@@ -53,3 +53,5 @@
 "EditProfile.unsavedChanges.title" = "Уверены,\nчто хотите выйти";
 "EditProfile.unsavedChanges.stay" = "Остаться";
 "EditProfile.unsavedChanges.exit" = "Выйти";
+
+"Tab.cart" = "Корзина";

@@ -20,11 +20,21 @@ final class TabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Catalog
         let catalogViewModel = viewModelAssembly.makeCatalogViewModel()
         let catalogController = CatalogViewController(viewModel: catalogViewModel, servicesAssembly: servicesAssembly)
         let catalogNavigationController = UINavigationController(rootViewController: catalogController)
         catalogNavigationController.tabBarItem = catalogTabBarItem
         
+        // Cart
+        let cartNavigationController = CartAssembly().build()
+        cartNavigationController.tabBarItem = UITabBarItem(
+            title: NSLocalizedString("Tab.cart", comment: ""),
+            image: UIImage(systemName: "cart"),
+            selectedImage: UIImage(systemName: "cart.fill")
+        )
+        
+        // Profile
         let profileViewModel = viewModelAssembly.makeProfileViewModel()
         let profileController = ProfileViewController(
             viewModel: profileViewModel,
@@ -33,7 +43,7 @@ final class TabBarController: UITabBarController {
         let profileNavigationController = UINavigationController(rootViewController: profileController)
         profileNavigationController.tabBarItem = profileTabBarItem
         
-        viewControllers = [profileNavigationController, catalogNavigationController]
+        viewControllers = [catalogNavigationController, cartNavigationController, profileNavigationController]
         
         view.backgroundColor = .systemBackground
     }
