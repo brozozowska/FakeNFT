@@ -8,8 +8,10 @@ protocol CartViewModelOutput: AnyObject {
 
 protocol CartViewModelProtocol: AnyObject {
     var items: [CartItem] { get }
+    var output: CartViewModelOutput? { get set }
     func viewDidLoad()
     func refresh()
+    func removeItem(id: String)
 }
 
 final class CartViewModel: CartViewModelProtocol {
@@ -28,6 +30,23 @@ final class CartViewModel: CartViewModelProtocol {
     
     func refresh() {
         load()
+    }
+    
+    func removeItem(id: String) {
+        output?.didChangeLoading(true)
+        cartService.removeItem(with: id) { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.output?.didChangeLoading(false)
+                switch result {
+                case .success:
+                    self.items.removeAll { $0.id == id }
+                    self.output?.didUpdateItems()
+                case .failure(let error):
+                    self.output?.didReceiveError(error)
+                }
+            }
+        }
     }
     
     private func load() {

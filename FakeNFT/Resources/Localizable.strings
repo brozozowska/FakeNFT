@@ -5,3 +5,5 @@
 "Error.repeat" = "Повторить";
 "Error.title" = "Ошибка";
 "Tab.cart" = "Корзина";
+"Cart.pay" = "К оплате";
+"Cart.price" = "Цена";
