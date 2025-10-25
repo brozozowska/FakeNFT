@@ -55,3 +55,5 @@
 "EditProfile.unsavedChanges.exit" = "Выйти";
 
 "Tab.cart" = "Корзина";
+"Cart.pay" = "К оплате";
+"Cart.price" = "Цена";
