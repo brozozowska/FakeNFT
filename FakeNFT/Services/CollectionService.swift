@@ -9,45 +9,57 @@ protocol CollectionService {
 final class CollectionServiceImpl: CollectionService {
     private let networkClient: NetworkClient
     private var cachedCollections: [NFTCollection]?
-    private var isLoading = false
-    private var completions: [CollectionsCompletion] = []
+    private let syncQueue = DispatchQueue(label: "collection.service.sync", attributes: .concurrent)
+    private var _isLoading = false
+    private var _completions: [CollectionsCompletion] = []
     
     init(networkClient: NetworkClient) {
         self.networkClient = networkClient
     }
     
+    deinit {
+        syncQueue.async(flags: .barrier) { [weak self] in
+                   self?._completions.removeAll()
+               }
+    }
+    
     func loadCollections(completion: @escaping CollectionsCompletion) {
         if let cachedCollections = cachedCollections {
-            completion(.success(cachedCollections))
+            DispatchQueue.main.async { completion(.success(cachedCollections)) }
             return
         }
         
-        if isLoading {
-            completions.append(completion)
-            return
+        var shouldStartLoading = false
+        
+        syncQueue.sync(flags: .barrier) {
+            if self._isLoading {
+                self._completions.append(completion)
+            } else {
+                self._isLoading = true
+                self._completions.append(completion)
+                shouldStartLoading = true
+            }
         }
         
-        isLoading = true
+        guard shouldStartLoading else { return }
         
         let request = CollectionsRequest()
         networkClient.send(request: request, type: [NFTCollection].self) { [weak self] result in
             guard let self else { return }
             
-            DispatchQueue.main.async {
-                self.isLoading = false
+            self.syncQueue.async(flags: .barrier) {
+                let currentCompletions = self._completions
+                self._completions.removeAll()
+                self._isLoading = false
                 
-                switch result {
-                case .success(let collections):
-                    self.cachedCollections = collections
-                    completion(.success(collections))
-                    
-                    self.completions.forEach { $0(.success(collections)) }
-                    self.completions.removeAll()
-                    
-                case .failure(let error):
-                    completion(.failure(error))
-                    self.completions.forEach { $0(.failure(error)) }
-                    self.completions.removeAll()
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let collections):
+                        self.cachedCollections = collections
+                        currentCompletions.forEach { $0(.success(collections)) }
+                    case .failure(let error):
+                        currentCompletions.forEach { $0(.failure(error)) }
+                    }
                 }
             }
         }
