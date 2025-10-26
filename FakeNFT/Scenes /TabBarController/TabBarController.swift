@@ -6,7 +6,7 @@ final class TabBarController: UITabBarController {
     
     private let catalogTabBarItem = UITabBarItem(
         title: NSLocalizedString("Tab.catalog", comment: ""),
-        image: UIImage(named: "catalog_noactive"),
+        image: UIImage(named: "catalog_noActive"),
         selectedImage: UIImage(named: "catalog_active"),
         
     )
