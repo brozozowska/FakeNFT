@@ -58,7 +58,7 @@ final class NFTCartCell: UITableViewCell, ReuseIdentifying {
 
     private let removeButton: UIButton = {
         let button = UIButton(type: .system)
-        let image = UIImage(systemName: Constants.removeSystemImageName)
+        let image = UIImage(resource: .basketRemove)
         button.setImage(image, for: .normal)
         button.tintColor = .label
         return button

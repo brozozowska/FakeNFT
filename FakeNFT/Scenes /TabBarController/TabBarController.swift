@@ -30,8 +30,8 @@ final class TabBarController: UITabBarController {
         let cartNavigationController = CartAssembly().build()
         cartNavigationController.tabBarItem = UITabBarItem(
             title: NSLocalizedString("Tab.cart", comment: ""),
-            image: UIImage(systemName: "cart"),
-            selectedImage: UIImage(systemName: "cart.fill")
+            image: UIImage(resource: .basket),
+            tag: 1
         )
         
         // Profile
