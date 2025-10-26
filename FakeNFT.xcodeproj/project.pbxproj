@@ -42,6 +42,9 @@
 		3FC8C38B29D242E90081F015 /* ProductDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC8C38A29D242E90081F015 /* ProductDetailsTableViewCell.swift */; };
 		3FC8C39129D2453B0081F015 /* ExamplePutRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC8C39029D2453B0081F015 /* ExamplePutRequest.swift */; };
 		3FC8C39329D246BA0081F015 /* DateFormatters+Presets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC8C39229D246BA0081F015 /* DateFormatters+Presets.swift */; };
+		4E12E5C22EAE17E2009FCC2C /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E12E5C12EAE17E2009FCC2C /* Currency.swift */; };
+		4E12E5C42EAE180D009FCC2C /* CurrencyServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E12E5C32EAE180D009FCC2C /* CurrencyServiceProtocol.swift */; };
+		4E12E5C62EAE1829009FCC2C /* CurrencyServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E12E5C52EAE1829009FCC2C /* CurrencyServiceMock.swift */; };
 		4EC062A62EACF5E800373C9E /* CartItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC062A52EACF5E800373C9E /* CartItem.swift */; };
 		4EC062A82EACF62700373C9E /* CartServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC062A72EACF62700373C9E /* CartServiceProtocol.swift */; };
 		4EC062AA2EACF65B00373C9E /* CartServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC062A92EACF65B00373C9E /* CartServiceMock.swift */; };
@@ -122,6 +125,9 @@
 		3FC8C38A29D242E90081F015 /* ProductDetailsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetailsTableViewCell.swift; sourceTree = "<group>"; };
 		3FC8C39029D2453B0081F015 /* ExamplePutRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamplePutRequest.swift; sourceTree = "<group>"; };
 		3FC8C39229D246BA0081F015 /* DateFormatters+Presets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DateFormatters+Presets.swift"; sourceTree = "<group>"; };
+		4E12E5C12EAE17E2009FCC2C /* Currency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
+		4E12E5C32EAE180D009FCC2C /* CurrencyServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyServiceProtocol.swift; sourceTree = "<group>"; };
+		4E12E5C52EAE1829009FCC2C /* CurrencyServiceMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyServiceMock.swift; sourceTree = "<group>"; };
 		4EC062A52EACF5E800373C9E /* CartItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartItem.swift; sourceTree = "<group>"; };
 		4EC062A72EACF62700373C9E /* CartServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartServiceProtocol.swift; sourceTree = "<group>"; };
 		4EC062A92EACF65B00373C9E /* CartServiceMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartServiceMock.swift; sourceTree = "<group>"; };
@@ -324,6 +330,8 @@
 				4EC062A72EACF62700373C9E /* CartServiceProtocol.swift */,
 				4EC062A92EACF65B00373C9E /* CartServiceMock.swift */,
 				4EC062B12EACF77700373C9E /* CartAssembly.swift */,
+				4E12E5C32EAE180D009FCC2C /* CurrencyServiceProtocol.swift */,
+				4E12E5C52EAE1829009FCC2C /* CurrencyServiceMock.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -394,6 +402,7 @@
 				E4F541122EABB3AB0046681D /* NFTCollection.swift */,
 				E4F541142EABC6370046681D /* User.swift */,
 				4EC062A52EACF5E800373C9E /* CartItem.swift */,
+				4E12E5C12EAE17E2009FCC2C /* Currency.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -605,6 +614,7 @@
 				4EC062A62EACF5E800373C9E /* CartItem.swift in Sources */,
 				0C79EE662A76DDFF00EE90EA /* NftDetailViewController.swift in Sources */,
 				E1A1B9DA2AA01CE400C3AFBC /* TabBarController.swift in Sources */,
+				4E12E5C42EAE180D009FCC2C /* CurrencyServiceProtocol.swift in Sources */,
 				3F478ED129DB476500F6D39E /* Fonts.swift in Sources */,
 				E4F1428A2EBDE64200D3AF8C /* ProfileModel.swift in Sources */,
 				0C79EE6A2A76DE1000EE90EA /* NftDetailAssembly.swift in Sources */,
@@ -626,6 +636,7 @@
 				3F68069929CBBAF100B4F915 /* SceneDelegate.swift in Sources */,
 				0C79EE6C2A76DE2E00EE90EA /* ServicesAssemly.swift in Sources */,
 				0CFCB74E2A7817DC0009A829 /* NftStorage.swift in Sources */,
+				4E12E5C62EAE1829009FCC2C /* CurrencyServiceMock.swift in Sources */,
 				3FC8C39129D2453B0081F015 /* ExamplePutRequest.swift in Sources */,
 				E4F142A02EBE0D6900D3AF8C /* ProfileRequest.swift in Sources */,
 				0CFCB7462A78064B0009A829 /* NftDetailCellModel.swift in Sources */,
@@ -644,6 +655,7 @@
 				E4F541262EB39D2E0046681D /* RatingView.swift in Sources */,
 				E4F5422B2EB7DEAC0046681D /* ViewModelAssembly.swift in Sources */,
 				0CFCB7492A7808900009A829 /* TestCatalogController.swift in Sources */,
+				4E12E5C22EAE17E2009FCC2C /* Currency.swift in Sources */,
 				3F6806D129CBBE6B00B4F915 /* NetworkClient.swift in Sources */,
 				0CFCB7442A7802440009A829 /* NftDetailInput.swift in Sources */,
 				0C79EE632A76DD1900EE90EA /* RequestConstants.swift in Sources */,

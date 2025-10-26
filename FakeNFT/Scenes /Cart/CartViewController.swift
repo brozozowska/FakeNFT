@@ -1,8 +1,10 @@
 import UIKit
 import Kingfisher
 
+// MARK: - Protocol
 protocol CartView: AnyObject, LoadingView, ErrorView { }
 
+// MARK: - CartViewController
 final class CartViewController: UIViewController, CartView {
 
     // MARK: - Constants
@@ -24,10 +26,11 @@ final class CartViewController: UIViewController, CartView {
             }
         }
         
+        static let emptyCartKey = "Cart.empty"
         static let payButtonTitleKey = "Cart.pay"
         static let tabTitleKey = "Tab.cart"
         static let tabImageSystemName = "cart"
-        static let currencySuffix = "ETH"
+        static let defaultCurrency = "ETH"
         static let errorRepeatKey = "Error.repeat"
     }
 
@@ -39,8 +42,6 @@ final class CartViewController: UIViewController, CartView {
         tableView.estimatedRowHeight = Constants.estimatedRowHeight
         return tableView
     }()
-
-    internal lazy var activityIndicator = UIActivityIndicatorView(style: .medium)
 
     private let bottomBar: UIView = {
         let view = UIView()
@@ -77,13 +78,15 @@ final class CartViewController: UIViewController, CartView {
     
     private let emptyStateLabel: UILabel = {
         let label = UILabel()
-        label.text = NSLocalizedString("Cart.empty", comment: "Empty cart message")
+        label.text = NSLocalizedString(Constants.emptyCartKey, comment: "Empty cart message")
         label.font = .systemFont(ofSize: 17, weight: .bold)
         label.textColor = .label
         label.textAlignment = .center
         label.isHidden = true
         return label
     }()
+    
+    internal lazy var activityIndicator = UIActivityIndicatorView(style: .medium)
 
     // MARK: - Formatting
     private lazy var priceFormatter: NumberFormatter = {
@@ -97,6 +100,11 @@ final class CartViewController: UIViewController, CartView {
     
     // MARK: - Dependencies
     private let viewModel: CartViewModelProtocol
+    
+    // MARK: - State
+    private var selectedCurrency: String = Constants.defaultCurrency {
+        didSet { updateBottomBar() }
+    }
 
     // MARK: - Init
     init(viewModel: CartViewModelProtocol) {
@@ -128,6 +136,8 @@ final class CartViewController: UIViewController, CartView {
 
         viewModel.output = self
 
+        NotificationCenter.default.addObserver(self, selector: #selector(onCurrencySelected(_:)), name: .didSelectCurrency, object: nil)
+        
         viewModel.viewDidLoad()
     }
 
@@ -147,6 +157,8 @@ final class CartViewController: UIViewController, CartView {
 
         stackLeft.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         stackLeft.setContentCompressionResistancePriority(.required, for: .horizontal)
+        
+        payButton.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
     }
 
     private func setupConstraints() {
@@ -183,17 +195,38 @@ final class CartViewController: UIViewController, CartView {
 
         updateBottomBar()
     }
-
-    // MARK: - Private Methods
+    
     private func setupActivityIndicator() {
         view.addSubview(activityIndicator)
         activityIndicator.constraintCenters(to: view)
     }
+
+    // MARK: - Actions
+    @objc private func payButtonTapped() {
+        openCurrencySelection()
+    }
     
+    @objc private func onCurrencySelected(_ notification: Notification) {
+        guard let currency = notification.object as? Currency else { return }
+        selectedCurrency = currency.name
+    }
+    
+    // MARK: - State
     private func updateEmptyState(isEmpty: Bool) {
         emptyStateLabel.isHidden = !isEmpty
         tableView.isHidden = isEmpty
         bottomBar.isHidden = isEmpty
+    }
+    
+    // MARK: - Navigation
+    private func openCurrencySelection() {
+        let currencyService = CurrencyServiceMock()
+        let currencyViewModel = CurrencyViewModel(currencyService: currencyService)
+        let viewController = CurrencyViewController(viewModel: currencyViewModel)
+        viewController.hidesBottomBarWhenPushed = true
+        navigationItem.backButtonTitle = ""
+        navigationController?.navigationBar.tintColor = .label
+        navigationController?.pushViewController(viewController, animated: true)
     }
 
     // MARK: - Helpers
@@ -203,10 +236,7 @@ final class CartViewController: UIViewController, CartView {
         let totalString = priceFormatter.string(from: total as NSDecimalNumber) ?? "\(total)"
 
         itemsCountLabel.text = "\(count) NFT"
-        totalPriceLabel.text = "\(totalString) \(Constants.currencySuffix)"
-
-        payButton.isEnabled = count > 0
-        payButton.alpha = count > 0 ? 1.0 : 0.5
+        totalPriceLabel.text = "\(totalString) \(selectedCurrency)"
     }
 }
 
@@ -238,17 +268,22 @@ extension CartViewController: CartViewModelOutput {
 
 // MARK: - UITableViewDataSource
 extension CartViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(
+        _ tableView: UITableView,
+        numberOfRowsInSection section: Int
+    ) -> Int {
         viewModel.items.count
     }
 
-    func tableView(_ tableView: UITableView,
-                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath
+    ) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: NFTCartCell.defaultReuseIdentifier, for: indexPath) as? NFTCartCell else {
             return UITableViewCell()
         }
         let item = viewModel.items[indexPath.row]
-        cell.configure(with: item, priceFormatter: priceFormatter, currencySuffix: Constants.currencySuffix)
+        cell.configure(with: item, priceFormatter: priceFormatter, currencySuffix: Constants.defaultCurrency)
         cell.onRemoveTapped = { [weak self] id in
             self?.viewModel.removeItem(id: id)
         }
