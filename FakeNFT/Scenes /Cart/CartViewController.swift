@@ -74,6 +74,16 @@ final class CartViewController: UIViewController, CartView {
         button.layer.masksToBounds = true
         return button
     }()
+    
+    private let emptyStateLabel: UILabel = {
+        let label = UILabel()
+        label.text = NSLocalizedString("Cart.empty", comment: "Empty cart message")
+        label.font = .systemFont(ofSize: 17, weight: .bold)
+        label.textColor = .label
+        label.textAlignment = .center
+        label.isHidden = true
+        return label
+    }()
 
     // MARK: - Formatting
     private lazy var priceFormatter: NumberFormatter = {
@@ -125,6 +135,7 @@ final class CartViewController: UIViewController, CartView {
     private func setupHierarchy() {
         view.addSubview(tableView)
         view.addSubview(bottomBar)
+        view.addSubview(emptyStateLabel)
 
         let stackLeft = UIStackView(arrangedSubviews: [itemsCountLabel, totalPriceLabel])
         stackLeft.axis = .vertical
@@ -142,6 +153,7 @@ final class CartViewController: UIViewController, CartView {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         bottomBar.translatesAutoresizingMaskIntoConstraints = false
         payButton.translatesAutoresizingMaskIntoConstraints = false
+        emptyStateLabel.translatesAutoresizingMaskIntoConstraints = false
 
         guard let stackLeft = bottomBar.subviews.compactMap({ $0 as? UIStackView }).first else { return }
 
@@ -163,15 +175,25 @@ final class CartViewController: UIViewController, CartView {
             payButton.topAnchor.constraint(equalTo: bottomBar.topAnchor, constant: Constants.contentInset),
             payButton.bottomAnchor.constraint(equalTo: bottomBar.bottomAnchor, constant: -Constants.contentInset),
             payButton.trailingAnchor.constraint(equalTo: bottomBar.trailingAnchor, constant: -Constants.contentInset),
-            payButton.leadingAnchor.constraint(equalTo: stackLeft.trailingAnchor, constant: Constants.interItemSpacing)
+            payButton.leadingAnchor.constraint(equalTo: stackLeft.trailingAnchor, constant: Constants.interItemSpacing),
+            
+            emptyStateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyStateLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
         ])
 
         updateBottomBar()
     }
 
+    // MARK: - Private Methods
     private func setupActivityIndicator() {
         view.addSubview(activityIndicator)
         activityIndicator.constraintCenters(to: view)
+    }
+    
+    private func updateEmptyState(isEmpty: Bool) {
+        emptyStateLabel.isHidden = !isEmpty
+        tableView.isHidden = isEmpty
+        bottomBar.isHidden = isEmpty
     }
 
     // MARK: - Helpers
@@ -191,8 +213,12 @@ final class CartViewController: UIViewController, CartView {
 // MARK: - CartViewModelOutput
 extension CartViewController: CartViewModelOutput {
     func didUpdateItems() {
-        tableView.reloadData()
-        updateBottomBar()
+        let isEmpty = viewModel.items.isEmpty
+        updateEmptyState(isEmpty: isEmpty)
+        if !isEmpty {
+            tableView.reloadData()
+            updateBottomBar()
+        }
     }
 
     func didChangeLoading(_ isLoading: Bool) {
