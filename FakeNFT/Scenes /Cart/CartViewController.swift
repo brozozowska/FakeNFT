@@ -110,11 +110,6 @@ final class CartViewController: UIViewController, CartView {
     init(viewModel: CartViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        tabBarItem = UITabBarItem(
-            title: NSLocalizedString(Constants.tabTitleKey, comment: "Cart tab"),
-            image: UIImage(systemName: Constants.tabImageSystemName),
-            tag: 1
-        )
     }
 
     required init?(coder: NSCoder) {
@@ -129,6 +124,7 @@ final class CartViewController: UIViewController, CartView {
         setupHierarchy()
         setupConstraints()
         setupActivityIndicator()
+        setupNavigationBar()
 
         tableView.dataSource = self
         tableView.delegate = self
@@ -200,6 +196,17 @@ final class CartViewController: UIViewController, CartView {
         view.addSubview(activityIndicator)
         activityIndicator.constraintCenters(to: view)
     }
+    
+    private func setupNavigationBar() {
+        let sortButton = UIBarButtonItem(
+            image: UIImage(resource: .sort),
+            style: .plain,
+            target: self,
+            action: #selector(sortButtonTapped)
+        )
+        sortButton.tintColor = .label
+        navigationItem.rightBarButtonItem = sortButton
+    }
 
     // MARK: - Actions
     @objc private func payButtonTapped() {
@@ -210,6 +217,8 @@ final class CartViewController: UIViewController, CartView {
         guard let currency = notification.object as? Currency else { return }
         selectedCurrency = currency.name
     }
+    
+    @objc private func sortButtonTapped() { }
     
     // MARK: - State
     private func updateEmptyState(isEmpty: Bool) {
