@@ -190,10 +190,11 @@ extension CurrencyViewController: UICollectionViewDataSource, UICollectionViewDe
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
+        guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: CurrencyCell.reuseIdentifier,
             for: indexPath
-        ) as! CurrencyCell
+        ) as? CurrencyCell else { return UICollectionViewCell() }
+       
         let currency = viewModel.currencies[indexPath.item]
         cell.configure(with: currency)
         return cell
