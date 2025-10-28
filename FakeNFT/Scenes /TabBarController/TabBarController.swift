@@ -14,9 +14,8 @@ final class TabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let catalogController = CatalogViewController(
-            collectionService: servicesAssembly.collectionService
-        )
+        let catalogViewModel = servicesAssembly.makeCatalogViewModel()
+        let catalogController = CatalogViewController(viewModel: catalogViewModel)
         let catalogNavigationController = UINavigationController(rootViewController: catalogController)
         catalogNavigationController.tabBarItem = catalogTabBarItem
         

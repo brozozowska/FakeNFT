@@ -22,4 +22,10 @@ final class ServicesAssembly {
             networkClient: networkClient
         )
     }
+    
+    // MARK: - View Models
+    
+    func makeCatalogViewModel() -> CatalogViewModel {
+        return CatalogViewModel(collectionService: collectionService)
+    }
 }

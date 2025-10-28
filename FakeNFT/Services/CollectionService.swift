@@ -19,8 +19,8 @@ final class CollectionServiceImpl: CollectionService {
     
     deinit {
         syncQueue.async(flags: .barrier) { [weak self] in
-                   self?._completions.removeAll()
-               }
+            self?._completions.removeAll()
+        }
     }
     
     func loadCollections(completion: @escaping CollectionsCompletion) {
@@ -32,11 +32,10 @@ final class CollectionServiceImpl: CollectionService {
         var shouldStartLoading = false
         
         syncQueue.sync(flags: .barrier) {
-            if self._isLoading {
-                self._completions.append(completion)
-            } else {
-                self._isLoading = true
-                self._completions.append(completion)
+            _completions.append(completion)
+            
+            if !_isLoading {
+                _isLoading = true
                 shouldStartLoading = true
             }
         }

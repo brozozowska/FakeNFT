@@ -1,11 +1,12 @@
 import UIKit
+import Combine
 
 final class CatalogViewController: UIViewController {
     
     // MARK: - Properties
     
-    private let collectionService: CollectionService
-    private var collections: [NFTCollection] = []
+    private let viewModel: CatalogViewModel
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - UI Components
     
@@ -39,12 +40,14 @@ final class CatalogViewController: UIViewController {
     
     // MARK: - Init
     
-    init(collectionService: CollectionService) {
-        self.collectionService = collectionService
+    init(viewModel: CatalogViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
+        assertionFailure("init(coder:) is not supported for CatalogViewController. Use init(viewModel:) instead.")
         return nil
     }
     
@@ -55,7 +58,8 @@ final class CatalogViewController: UIViewController {
         setupViews()
         setupConstraints()
         setupNavigationBar()
-        loadCollections()
+        setupBindings()
+        viewModel.loadCollections()
     }
     
     // MARK: - Private Methods
@@ -86,41 +90,29 @@ final class CatalogViewController: UIViewController {
         navigationItem.rightBarButtonItem = sortButton
     }
     
-    private func loadCollections() {
-        showLoading()
-        collectionService.loadCollections { [weak self] result in
-            guard let self else { return }
-            self.hideLoading()
-            
-            switch result {
-            case .success(let collections):
-                self.collections = collections
-                self.tableView.reloadData()
-            case .failure(let error):
-                self.showError(self.makeErrorModel(error))
+    private func setupBindings() {
+        viewModel.$isLoading
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isLoading in
+                isLoading ? self?.showLoading() : self?.hideLoading()
             }
-        }
-    }
-    
-    private func makeErrorModel(_ error: Error) -> ErrorModel {
-        let message: String
-        if let urlError = error as? URLError {
-            switch urlError.code {
-            case .notConnectedToInternet, .networkConnectionLost:
-                message = NSLocalizedString("Error.network.connection", comment: "No internet connection")
-            case .timedOut:
-                message = NSLocalizedString("Error.network.timeout", comment: "Request timeout")
-            default:
-                message = NSLocalizedString("Error.network", comment: "Network error")
-            }
-        } else {
-            message = NSLocalizedString("Error.unknown", comment: "Unknown error")
-        }
+            .store(in: &cancellables)
         
-        let actionText = NSLocalizedString("Error.repeat", comment: "Try again")
-        return ErrorModel(message: message, actionText: actionText) { [weak self] in
-            self?.loadCollections()
-        }
+        viewModel.$collections
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.tableView.reloadData()
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$errorModel
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] errorModel in
+                if let errorModel = errorModel {
+                    self?.showError(errorModel)
+                }
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Actions
@@ -145,12 +137,12 @@ final class CatalogViewController: UIViewController {
 
 extension CatalogViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return collections.count
+        viewModel.collectionsCount()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: CollectionTableViewCell = tableView.dequeueReusableCell()
-        let collection = collections[indexPath.row]
+        let collection = viewModel.collection(at: indexPath.row)
         cell.configure(with: collection)
         return cell
     }
@@ -162,7 +154,7 @@ extension CatalogViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let collection = collections[indexPath.row]
+        let collection = viewModel.collection(at: indexPath.row)
         // TODO: Реализовать переход на экран коллекции в следующих частях
         print("Selected collection: \(collection.name)")
         
@@ -177,10 +169,18 @@ extension CatalogViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 179
+        179
     }
 }
 
 // MARK: - LoadingView & ErrorView
 
-extension CatalogViewController: LoadingView, ErrorView {}
+extension CatalogViewController: LoadingView, ErrorView {
+    func showLoading() {
+        activityIndicator.startAnimating()
+    }
+    
+    func hideLoading() {
+        activityIndicator.stopAnimating()
+    }
+}
