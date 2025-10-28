@@ -4,28 +4,43 @@ import Kingfisher
 final class NFTCartCell: UITableViewCell, ReuseIdentifying {
 
     // MARK: - Constants
-    private struct Constants {
-        static let contentInset: CGFloat = 16
-        static let imageSize: CGFloat = 108
-        static let titleTopOffset: CGFloat = 8
-        static let priceLabelBottomOffset: CGFloat = 8
-        static let titleToRemoveSpacing: CGFloat = 12
-        static let titleToRatingSpacing: CGFloat = 6
-        static let ratingToPriceCaptionSpacing: CGFloat = 10
-        static let priceCaptionToPriceSpacing: CGFloat = 6
-        static let ratingStars: Int = 5
-        static let ratingStarSpacing: CGFloat = 0
-        static let ratingStarSize: CGFloat = 12
-        static let previewCornerRadius: CGFloat = 12
+    private enum Constants {
+        enum Layout {
+            static let contentInset: CGFloat = 16
+            static let imageSize: CGFloat = 108
+            static let titleTopOffset: CGFloat = 8
+            static let priceLabelBottomOffset: CGFloat = 8
+            static let titleToRemoveSpacing: CGFloat = 12
+            static let titleToRatingSpacing: CGFloat = 6
+            static let ratingToPriceCaptionSpacing: CGFloat = 10
+            static let priceCaptionToPriceSpacing: CGFloat = 6
+        }
 
-        static let priceCaptionTextKey = "Cart.price"
-        static let removeSystemImageName = "trash"
+        enum Typography {
+            static let titleFontSize: CGFloat = 17
+            static let priceCaptionFontSize: CGFloat = 13
+            static let priceFontSize: CGFloat = 17
+        }
+
+        enum Appearance {
+            static let previewCornerRadius: CGFloat = 12
+        }
+
+        enum Rating {
+            static let stars: Int = 5
+            static let starSpacing: CGFloat = 0
+            static let starSize: CGFloat = 12
+        }
+
+        enum Strings {
+            static let priceCaptionTextKey = "Cart.price"
+        }
     }
 
     // MARK: - UI
     private lazy var previewImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.layer.cornerRadius = Constants.previewCornerRadius
+        imageView.layer.cornerRadius = Constants.Appearance.previewCornerRadius
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
         return imageView
@@ -33,25 +48,29 @@ final class NFTCartCell: UITableViewCell, ReuseIdentifying {
 
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 17, weight: .bold)
+        label.font = .systemFont(ofSize: Constants.Typography.titleFontSize, weight: .bold)
         label.textColor = .label
         label.numberOfLines = 1
         return label
     }()
 
-    private lazy var ratingView = StarRatingView(stars: Constants.ratingStars, starSize: Constants.ratingStarSize, spacing: Constants.ratingStarSpacing)
+    private lazy var ratingView = StarRatingView(
+        stars: Constants.Rating.stars,
+        starSize: Constants.Rating.starSize,
+        spacing: Constants.Rating.starSpacing
+    )
 
     private lazy var priceCaptionLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .regular)
+        label.font = .systemFont(ofSize: Constants.Typography.priceCaptionFontSize, weight: .regular)
         label.textColor = .label
-        label.text = NSLocalizedString(Constants.priceCaptionTextKey, comment: "Price")
+        label.text = NSLocalizedString(Constants.Strings.priceCaptionTextKey, comment: "Price")
         return label
     }()
 
     private lazy var priceLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 17, weight: .bold)
+        label.font = .systemFont(ofSize: Constants.Typography.priceFontSize, weight: .bold)
         label.textColor = .label
         return label
     }()
@@ -87,7 +106,7 @@ final class NFTCartCell: UITableViewCell, ReuseIdentifying {
     func configure(with item: CartItem, priceFormatter: NumberFormatter, currencySuffix: String) {
         currentId = item.id
         titleLabel.text = item.title
-        ratingView.rating = max(0, min(Constants.ratingStars, item.rating))
+        ratingView.rating = max(0, min(Constants.Rating.stars, item.rating))
 
         if let url = item.imageURL {
             previewImageView.kf.setImage(with: url)
@@ -126,30 +145,30 @@ final class NFTCartCell: UITableViewCell, ReuseIdentifying {
         removeButton.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            previewImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.contentInset),
-            previewImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Constants.contentInset),
-            previewImageView.widthAnchor.constraint(equalToConstant: Constants.imageSize),
-            previewImageView.heightAnchor.constraint(equalToConstant: Constants.imageSize),
-            previewImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -Constants.contentInset),
+            previewImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.Layout.contentInset),
+            previewImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Constants.Layout.contentInset),
+            previewImageView.widthAnchor.constraint(equalToConstant: Constants.Layout.imageSize),
+            previewImageView.heightAnchor.constraint(equalToConstant: Constants.Layout.imageSize),
+            previewImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -Constants.Layout.contentInset),
 
-            titleLabel.topAnchor.constraint(equalTo: previewImageView.topAnchor, constant: Constants.titleTopOffset),
-            titleLabel.leadingAnchor.constraint(equalTo: previewImageView.trailingAnchor, constant: Constants.contentInset + 4),
-            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: removeButton.leadingAnchor, constant: -Constants.titleToRemoveSpacing),
+            titleLabel.topAnchor.constraint(equalTo: previewImageView.topAnchor, constant: Constants.Layout.titleTopOffset),
+            titleLabel.leadingAnchor.constraint(equalTo: previewImageView.trailingAnchor, constant: Constants.Layout.contentInset + 4),
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: removeButton.leadingAnchor, constant: -Constants.Layout.titleToRemoveSpacing),
 
-            ratingView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: Constants.titleToRatingSpacing),
+            ratingView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: Constants.Layout.titleToRatingSpacing),
             ratingView.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
 
-            priceCaptionLabel.topAnchor.constraint(equalTo: ratingView.bottomAnchor, constant: Constants.ratingToPriceCaptionSpacing),
+            priceCaptionLabel.topAnchor.constraint(equalTo: ratingView.bottomAnchor, constant: Constants.Layout.ratingToPriceCaptionSpacing),
             priceCaptionLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            priceCaptionLabel.trailingAnchor.constraint(lessThanOrEqualTo: removeButton.leadingAnchor, constant: -Constants.titleToRemoveSpacing),
+            priceCaptionLabel.trailingAnchor.constraint(lessThanOrEqualTo: removeButton.leadingAnchor, constant: -Constants.Layout.titleToRemoveSpacing),
 
-            priceLabel.topAnchor.constraint(equalTo: priceCaptionLabel.bottomAnchor, constant: Constants.priceCaptionToPriceSpacing),
+            priceLabel.topAnchor.constraint(equalTo: priceCaptionLabel.bottomAnchor, constant: Constants.Layout.priceCaptionToPriceSpacing),
             priceLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            priceLabel.trailingAnchor.constraint(lessThanOrEqualTo: removeButton.leadingAnchor, constant: -Constants.titleToRemoveSpacing),
-            priceLabel.bottomAnchor.constraint(equalTo: previewImageView.bottomAnchor, constant: -Constants.priceLabelBottomOffset),
+            priceLabel.trailingAnchor.constraint(lessThanOrEqualTo: removeButton.leadingAnchor, constant: -Constants.Layout.titleToRemoveSpacing),
+            priceLabel.bottomAnchor.constraint(equalTo: previewImageView.bottomAnchor, constant: -Constants.Layout.priceLabelBottomOffset),
 
             removeButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            removeButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.contentInset),
+            removeButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.Layout.contentInset),
         ])
     }
 }
