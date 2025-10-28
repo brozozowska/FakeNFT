@@ -8,30 +8,51 @@ protocol CartView: AnyObject, LoadingView, ErrorView { }
 final class CartViewController: UIViewController, CartView {
 
     // MARK: - Constants
-    private struct Constants {
-        static let bottomBarHeight: CGFloat = 76
-        static let contentInset: CGFloat = 16
-        static let interItemSpacing: CGFloat = 24
-        static let stackSpacing: CGFloat = 4
-        static let bottomBarCornerRadius: CGFloat = 16
-        static let estimatedRowHeight: CGFloat = 120
-        static let payButtonCornerRadius: CGFloat = 16
-        
-        static let payButtonTitleColor: UIColor = UIColor { traits in
-            switch traits.userInterfaceStyle {
-            case .dark:
-                return .black
-            default:
-                return .white
+    private enum Constants {
+        enum Layout {
+            static let bottomBarHeight: CGFloat = 76
+            static let contentInset: CGFloat = 16
+            static let interItemSpacing: CGFloat = 24
+            static let stackSpacing: CGFloat = 4
+            static let bottomBarCornerRadius: CGFloat = 16
+            static let estimatedRowHeight: CGFloat = 120
+        }
+
+        enum PayButton {
+            static let cornerRadius: CGFloat = 16
+            static let titleFontSize: CGFloat = 17
+        }
+
+        enum Fonts {
+            static let itemsCountFontSize: CGFloat = 15
+            static let totalPriceFontSize: CGFloat = 17
+        }
+
+        enum Colors {
+            static let payButtonTitleColor: UIColor = UIColor { traits in
+                switch traits.userInterfaceStyle {
+                case .dark:
+                    return .black
+                default:
+                    return .white
+                }
             }
         }
-        
-        static let emptyCartKey = "Cart.empty"
-        static let payButtonTitleKey = "Cart.pay"
-        static let tabTitleKey = "Tab.cart"
-        static let tabImageSystemName = "cart"
-        static let defaultCurrency = "ETH"
-        static let errorRepeatKey = "Error.repeat"
+
+        enum Strings {
+            static let emptyCartKey = "Cart.empty"
+            static let payButtonTitleKey = "Cart.pay"
+            static let tabTitleKey = "Tab.cart"
+            static let errorRepeatKey = "Error.repeat"
+        }
+
+        enum Images {
+            static let tabImageSystemName = "cart"
+        }
+
+        enum Defaults {
+            static let currency = "ETH"
+        }
     }
 
     // MARK: - UI
@@ -39,28 +60,28 @@ final class CartViewController: UIViewController, CartView {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.separatorStyle = .none
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = Constants.estimatedRowHeight
+        tableView.estimatedRowHeight = Constants.Layout.estimatedRowHeight
         return tableView
     }()
 
     private lazy var bottomBar: UIView = {
         let view = UIView()
         view.backgroundColor = .secondarySystemBackground
-        view.layer.cornerRadius = Constants.bottomBarCornerRadius
+        view.layer.cornerRadius = Constants.Layout.bottomBarCornerRadius
         view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         return view
     }()
 
     private lazy var itemsCountLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .regular)
+        label.font = .systemFont(ofSize: Constants.Fonts.itemsCountFontSize, weight: .regular)
         label.textColor = .label
         return label
     }()
 
     private lazy var totalPriceLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 17, weight: .bold)
+        label.font = .systemFont(ofSize: Constants.Fonts.totalPriceFontSize, weight: .bold)
         label.textColor = .systemGreen
         return label
     }()
@@ -68,17 +89,17 @@ final class CartViewController: UIViewController, CartView {
     private lazy var payButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = .label
-        button.setTitle(NSLocalizedString(Constants.payButtonTitleKey, comment: "Pay button"), for: .normal)
-        button.setTitleColor(Constants.payButtonTitleColor, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 17, weight: .bold)
-        button.layer.cornerRadius = Constants.payButtonCornerRadius
+        button.setTitle(NSLocalizedString(Constants.Strings.payButtonTitleKey, comment: "Pay button"), for: .normal)
+        button.setTitleColor(Constants.Colors.payButtonTitleColor, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: Constants.PayButton.titleFontSize, weight: .bold)
+        button.layer.cornerRadius = Constants.PayButton.cornerRadius
         button.layer.masksToBounds = true
         return button
     }()
     
     private lazy var emptyStateLabel: UILabel = {
         let label = UILabel()
-        label.text = NSLocalizedString(Constants.emptyCartKey, comment: "Empty cart message")
+        label.text = NSLocalizedString(Constants.Strings.emptyCartKey, comment: "Empty cart message")
         label.font = .systemFont(ofSize: 17, weight: .bold)
         label.textColor = .label
         label.textAlignment = .center
@@ -102,7 +123,7 @@ final class CartViewController: UIViewController, CartView {
     private let viewModel: CartViewModelProtocol
     
     // MARK: - State
-    private var selectedCurrency: String = Constants.defaultCurrency {
+    private var selectedCurrency: String = Constants.Defaults.currency {
         didSet { updateBottomBar() }
     }
 
@@ -145,7 +166,7 @@ final class CartViewController: UIViewController, CartView {
 
         let stackLeft = UIStackView(arrangedSubviews: [itemsCountLabel, totalPriceLabel])
         stackLeft.axis = .vertical
-        stackLeft.spacing = Constants.stackSpacing
+        stackLeft.spacing = Constants.Layout.stackSpacing
         stackLeft.translatesAutoresizingMaskIntoConstraints = false
 
         bottomBar.addSubview(stackLeft)
@@ -169,21 +190,21 @@ final class CartViewController: UIViewController, CartView {
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Constants.bottomBarHeight),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Constants.Layout.bottomBarHeight),
 
             bottomBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             bottomBar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            bottomBar.heightAnchor.constraint(equalToConstant: Constants.bottomBarHeight),
+            bottomBar.heightAnchor.constraint(equalToConstant: Constants.Layout.bottomBarHeight),
 
-            stackLeft.leadingAnchor.constraint(equalTo: bottomBar.leadingAnchor, constant: Constants.contentInset),
-            stackLeft.topAnchor.constraint(equalTo: bottomBar.topAnchor, constant: Constants.contentInset),
-            stackLeft.bottomAnchor.constraint(equalTo: bottomBar.bottomAnchor, constant: -Constants.contentInset),
+            stackLeft.leadingAnchor.constraint(equalTo: bottomBar.leadingAnchor, constant: Constants.Layout.contentInset),
+            stackLeft.topAnchor.constraint(equalTo: bottomBar.topAnchor, constant: Constants.Layout.contentInset),
+            stackLeft.bottomAnchor.constraint(equalTo: bottomBar.bottomAnchor, constant: -Constants.Layout.contentInset),
 
-            payButton.topAnchor.constraint(equalTo: bottomBar.topAnchor, constant: Constants.contentInset),
-            payButton.bottomAnchor.constraint(equalTo: bottomBar.bottomAnchor, constant: -Constants.contentInset),
-            payButton.trailingAnchor.constraint(equalTo: bottomBar.trailingAnchor, constant: -Constants.contentInset),
-            payButton.leadingAnchor.constraint(equalTo: stackLeft.trailingAnchor, constant: Constants.interItemSpacing),
+            payButton.topAnchor.constraint(equalTo: bottomBar.topAnchor, constant: Constants.Layout.contentInset),
+            payButton.bottomAnchor.constraint(equalTo: bottomBar.bottomAnchor, constant: -Constants.Layout.contentInset),
+            payButton.trailingAnchor.constraint(equalTo: bottomBar.trailingAnchor, constant: -Constants.Layout.contentInset),
+            payButton.leadingAnchor.constraint(equalTo: stackLeft.trailingAnchor, constant: Constants.Layout.interItemSpacing),
             
             emptyStateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             emptyStateLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -267,7 +288,7 @@ extension CartViewController: CartViewModelOutput {
     func didReceiveError(_ error: Error) {
         let model = ErrorModel(
             message: error.localizedDescription,
-            actionText: NSLocalizedString(Constants.errorRepeatKey, comment: "Repeat")
+            actionText: NSLocalizedString(Constants.Strings.errorRepeatKey, comment: "Repeat")
         ) { [weak self] in
             self?.viewModel.refresh()
         }
@@ -292,7 +313,7 @@ extension CartViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         let item = viewModel.items[indexPath.row]
-        cell.configure(with: item, priceFormatter: priceFormatter, currencySuffix: Constants.defaultCurrency)
+        cell.configure(with: item, priceFormatter: priceFormatter, currencySuffix: Constants.Defaults.currency)
         cell.onRemoveTapped = { [weak self] id in
             self?.viewModel.removeItem(id: id)
         }

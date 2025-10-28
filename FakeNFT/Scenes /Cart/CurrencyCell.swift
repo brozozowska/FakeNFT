@@ -4,18 +4,27 @@ import Kingfisher
 final class CurrencyCell: UICollectionViewCell {
     
     // MARK: - Constants
-    private struct Constants {
-        static let cornerRadius: CGFloat = 12
-        static let iconCornerRadius: CGFloat = 6
-        static let iconSize: CGFloat = 36
-        static let horizontalInset: CGFloat = 12
-        static let spacingBetweenIconAndLabels: CGFloat = 4
-        static let textStackSpacing: CGFloat = 2
+    private enum Constants {
+        enum Layout {
+            static let horizontalInset: CGFloat = 12
+            static let spacingBetweenIconAndLabels: CGFloat = 4
+            static let textStackSpacing: CGFloat = 2
+        }
         
-        static let titleFontSize: CGFloat = 13
-        static let tickerFontSize: CGFloat = 13
+        enum Typography {
+            static let titleFontSize: CGFloat = 13
+            static let tickerFontSize: CGFloat = 13
+        }
         
-        static let placeholderSystemImageName = "bitcoinsign.circle"
+        enum Appearance {
+            static let cornerRadius: CGFloat = 12
+            static let iconCornerRadius: CGFloat = 6
+            static let iconSize: CGFloat = 36
+        }
+        
+        enum Strings {
+            static let placeholderSystemImageName = "bitcoinsign.circle"
+        }
     }
     
     // MARK: - Reuse Identifier
@@ -25,21 +34,21 @@ final class CurrencyCell: UICollectionViewCell {
     private lazy var iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.layer.cornerRadius = Constants.iconCornerRadius
+        imageView.layer.cornerRadius = Constants.Appearance.iconCornerRadius
         imageView.clipsToBounds = true
         return imageView
     }()
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: Constants.titleFontSize, weight: .regular)
+        label.font = .systemFont(ofSize: Constants.Typography.titleFontSize, weight: .regular)
         label.textColor = .label
         return label
     }()
     
     private lazy var tickerLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: Constants.tickerFontSize, weight: .regular)
+        label.font = .systemFont(ofSize: Constants.Typography.tickerFontSize, weight: .regular)
         label.textColor = .systemGreen
         return label
     }()
@@ -47,7 +56,7 @@ final class CurrencyCell: UICollectionViewCell {
     private lazy var textStack: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [titleLabel, tickerLabel])
         stack.axis = .vertical
-        stack.spacing = Constants.textStackSpacing
+        stack.spacing = Constants.Layout.textStackSpacing
         return stack
     }()
     
@@ -70,7 +79,7 @@ final class CurrencyCell: UICollectionViewCell {
         
         iconImageView.kf.setImage(
             with: currency.imageURL,
-            placeholder: UIImage(systemName: Constants.placeholderSystemImageName)
+            placeholder: UIImage(systemName: Constants.Strings.placeholderSystemImageName)
         )
     }
     
@@ -85,19 +94,19 @@ final class CurrencyCell: UICollectionViewCell {
         textStack.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            iconImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.horizontalInset),
+            iconImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.Layout.horizontalInset),
             iconImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            iconImageView.heightAnchor.constraint(equalToConstant: Constants.iconSize),
-            iconImageView.widthAnchor.constraint(equalToConstant: Constants.iconSize),
+            iconImageView.heightAnchor.constraint(equalToConstant: Constants.Appearance.iconSize),
+            iconImageView.widthAnchor.constraint(equalToConstant: Constants.Appearance.iconSize),
             
-            textStack.leadingAnchor.constraint(equalTo: iconImageView.trailingAnchor, constant: Constants.spacingBetweenIconAndLabels),
+            textStack.leadingAnchor.constraint(equalTo: iconImageView.trailingAnchor, constant: Constants.Layout.spacingBetweenIconAndLabels),
             textStack.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
     }
     
     private func configureAppearance() {
         contentView.backgroundColor = .secondarySystemBackground
-        contentView.layer.cornerRadius = Constants.cornerRadius
+        contentView.layer.cornerRadius = Constants.Appearance.cornerRadius
         contentView.layer.masksToBounds = true
     }
 }
