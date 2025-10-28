@@ -148,7 +148,6 @@ final class CartViewController: UIViewController, CartView {
         setupNavigationBar()
 
         tableView.dataSource = self
-        tableView.delegate = self
         tableView.register(NFTCartCell.self, forCellReuseIdentifier: NFTCartCell.defaultReuseIdentifier)
 
         viewModel.output = self
@@ -325,6 +324,3 @@ extension CartViewController: UITableViewDataSource {
         return cell
     }
 }
-
-// MARK: - UITableViewDelegate
-extension CartViewController: UITableViewDelegate { }
