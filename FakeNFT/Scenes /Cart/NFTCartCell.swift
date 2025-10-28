@@ -23,7 +23,7 @@ final class NFTCartCell: UITableViewCell, ReuseIdentifying {
     }
 
     // MARK: - UI
-    private let previewImageView: UIImageView = {
+    private lazy var previewImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.layer.cornerRadius = Constants.previewCornerRadius
         imageView.clipsToBounds = true
@@ -31,7 +31,7 @@ final class NFTCartCell: UITableViewCell, ReuseIdentifying {
         return imageView
     }()
 
-    private let titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 17, weight: .bold)
         label.textColor = .label
@@ -39,9 +39,9 @@ final class NFTCartCell: UITableViewCell, ReuseIdentifying {
         return label
     }()
 
-    private let ratingView = StarRatingView(stars: Constants.ratingStars, starSize: Constants.ratingStarSize, spacing: Constants.ratingStarSpacing)
+    private lazy var ratingView = StarRatingView(stars: Constants.ratingStars, starSize: Constants.ratingStarSize, spacing: Constants.ratingStarSpacing)
 
-    private let priceCaptionLabel: UILabel = {
+    private lazy var priceCaptionLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 13, weight: .regular)
         label.textColor = .label
@@ -49,14 +49,14 @@ final class NFTCartCell: UITableViewCell, ReuseIdentifying {
         return label
     }()
 
-    private let priceLabel: UILabel = {
+    private lazy var priceLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 17, weight: .bold)
         label.textColor = .label
         return label
     }()
 
-    private let removeButton: UIButton = {
+    private lazy var removeButton: UIButton = {
         let button = UIButton(type: .system)
         let image = UIImage(resource: .basketRemove)
         button.setImage(image, for: .normal)

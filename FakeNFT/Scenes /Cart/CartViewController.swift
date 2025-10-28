@@ -35,7 +35,7 @@ final class CartViewController: UIViewController, CartView {
     }
 
     // MARK: - UI
-    private let tableView: UITableView = {
+    private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.separatorStyle = .none
         tableView.rowHeight = UITableView.automaticDimension
@@ -43,7 +43,7 @@ final class CartViewController: UIViewController, CartView {
         return tableView
     }()
 
-    private let bottomBar: UIView = {
+    private lazy var bottomBar: UIView = {
         let view = UIView()
         view.backgroundColor = .secondarySystemBackground
         view.layer.cornerRadius = Constants.bottomBarCornerRadius
@@ -51,21 +51,21 @@ final class CartViewController: UIViewController, CartView {
         return view
     }()
 
-    private let itemsCountLabel: UILabel = {
+    private lazy var itemsCountLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 15, weight: .regular)
         label.textColor = .label
         return label
     }()
 
-    private let totalPriceLabel: UILabel = {
+    private lazy var totalPriceLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 17, weight: .bold)
         label.textColor = .systemGreen
         return label
     }()
 
-    private let payButton: UIButton = {
+    private lazy var payButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = .label
         button.setTitle(NSLocalizedString(Constants.payButtonTitleKey, comment: "Pay button"), for: .normal)
@@ -76,7 +76,7 @@ final class CartViewController: UIViewController, CartView {
         return button
     }()
     
-    private let emptyStateLabel: UILabel = {
+    private lazy var emptyStateLabel: UILabel = {
         let label = UILabel()
         label.text = NSLocalizedString(Constants.emptyCartKey, comment: "Empty cart message")
         label.font = .systemFont(ofSize: 17, weight: .bold)

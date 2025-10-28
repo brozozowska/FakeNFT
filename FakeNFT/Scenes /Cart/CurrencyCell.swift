@@ -22,7 +22,7 @@ final class CurrencyCell: UICollectionViewCell {
     static let reuseIdentifier = "CurrencyCell"
     
     // MARK: - UI
-    private let iconImageView: UIImageView = {
+    private lazy var iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.layer.cornerRadius = Constants.iconCornerRadius
@@ -30,14 +30,14 @@ final class CurrencyCell: UICollectionViewCell {
         return imageView
     }()
     
-    private let titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: Constants.titleFontSize, weight: .regular)
         label.textColor = .label
         return label
     }()
     
-    private let tickerLabel: UILabel = {
+    private lazy var tickerLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: Constants.tickerFontSize, weight: .regular)
         label.textColor = .systemGreen

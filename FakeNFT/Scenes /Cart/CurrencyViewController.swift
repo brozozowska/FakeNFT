@@ -34,7 +34,7 @@ final class CurrencyViewController: UIViewController, CurrencyView {
     }
     
     // MARK: - UI
-    private let collectionView: UICollectionView = {
+    private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(
             top: Constants.collectionTopInset,
@@ -45,7 +45,7 @@ final class CurrencyViewController: UIViewController, CurrencyView {
         return UICollectionView(frame: .zero, collectionViewLayout: layout)
     }()
     
-    private let bottomContainer: UIView = {
+    private lazy var bottomContainer: UIView = {
         let view = UIView()
         view.backgroundColor = .secondarySystemBackground
         view.layer.cornerRadius = Constants.bottomContainerCornerRadius
@@ -53,7 +53,7 @@ final class CurrencyViewController: UIViewController, CurrencyView {
         return view
     }()
     
-    private let termsLabel: UILabel = {
+    private lazy var termsLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
         label.textAlignment = .left
@@ -62,7 +62,7 @@ final class CurrencyViewController: UIViewController, CurrencyView {
         return label
     }()
     
-    private let payButton: UIButton = {
+    private lazy var payButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = .label
         button.setTitle(NSLocalizedString(Constants.payButtonKey, comment: "Pay button title"), for: .normal)
