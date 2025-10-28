@@ -123,19 +123,25 @@ final class CurrencyViewController: UIViewController, CurrencyView {
     
     // MARK: - Setup
     private func setupHierarchy() {
-        view.addSubview(collectionView)
-        view.addSubview(bottomContainer)
-        bottomContainer.addSubview(termsLabel)
-        bottomContainer.addSubview(payButton)
-        view.addSubview(activityIndicator)
+        [
+            collectionView,
+            bottomContainer,
+            activityIndicator
+        ].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview($0)
+        }
+
+        [
+            termsLabel,
+            payButton
+        ].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            bottomContainer.addSubview($0)
+        }
     }
     
     private func setupConstraints() {
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        bottomContainer.translatesAutoresizingMaskIntoConstraints = false
-        termsLabel.translatesAutoresizingMaskIntoConstraints = false
-        payButton.translatesAutoresizingMaskIntoConstraints = false
-        
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -159,7 +165,6 @@ final class CurrencyViewController: UIViewController, CurrencyView {
     }
     
     private func setupActivityIndicator() {
-        view.addSubview(activityIndicator)
         activityIndicator.constraintCenters(to: view)
     }
 }

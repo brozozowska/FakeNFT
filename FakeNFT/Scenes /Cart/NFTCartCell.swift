@@ -128,22 +128,20 @@ final class NFTCartCell: UITableViewCell, ReuseIdentifying {
 
     // MARK: - Setup
     private func setupHierarchy() {
-        contentView.addSubview(previewImageView)
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(ratingView)
-        contentView.addSubview(priceCaptionLabel)
-        contentView.addSubview(priceLabel)
-        contentView.addSubview(removeButton)
+        [
+            previewImageView,
+            titleLabel,
+            ratingView,
+            priceCaptionLabel,
+            priceLabel,
+            removeButton
+        ].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            contentView.addSubview($0)
+        }
     }
 
     private func setupConstraints() {
-        previewImageView.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        ratingView.translatesAutoresizingMaskIntoConstraints = false
-        priceCaptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        priceLabel.translatesAutoresizingMaskIntoConstraints = false
-        removeButton.translatesAutoresizingMaskIntoConstraints = false
-
         NSLayoutConstraint.activate([
             previewImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.Layout.contentInset),
             previewImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Constants.Layout.contentInset),
