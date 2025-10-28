@@ -85,14 +85,16 @@ final class CurrencyCell: UICollectionViewCell {
     
     // MARK: - Setup
     private func setupHierarchy() {
-        contentView.addSubview(iconImageView)
-        contentView.addSubview(textStack)
+        [
+            iconImageView,
+            textStack
+        ].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            contentView.addSubview($0)
+        }
     }
     
     private func setupConstraints() {
-        iconImageView.translatesAutoresizingMaskIntoConstraints = false
-        textStack.translatesAutoresizingMaskIntoConstraints = false
-        
         NSLayoutConstraint.activate([
             iconImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.Layout.horizontalInset),
             iconImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),

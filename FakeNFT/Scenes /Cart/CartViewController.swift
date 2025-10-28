@@ -160,17 +160,27 @@ final class CartViewController: UIViewController, CartView {
 
     // MARK: - Setup
     private func setupHierarchy() {
-        view.addSubview(tableView)
-        view.addSubview(bottomBar)
-        view.addSubview(emptyStateLabel)
+        [
+            tableView,
+            bottomBar,
+            emptyStateLabel
+        ].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview($0)
+        }
 
         let stackLeft = UIStackView(arrangedSubviews: [itemsCountLabel, totalPriceLabel])
         stackLeft.axis = .vertical
         stackLeft.spacing = Constants.Layout.stackSpacing
         stackLeft.translatesAutoresizingMaskIntoConstraints = false
 
-        bottomBar.addSubview(stackLeft)
-        bottomBar.addSubview(payButton)
+        [
+            stackLeft,
+            payButton
+        ].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            bottomBar.addSubview($0)
+        }
 
         stackLeft.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         stackLeft.setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -179,11 +189,6 @@ final class CartViewController: UIViewController, CartView {
     }
 
     private func setupConstraints() {
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        bottomBar.translatesAutoresizingMaskIntoConstraints = false
-        payButton.translatesAutoresizingMaskIntoConstraints = false
-        emptyStateLabel.translatesAutoresizingMaskIntoConstraints = false
-
         guard let stackLeft = bottomBar.subviews.compactMap({ $0 as? UIStackView }).first else { return }
 
         NSLayoutConstraint.activate([
