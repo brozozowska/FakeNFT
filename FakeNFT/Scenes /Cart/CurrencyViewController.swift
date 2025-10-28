@@ -114,7 +114,7 @@ final class CurrencyViewController: UIViewController, CurrencyView {
         setupActivityIndicator()
         
         collectionView.backgroundColor = .clear
-        collectionView.register(CurrencyCell.self, forCellWithReuseIdentifier: CurrencyCell.reuseIdentifier)
+        collectionView.register(CurrencyCell.self)
         collectionView.dataSource = self
         collectionView.delegate = self
         
@@ -208,11 +208,7 @@ extension CurrencyViewController: UICollectionViewDataSource, UICollectionViewDe
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: CurrencyCell.reuseIdentifier,
-            for: indexPath
-        ) as? CurrencyCell else { return UICollectionViewCell() }
-       
+        let cell: CurrencyCell = collectionView.dequeueReusableCell(indexPath: indexPath)
         let currency = viewModel.currencies[indexPath.item]
         cell.configure(with: currency)
         return cell

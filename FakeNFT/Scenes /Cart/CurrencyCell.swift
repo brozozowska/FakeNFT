@@ -1,7 +1,7 @@
 import UIKit
 import Kingfisher
 
-final class CurrencyCell: UICollectionViewCell {
+final class CurrencyCell: UICollectionViewCell, ReuseIdentifying {
     
     // MARK: - Constants
     private enum Constants {
@@ -26,9 +26,6 @@ final class CurrencyCell: UICollectionViewCell {
             static let placeholderSystemImageName = "bitcoinsign.circle"
         }
     }
-    
-    // MARK: - Reuse Identifier
-    static let reuseIdentifier = "CurrencyCell"
     
     // MARK: - UI
     private lazy var iconImageView: UIImageView = {
