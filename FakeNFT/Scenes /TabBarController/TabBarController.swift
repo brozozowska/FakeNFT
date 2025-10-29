@@ -15,14 +15,14 @@ final class TabBarController: UITabBarController {
             servicesAssembly: servicesAssembly
         )
         catalogController.tabBarItem = UITabBarItem(
-            title: NSLocalizedString("Tab.catalog", comment: ""),
+            title: NSLocalizedString("Tab.catalog", comment: "Catalog tab bar"),
             image: UIImage(systemName: "square.stack.3d.up.fill"),
             tag: 0
         )
 
-        let cartController = CartAssembly().build()
+        let cartController = CartAssembly(servicesAssembly: servicesAssembly).build()
         cartController.tabBarItem = UITabBarItem(
-            title: NSLocalizedString("Tab.cart", comment: ""),
+            title: NSLocalizedString("Tab.cart", comment: "Cart tab bar"),
             image: UIImage(resource: .basket),
             tag: 1
         )

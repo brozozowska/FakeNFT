@@ -107,7 +107,7 @@ final class CartViewController: UIViewController, CartView {
         return label
     }()
     
-    internal lazy var activityIndicator = UIActivityIndicatorView(style: .medium)
+    lazy var activityIndicator = UIActivityIndicatorView(style: .medium)
 
     // MARK: - Formatting
     private lazy var priceFormatter: NumberFormatter = {
