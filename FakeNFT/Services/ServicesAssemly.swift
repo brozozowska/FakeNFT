@@ -24,10 +24,6 @@ final class ServicesAssembly {
         )
     }
     
-    var cartService: CartStorage {
-        CartStorageImpl(networkClient: networkClient)
-    }
-    
     var likeService: LikeStorage {
         LikeStorageImpl(networkClient: networkClient)
     }
@@ -45,5 +41,16 @@ final class ServicesAssembly {
             networkClient: networkClient,
             likeStorage: likeService
         )
+    }
+
+    var cartService: CartServiceProtocol {
+        CartServiceNetwork(
+            networkClient: networkClient,
+            nftService: nftService
+        )
+    }
+
+    var currencyService: CurrencyServiceProtocol {
+        CurrencyServiceNetwork(networkClient: networkClient)
     }
 }
