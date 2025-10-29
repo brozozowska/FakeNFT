@@ -10,7 +10,10 @@ final class CartAssembly {
     func build() -> UIViewController {
         let service = servicesAssembly.cartService
         let viewModel = CartViewModel(cartService: service)
-        let viewController = CartViewController(viewModel: viewModel)
+        let viewController = CartViewController(
+            viewModel: viewModel,
+            currencyService: servicesAssembly.currencyService
+        )
         return UINavigationController(rootViewController: viewController)
     }
 }

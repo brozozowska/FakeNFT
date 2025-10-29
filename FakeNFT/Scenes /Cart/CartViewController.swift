@@ -121,6 +121,7 @@ final class CartViewController: UIViewController, CartView {
     
     // MARK: - Dependencies
     private let viewModel: CartViewModelProtocol
+    private let currencyService: CurrencyServiceProtocol
     
     // MARK: - State
     private var selectedCurrency: String = Constants.Defaults.currency {
@@ -128,8 +129,9 @@ final class CartViewController: UIViewController, CartView {
     }
 
     // MARK: - Init
-    init(viewModel: CartViewModelProtocol) {
+    init(viewModel: CartViewModelProtocol, currencyService: CurrencyServiceProtocol) {
         self.viewModel = viewModel
+        self.currencyService = currencyService
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -254,7 +256,6 @@ final class CartViewController: UIViewController, CartView {
     
     // MARK: - Navigation
     private func openCurrencySelection() {
-        let currencyService = CurrencyServiceMock()
         let currencyViewModel = CurrencyViewModel(currencyService: currencyService)
         let viewController = CurrencyViewController(viewModel: currencyViewModel)
         viewController.hidesBottomBarWhenPushed = true

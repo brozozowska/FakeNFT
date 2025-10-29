@@ -17,11 +17,15 @@ final class ServicesAssembly {
             storage: nftStorage
         )
     }
-    
+
     var cartService: CartServiceProtocol {
         CartServiceNetwork(
             networkClient: networkClient,
             nftService: nftService
         )
+    }
+
+    var currencyService: CurrencyServiceProtocol {
+        CurrencyServiceNetwork(networkClient: networkClient)
     }
 }
