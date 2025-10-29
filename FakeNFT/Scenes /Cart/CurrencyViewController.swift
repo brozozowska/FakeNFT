@@ -85,7 +85,7 @@ final class CurrencyViewController: UIViewController, CurrencyView {
         return button
     }()
     
-    internal lazy var activityIndicator = UIActivityIndicatorView(style: .medium)
+    lazy var activityIndicator = UIActivityIndicatorView(style: .medium)
     
     // MARK: - Dependencies
     private let viewModel: CurrencyViewModelProtocol

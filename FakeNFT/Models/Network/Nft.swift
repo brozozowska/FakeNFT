@@ -1,13 +1,13 @@
 import Foundation
 
 struct Nft: Decodable {
-    let createdAt: String
+    let id: String
     let name: String
     let images: [URL]
     let rating: Int
-    let description: String
-    let price: Float
+    let price: Decimal
+    let description: String?
     let author: String
-    let id: String
+    let createdAt: String?
 }
 
