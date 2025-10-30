@@ -156,14 +156,15 @@ final class CollectionViewController: UIViewController {
                 elementKind: UICollectionView.elementKindSectionHeader,
                 alignment: .top
             )
-            header.contentInsets = NSDirectionalEdgeInsets(
-                top: -(self.navigationController?.navigationBar.frame.height ?? 0),
+            section.boundarySupplementaryItems = [header]
+            
+            let navBarHeight = self.navigationController?.navigationBar.frame.height ?? 0
+            section.contentInsets = NSDirectionalEdgeInsets(
+                top: 20 - navBarHeight,
                 leading: 0,
-                bottom: 0,
+                bottom: 20,
                 trailing: 0
             )
-            
-            section.boundarySupplementaryItems = [header]
             
             return section
         }
