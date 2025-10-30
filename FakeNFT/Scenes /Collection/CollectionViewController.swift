@@ -160,7 +160,7 @@ final class CollectionViewController: UIViewController {
             
             let navBarHeight = self.navigationController?.navigationBar.frame.height ?? 0
             section.contentInsets = NSDirectionalEdgeInsets(
-                top: 20 - navBarHeight,
+                top: 20,
                 leading: 0,
                 bottom: 20,
                 trailing: 0

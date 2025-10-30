@@ -134,10 +134,10 @@ final class NFTCell: UICollectionViewCell {
             nftImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             nftImageView.heightAnchor.constraint(equalTo: nftImageView.widthAnchor),
             
-            likeButton.topAnchor.constraint(equalTo: nftImageView.topAnchor, constant: 8),
-            likeButton.trailingAnchor.constraint(equalTo: nftImageView.trailingAnchor, constant: -8),
-            likeButton.widthAnchor.constraint(equalToConstant: 24),
-            likeButton.heightAnchor.constraint(equalToConstant: 24),
+            likeButton.topAnchor.constraint(equalTo: nftImageView.topAnchor),
+            likeButton.trailingAnchor.constraint(equalTo: nftImageView.trailingAnchor),
+            likeButton.widthAnchor.constraint(equalToConstant: 40),
+            likeButton.heightAnchor.constraint(equalToConstant: 40),
             
             ratingView.topAnchor.constraint(equalTo: nftImageView.bottomAnchor, constant: 8),
             ratingView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),

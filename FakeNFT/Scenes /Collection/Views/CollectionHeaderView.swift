@@ -29,7 +29,7 @@ final class CollectionHeaderView: UICollectionReusableView {
     
     private lazy var authorLabel: UILabel = {
         let label = UILabel()
-        label.font = .bodyRegular
+        label.font = .caption1
         label.textColor = .black
         label.isUserInteractionEnabled = true
         return label
@@ -37,7 +37,7 @@ final class CollectionHeaderView: UICollectionReusableView {
     
     private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
-        label.font = .caption1
+        label.font = .caption2
         label.textColor = .black
         label.numberOfLines = 0
         return label
@@ -61,10 +61,18 @@ final class CollectionHeaderView: UICollectionReusableView {
     func configure(with collection: NFTCollection, author: String) {
         titleLabel.text = collection.name
         
-        let authorText = "Автор коллекции: \(author)"
+        let baseText = "Автор коллекции: "
+        let authorText = "\(baseText)\(author)"
         let attributedString = NSMutableAttributedString(string: authorText)
-        let range = (authorText as NSString).range(of: author)
-        attributedString.addAttribute(.font, value: UIFont.bodyBold, range: range)
+        
+        let baseRange = NSRange(location: 0, length: baseText.count)
+        attributedString.addAttribute(.font, value: UIFont.caption2, range: baseRange)
+        attributedString.addAttribute(.foregroundColor, value: UIColor.black, range: baseRange)
+        
+        let authorRange = NSRange(location: baseText.count, length: author.count)
+        attributedString.addAttribute(.font, value: UIFont.caption1, range: authorRange)
+        attributedString.addAttribute(.foregroundColor, value: UIColor.blueUniversal, range: authorRange)
+        
         authorLabel.attributedText = attributedString
         
         descriptionLabel.text = collection.description
