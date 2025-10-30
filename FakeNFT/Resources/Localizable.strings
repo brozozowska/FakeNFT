@@ -8,6 +8,9 @@
 "Cart.pay" = "К оплате";
 "Cart.price" = "Цена";
 "Cart.empty" = "Корзина пуста";
+"Cart.delete.confirm.message" = "Вы уверены, что хотите\nудалить объект из корзины?";
+"Cart.delete.confirm.remove" = "Удалить";
+"Cart.delete.confirm.cancel" = "Вернуться";
 "Currency.header" = "Выберите способ оплаты";
 "Currency.terms" = "Совершая покупку, вы соглашаетесь с условиями\nПользовательского соглашения";
 "Currency.pay" = "Оплатить";
