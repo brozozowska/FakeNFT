@@ -273,6 +273,24 @@ final class CartViewController: UIViewController, CartView {
         itemsCountLabel.text = "\(count) NFT"
         totalPriceLabel.text = "\(totalString) \(selectedCurrency)"
     }
+
+    // MARK: - Delete confirmation
+    private func showDeleteConfirmation(for item: CartItem) {
+        let overlay = DeleteConfirmationView()
+        overlay.configure(imageURL: item.imageURL)
+        overlay.onCancel = { [weak overlay] in
+            overlay?.dismiss()
+        }
+        overlay.onConfirm = { [weak self, weak overlay] in
+            overlay?.dismiss()
+            self?.viewModel.removeItem(id: item.id)
+        }
+        if let host = tabBarController?.view ?? navigationController?.view ?? view {
+            overlay.present(in: host)
+        } else {
+            overlay.present(in: view)
+        }
+    }
 }
 
 // MARK: - CartViewModelOutput
@@ -319,8 +337,10 @@ extension CartViewController: UITableViewDataSource {
         }
         let item = viewModel.items[indexPath.row]
         cell.configure(with: item, priceFormatter: priceFormatter, currencySuffix: Constants.Defaults.currency)
-        cell.onRemoveTapped = { [weak self] id in
-            self?.viewModel.removeItem(id: id)
+        cell.onRemoveTapped = { [weak self] _ in
+            guard let self else { return }
+            let item = self.viewModel.items[indexPath.row]
+            self.showDeleteConfirmation(for: item)
         }
         return cell
     }
