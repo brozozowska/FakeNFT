@@ -18,6 +18,7 @@ final class CollectionViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.backgroundColor = .white
+        collectionView.contentInsetAdjustmentBehavior = .never
         return collectionView
     }()
     
@@ -44,17 +45,43 @@ final class CollectionViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupNavigationBar()
         setupViews()
         setupConstraints()
         setupBindings()
         viewModel.loadCollectionData()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.tabBar.isHidden = true
+        
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.isTranslucent = true
+        navigationController?.navigationBar.tintColor = .clear
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
+        
+        navigationController?.navigationBar.setBackgroundImage(nil, for: .default)
+        navigationController?.navigationBar.shadowImage = nil
+        navigationController?.navigationBar.tintColor = nil
+    }
+    
     // MARK: - Private Methods
+    
+    private func setupNavigationBar() {
+        navigationItem.title = ""
+        
+        navigationController?.navigationBar.tintColor = .clear
+    }
     
     private func setupViews() {
         view.backgroundColor = .white
-        title = viewModel.collectionName
+        title = ""
         
         view.addSubview(collectionView)
         view.addSubview(activityIndicator)
@@ -129,6 +156,13 @@ final class CollectionViewController: UIViewController {
                 elementKind: UICollectionView.elementKindSectionHeader,
                 alignment: .top
             )
+            header.contentInsets = NSDirectionalEdgeInsets(
+                top: -(self.navigationController?.navigationBar.frame.height ?? 0),
+                leading: 0,
+                bottom: 0,
+                trailing: 0
+            )
+            
             section.boundarySupplementaryItems = [header]
             
             return section

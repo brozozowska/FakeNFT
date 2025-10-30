@@ -14,8 +14,6 @@ final class CollectionHeaderView: UICollectionReusableView {
     private lazy var coverImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
-        imageView.layer.cornerRadius = 12
-        imageView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
         imageView.layer.masksToBounds = true
         imageView.backgroundColor = .lightGray
         return imageView
