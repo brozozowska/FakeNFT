@@ -44,6 +44,12 @@ final class CartViewController: UIViewController, CartView {
             static let payButtonTitleKey = "Cart.pay"
             static let tabTitleKey = "Tab.cart"
             static let errorRepeatKey = "Error.repeat"
+
+            static let sortTitleKey = "Cart.sort.title"
+            static let sortByPriceKey = "Cart.sort.price"
+            static let sortByRatingKey = "Cart.sort.rating"
+            static let sortByNameKey = "Cart.sort.name"
+            static let sortCloseKey = "Cart.sort.close"
         }
 
         enum Images {
@@ -245,7 +251,29 @@ final class CartViewController: UIViewController, CartView {
         selectedCurrency = currency.name
     }
     
-    @objc private func sortButtonTapped() { }
+    @objc private func sortButtonTapped() {
+        let title = NSLocalizedString(Constants.Strings.sortTitleKey, comment: "Sort")
+        let byPrice = NSLocalizedString(Constants.Strings.sortByPriceKey, comment: "By price")
+        let byRating = NSLocalizedString(Constants.Strings.sortByRatingKey, comment: "By rating")
+        let byName = NSLocalizedString(Constants.Strings.sortByNameKey, comment: "By name")
+        let close = NSLocalizedString(Constants.Strings.sortCloseKey, comment: "Close")
+
+        let sheet = UIAlertController(title: title, message: nil, preferredStyle: .actionSheet)
+
+        sheet.addAction(UIAlertAction(title: byPrice, style: .default, handler: { [weak self] _ in
+            self?.dismiss(animated: true)
+        }))
+        sheet.addAction(UIAlertAction(title: byRating, style: .default, handler: { [weak self] _ in
+            self?.dismiss(animated: true)
+        }))
+        sheet.addAction(UIAlertAction(title: byName, style: .default, handler: { [weak self] _ in
+            self?.dismiss(animated: true)
+        }))
+
+        sheet.addAction(UIAlertAction(title: close, style: .cancel, handler: nil))
+
+        present(sheet, animated: true)
+    }
     
     // MARK: - State
     private func updateEmptyState(isEmpty: Bool) {
