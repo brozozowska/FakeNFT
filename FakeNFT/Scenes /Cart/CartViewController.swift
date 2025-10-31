@@ -261,13 +261,13 @@ final class CartViewController: UIViewController, CartView {
         let sheet = UIAlertController(title: title, message: nil, preferredStyle: .actionSheet)
 
         sheet.addAction(UIAlertAction(title: byPrice, style: .default, handler: { [weak self] _ in
-            self?.dismiss(animated: true)
+            self?.viewModel.applySort(.price)
         }))
         sheet.addAction(UIAlertAction(title: byRating, style: .default, handler: { [weak self] _ in
-            self?.dismiss(animated: true)
+            self?.viewModel.applySort(.rating)
         }))
         sheet.addAction(UIAlertAction(title: byName, style: .default, handler: { [weak self] _ in
-            self?.dismiss(animated: true)
+            self?.viewModel.applySort(.name)
         }))
 
         sheet.addAction(UIAlertAction(title: close, style: .cancel, handler: nil))
