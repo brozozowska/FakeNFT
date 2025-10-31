@@ -14,7 +14,8 @@ final class RatingView: UIView {
     }
     
     required init?(coder: NSCoder) {
-        return nil
+        super.init(coder: coder)
+        setupStars()
     }
     
     // MARK: - Configuration
