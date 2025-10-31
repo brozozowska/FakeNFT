@@ -26,12 +26,12 @@ final class ServicesAssembly {
     // MARK: - View Models
     
     func makeCatalogViewModel() -> CatalogViewModel {
-        return CatalogViewModel(collectionService: collectionService)
+        CatalogViewModel(collectionService: collectionService)
     }
     
     // MARK: - CollectionView Models
     
     func makeCollectionViewModel(collection: NFTCollection) -> CollectionViewModel {
-        return CollectionViewModel(collection: collection, nftService: nftService)
+        CollectionViewModel(collection: collection, nftService: nftService)
     }
 }

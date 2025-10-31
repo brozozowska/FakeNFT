@@ -23,7 +23,7 @@ final class CollectionHeaderView: UICollectionReusableView {
         let label = UILabel()
         label.font = .headline3
         label.textColor = .black
-        label.numberOfLines = 0
+        label.numberOfLines = .zero
         return label
     }()
     
@@ -39,7 +39,7 @@ final class CollectionHeaderView: UICollectionReusableView {
         let label = UILabel()
         label.font = .caption2
         label.textColor = .black
-        label.numberOfLines = 0
+        label.numberOfLines = .zero
         return label
     }()
     
@@ -52,7 +52,9 @@ final class CollectionHeaderView: UICollectionReusableView {
         setupGestures()
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
+        assertionFailure("init(coder:) has not been implemented")
         return nil
     }
     

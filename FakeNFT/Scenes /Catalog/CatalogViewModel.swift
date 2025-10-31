@@ -38,11 +38,11 @@ final class CatalogViewModel: ObservableObject {
     }
     
     func collection(at index: Int) -> NFTCollection {
-        return collections[index]
+        collections[index]
     }
     
     func collectionsCount() -> Int {
-        return collections.count
+        collections.count
     }
     
     // MARK: - Private Methods

@@ -4,27 +4,32 @@ import Combine
 final class CollectionViewModel: ObservableObject {
     
     // MARK: - Published Properties
+    
     @Published var nfts: [Nft] = []
     @Published var isLoading: Bool = false
     @Published var errorModel: ErrorModel?
     
     // MARK: - Public Properties
+    
     let collection: NFTCollection
     var collectionName: String { collection.name }
     var authorName: String { collection.author }
     var nftsCount: Int { nfts.count }
     
     // MARK: - Private Properties
+    
     private let nftService: NftService
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Init
+    
     init(collection: NFTCollection, nftService: NftService) {
         self.collection = collection
         self.nftService = nftService
     }
     
     // MARK: - Public Methods
+    
     func loadCollectionData() {
         isLoading = true
         errorModel = nil
@@ -59,7 +64,7 @@ final class CollectionViewModel: ObservableObject {
     }
     
     func nft(at index: Int) -> Nft {
-        return nfts[index]
+        nfts[index]
     }
     
     func toggleLike(for nftId: String) {
@@ -83,6 +88,7 @@ final class CollectionViewModel: ObservableObject {
     }
     
     // MARK: - Private Methods
+    
     private func makeErrorModel(_ error: Error) -> ErrorModel {
         let message: String
         if let urlError = error as? URLError {

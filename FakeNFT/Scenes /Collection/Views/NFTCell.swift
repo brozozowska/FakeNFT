@@ -65,7 +65,9 @@ final class NFTCell: UICollectionViewCell {
         setupConstraints()
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
+        assertionFailure("init(coder:) has not been implemented")
         return nil
     }
     

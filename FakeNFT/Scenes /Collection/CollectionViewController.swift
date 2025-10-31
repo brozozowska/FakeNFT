@@ -174,7 +174,7 @@ final class CollectionViewController: UIViewController {
 
 extension CollectionViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.nftsCount
+        viewModel.nftsCount
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

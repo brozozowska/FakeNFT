@@ -18,7 +18,7 @@ final class CollectionTableViewCell: UITableViewCell, ReuseIdentifying {
         let label = UILabel()
         label.font = .bodyBold
         label.textColor = .black
-        label.numberOfLines = 0
+        label.numberOfLines = .zero
         return label
     }()
     
@@ -30,7 +30,9 @@ final class CollectionTableViewCell: UITableViewCell, ReuseIdentifying {
         setupConstraints()
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
+        assertionFailure("init(coder:) has not been implemented")
         return nil
     }
     
