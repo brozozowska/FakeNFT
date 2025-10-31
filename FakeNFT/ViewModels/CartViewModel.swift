@@ -16,14 +16,30 @@ protocol CartViewModelProtocol: AnyObject {
 }
 
 final class CartViewModel: CartViewModelProtocol {
+    private enum Storage {
+        static let sortOptionKey = "cart.sort.option"
+    }
+
     private let cartService: CartServiceProtocol
     private(set) var items: [CartItem] = []
-    private var currentSort: SortOption?
+    private var currentSort: SortOption? {
+        didSet {
+            if let currentSort {
+                UserDefaults.standard.set(currentSort.rawValue, forKey: Storage.sortOptionKey)
+            }
+        }
+    }
 
     weak var output: CartViewModelOutput?
     
     init(cartService: CartServiceProtocol) {
         self.cartService = cartService
+        if let saved = UserDefaults.standard.string(forKey: Storage.sortOptionKey),
+           let option = SortOption(rawValue: saved) {
+            currentSort = option
+        } else {
+            currentSort = .name
+        }
     }
     
     func viewDidLoad() {
@@ -79,9 +95,9 @@ final class CartViewModel: CartViewModelProtocol {
         guard let currentSort else { return }
         switch currentSort {
         case .price:
-            items.sort { $0.price < $1.price }
+            items.sort { $0.price > $1.price }
         case .rating:
-            items.sort { $0.rating < $1.rating }
+            items.sort { $0.rating > $1.rating }
         case .name:
             items.sort { $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending }
         }
