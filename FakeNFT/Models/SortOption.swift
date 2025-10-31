@@ -1,6 +1,6 @@
 import Foundation
 
-enum SortOption: Equatable {
+enum SortOption: String {
     case price
     case rating
     case name
