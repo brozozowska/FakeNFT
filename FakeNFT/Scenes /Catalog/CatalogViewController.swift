@@ -69,14 +69,13 @@ final class CatalogViewController: UIViewController {
     private func setupViews() {
         view.backgroundColor = .white
         
-        view.addSubview(tableView)
-        view.addSubview(activityIndicator)
+        [tableView, activityIndicator].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview($0)
+        }
     }
     
     private func setupConstraints() {
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-        
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),

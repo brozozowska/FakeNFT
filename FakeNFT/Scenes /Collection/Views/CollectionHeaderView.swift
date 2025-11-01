@@ -111,18 +111,18 @@ final class CollectionHeaderView: UICollectionReusableView {
     private func setupViews() {
         backgroundColor = .white
         
-        addSubview(coverImageView)
-        addSubview(titleLabel)
-        addSubview(authorLabel)
-        addSubview(descriptionLabel)
+        [
+            coverImageView,
+            titleLabel,
+            authorLabel,
+            descriptionLabel
+        ].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            addSubview($0)
+        }
     }
     
     private func setupConstraints() {
-        coverImageView.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        authorLabel.translatesAutoresizingMaskIntoConstraints = false
-        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        
         NSLayoutConstraint.activate([
             coverImageView.topAnchor.constraint(equalTo: topAnchor),
             coverImageView.leadingAnchor.constraint(equalTo: leadingAnchor),

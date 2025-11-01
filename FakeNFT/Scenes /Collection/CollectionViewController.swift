@@ -83,14 +83,13 @@ final class CollectionViewController: UIViewController {
         view.backgroundColor = .white
         title = ""
         
-        view.addSubview(collectionView)
-        view.addSubview(activityIndicator)
+        [collectionView, activityIndicator].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview($0)
+        }
     }
     
     private func setupConstraints() {
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-        
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.topAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),

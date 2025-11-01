@@ -93,14 +93,13 @@ final class CollectionTableViewCell: UITableViewCell, ReuseIdentifying {
         contentView.backgroundColor = .white
         selectionStyle = .none
         
-        contentView.addSubview(coverImageView)
-        contentView.addSubview(titleLabel)
+        [coverImageView, titleLabel].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            contentView.addSubview($0)
+        }
     }
     
     private func setupConstraints() {
-        coverImageView.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        
         NSLayoutConstraint.activate([
             coverImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             coverImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),

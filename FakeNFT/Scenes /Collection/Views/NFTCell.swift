@@ -114,22 +114,20 @@ final class NFTCell: UICollectionViewCell {
     private func setupViews() {
         contentView.backgroundColor = .white
         
-        contentView.addSubview(nftImageView)
-        contentView.addSubview(likeButton)
-        contentView.addSubview(ratingView)
-        contentView.addSubview(nameLabel)
-        contentView.addSubview(priceLabel)
-        contentView.addSubview(cartButton)
+        [
+            nftImageView,
+            likeButton,
+            ratingView,
+            nameLabel,
+            priceLabel,
+            cartButton
+        ].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            contentView.addSubview($0)
+        }
     }
     
     private func setupConstraints() {
-        nftImageView.translatesAutoresizingMaskIntoConstraints = false
-        likeButton.translatesAutoresizingMaskIntoConstraints = false
-        ratingView.translatesAutoresizingMaskIntoConstraints = false
-        nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        priceLabel.translatesAutoresizingMaskIntoConstraints = false
-        cartButton.translatesAutoresizingMaskIntoConstraints = false
-        
         NSLayoutConstraint.activate([
             nftImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             nftImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
