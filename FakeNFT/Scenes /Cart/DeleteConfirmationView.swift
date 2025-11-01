@@ -113,11 +113,7 @@ final class DeleteConfirmationView: UIView {
 
     // MARK: - Public
     func configure(imageURL: URL?) {
-        if let url = imageURL {
-            imageView.kf.setImage(with: url)
-        } else {
-            imageView.image = nil
-        }
+        imageView.kf.setImage(with: imageURL)
     }
 
     func present(in container: UIView) {
