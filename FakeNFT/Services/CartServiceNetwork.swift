@@ -12,12 +12,15 @@ final class CartServiceNetwork: CartServiceProtocol {
     }
     
     func fetchCartItems(completion: @escaping (Result<[CartItem], Error>) -> Void) {
+        assert(Thread.isMainThread, "CartServiceNetwork.fetchCartItems must be called on the main thread")
+        
         let request = OrderGetRequest()
         networkClient.send(request: request, type: OrderDTO.self) { [weak self] result in
+            guard let self else { return }
             switch result {
             case .success(let order):
-                self?.currentIds = order.nfts
-                self?.loadCartItems(ids: order.nfts, completion: completion)
+                self.currentIds = order.nfts
+                self.loadCartItems(ids: order.nfts, completion: completion)
             case .failure(let error):
                 completion(.failure(error))
             }
@@ -25,10 +28,12 @@ final class CartServiceNetwork: CartServiceProtocol {
     }
     
     func removeItem(with id: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        assert(Thread.isMainThread, "CartServiceNetwork.removeItem must be called on the main thread")
+        
         let proceed: ([String]) -> Void = { [weak self] ids in
-            let updated = ids.filter { $0 != id }
             guard let self else { return }
-            
+            let updated = ids.filter { $0 != id }
+
             guard !updated.isEmpty else {
                 self.clear(completion: completion)
                 return
@@ -36,7 +41,8 @@ final class CartServiceNetwork: CartServiceProtocol {
             
             let dto = OrderPutDto(nfts: updated)
             let request = OrderPutRequest(dto: dto)
-            self.networkClient.send(request: request, type: OrderDTO.self) { result in
+            self.networkClient.send(request: request, type: OrderDTO.self) { [weak self] result in
+                guard let self else { return }
                 switch result {
                 case .success(let order):
                     self.currentIds = order.nfts
@@ -50,9 +56,10 @@ final class CartServiceNetwork: CartServiceProtocol {
         if currentIds.isEmpty {
             let getReq = OrderGetRequest()
             networkClient.send(request: getReq, type: OrderDTO.self) { [weak self] result in
+                guard let self else { return }
                 switch result {
                 case .success(let order):
-                    self?.currentIds = order.nfts
+                    self.currentIds = order.nfts
                     proceed(order.nfts)
                 case .failure(let error):
                     completion(.failure(error))
@@ -64,11 +71,14 @@ final class CartServiceNetwork: CartServiceProtocol {
     }
     
     func clear(completion: @escaping (Result<Void, Error>) -> Void) {
+        assert(Thread.isMainThread, "CartServiceNetwork.clear must be called on the main thread")
+        
         let request = OrderPutRequest(dto: nil)
         networkClient.send(request: request, type: OrderDTO.self) { [weak self] result in
+            guard let self else { return }
             switch result {
             case .success(let order):
-                self?.currentIds = order.nfts
+                self.currentIds = order.nfts
                 completion(.success(()))
             case .failure(let error):
                 completion(.failure(error))
