@@ -2,9 +2,21 @@ import UIKit
 
 final class RatingView: UIView {
     
+    // MARK: - Public Properties
+    
+    var rating: Int {
+        get { currentRating }
+        set {
+            currentRating = newValue
+            updateStars()
+        }
+    }
+    
     // MARK: - Private Properties
     
     private var stars: [UIImageView] = []
+    private var currentRating: Int = 0
+    private let stackView = UIStackView()
     
     // MARK: - Init
     
@@ -18,23 +30,23 @@ final class RatingView: UIView {
         setupStars()
     }
     
-    // MARK: - Configuration
-    
-    func setRating(_ rating: Int) {
-        for (index, star) in stars.enumerated() {
-            let imageName = index < rating ? "star_active" : "star_inactive"
-            star.image = UIImage(named: imageName)
-        }
-    }
-    
     // MARK: - Private Methods
     
     private func setupStars() {
-        let stackView = UIStackView()
+        setupStackView()
+        createStars()
+        setupConstraints()
+    }
+    
+    private func setupStackView() {
         stackView.axis = .horizontal
         stackView.spacing = 2
         stackView.distribution = .fillEqually
         
+        addSubview(stackView)
+    }
+    
+    private func createStars() {
         for _ in 0..<5 {
             let starImageView = UIImageView()
             starImageView.contentMode = .scaleAspectFit
@@ -42,8 +54,9 @@ final class RatingView: UIView {
             stars.append(starImageView)
             stackView.addArrangedSubview(starImageView)
         }
-        
-        addSubview(stackView)
+    }
+    
+    private func setupConstraints() {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
@@ -52,5 +65,12 @@ final class RatingView: UIView {
             stackView.trailingAnchor.constraint(equalTo: trailingAnchor),
             stackView.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
+    }
+    
+    private func updateStars() {
+        for (index, star) in stars.enumerated() {
+            let imageName = index < currentRating ? "star_active" : "star_inactive"
+            star.image = UIImage(named: imageName)
+        }
     }
 }
