@@ -6,6 +6,7 @@ final class CatalogViewController: UIViewController {
     // MARK: - Properties
     
     private let viewModel: CatalogViewModel
+    private let servicesAssembly: ServicesAssembly
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - UI Components
@@ -40,8 +41,9 @@ final class CatalogViewController: UIViewController {
     
     // MARK: - Init
     
-    init(viewModel: CatalogViewModel) {
+    init(viewModel: CatalogViewModel, servicesAssembly: ServicesAssembly) {
         self.viewModel = viewModel
+        self.servicesAssembly = servicesAssembly
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -67,14 +69,13 @@ final class CatalogViewController: UIViewController {
     private func setupViews() {
         view.backgroundColor = .white
         
-        view.addSubview(tableView)
-        view.addSubview(activityIndicator)
+        [tableView, activityIndicator].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview($0)
+        }
     }
     
     private func setupConstraints() {
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-        
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -118,7 +119,7 @@ final class CatalogViewController: UIViewController {
     // MARK: - Actions
     
     @objc private func sortButtonTapped() {
-        // TODO: Реализовать выбор сортировки в следующих частях
+        // TODO: Реализовать выбор сортировки в третьей части
         let alert = UIAlertController(
             title: "Сортировка",
             message: nil,
@@ -155,17 +156,10 @@ extension CatalogViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         
         let collection = viewModel.collection(at: indexPath.row)
-        // TODO: Реализовать переход на экран коллекции в следующих частях
-        print("Selected collection: \(collection.name)")
-        
-        // Временная заглушка
-        let alert = UIAlertController(
-            title: "Коллекция",
-            message: "Выбрана коллекция: \(collection.name)",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
+        guard let viewModelAssembly = (tabBarController as? TabBarController)?.viewModelAssembly else { return }
+        let collectionViewModel = viewModelAssembly.makeCollectionViewModel(collection: collection)
+        let collectionViewController = CollectionViewController(viewModel: collectionViewModel)
+        navigationController?.pushViewController(collectionViewController, animated: true)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

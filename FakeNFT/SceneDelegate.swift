@@ -8,8 +8,11 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         nftStorage: NftStorageImpl()
     )
 
+    lazy var viewModelAssembly = ViewModelAssembly(servicesAssembly: servicesAssembly)
+    
     func scene(_: UIScene, willConnectTo _: UISceneSession, options _: UIScene.ConnectionOptions) {
         let tabBarController = window?.rootViewController as? TabBarController
         tabBarController?.servicesAssembly = servicesAssembly
+        tabBarController?.viewModelAssembly = viewModelAssembly
     }
 }
