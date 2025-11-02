@@ -22,16 +22,4 @@ final class ServicesAssembly {
             networkClient: networkClient
         )
     }
-    
-    // MARK: - View Models
-    
-    func makeCatalogViewModel() -> CatalogViewModel {
-        CatalogViewModel(collectionService: collectionService)
-    }
-    
-    // MARK: - CollectionView Models
-    
-    func makeCollectionViewModel(collection: NFTCollection) -> CollectionViewModel {
-        CollectionViewModel(collection: collection, nftService: nftService)
-    }
 }

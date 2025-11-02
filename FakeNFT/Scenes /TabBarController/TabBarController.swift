@@ -3,6 +3,7 @@ import UIKit
 final class TabBarController: UITabBarController {
     
     var servicesAssembly: ServicesAssembly!
+    var viewModelAssembly: ViewModelAssembly!
     
     private let catalogTabBarItem = UITabBarItem(
         title: NSLocalizedString("Tab.catalog", comment: ""),
@@ -13,7 +14,7 @@ final class TabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let catalogViewModel = servicesAssembly.makeCatalogViewModel()
+        let catalogViewModel = viewModelAssembly.makeCatalogViewModel()
         let catalogController = CatalogViewController(viewModel: catalogViewModel, servicesAssembly: servicesAssembly)
         let catalogNavigationController = UINavigationController(rootViewController: catalogController)
         catalogNavigationController.tabBarItem = catalogTabBarItem
