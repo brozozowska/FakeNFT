@@ -22,7 +22,7 @@ final class CollectionViewController: UIViewController {
         return collectionView
     }()
     
-    internal lazy var activityIndicator: UIActivityIndicatorView = {
+    lazy var activityIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(style: .medium)
         indicator.hidesWhenStopped = true
         return indicator

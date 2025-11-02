@@ -35,6 +35,7 @@ final class CollectionViewModel: ObservableObject {
         errorModel = nil
         
         let group = DispatchGroup()
+        let threadSafeQueue = DispatchQueue(label: "com.app.collectionViewModel.nfts", attributes: .concurrent)
         var loadedNFTs: [Nft] = []
         var loadError: Error?
         
@@ -43,9 +44,15 @@ final class CollectionViewModel: ObservableObject {
             nftService.loadNft(id: nftId) { result in
                 switch result {
                 case .success(let nft):
-                    loadedNFTs.append(nft)
+                    threadSafeQueue.async(flags: .barrier) {
+                        loadedNFTs.append(nft)
+                    }
                 case .failure(let error):
-                    loadError = error
+                    threadSafeQueue.async(flags: .barrier) {
+                        if loadError == nil {
+                            loadError = error
+                        }
+                    }
                 }
                 group.leave()
             }
@@ -53,12 +60,15 @@ final class CollectionViewModel: ObservableObject {
         
         group.notify(queue: .main) { [weak self] in
             guard let self else { return }
-            self.isLoading = false
             
-            if let error = loadError {
-                self.errorModel = self.makeErrorModel(error)
-            } else {
-                self.nfts = loadedNFTs
+            threadSafeQueue.sync {
+                self.isLoading = false
+                
+                if let error = loadError {
+                    self.errorModel = self.makeErrorModel(error)
+                } else {
+                    self.nfts = loadedNFTs
+                }
             }
         }
     }

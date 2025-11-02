@@ -15,7 +15,7 @@ final class RatingView: UIView {
     // MARK: - Private Properties
     
     private var stars: [UIImageView] = []
-    private var currentRating: Int = 0
+    private var currentRating: Int = .zero
     private let stackView = UIStackView()
     
     // MARK: - Init
@@ -25,10 +25,11 @@ final class RatingView: UIView {
         setupStars()
     }
     
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupStars()
-    }
+    @available(*, unavailable)
+        required init?(coder: NSCoder) {
+            assertionFailure("init(coder:) has not been implemented")
+            return nil
+        }
     
     // MARK: - Private Methods
     
