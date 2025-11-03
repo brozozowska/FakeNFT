@@ -131,6 +131,7 @@
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		E4F541272EB39D440046681D /* Collection */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Collection; sourceTree = "<group>"; };
+		E4F542882EB8AA030046681D /* Sorting */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Sorting; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -282,6 +283,7 @@
 		3F6806C629CBBC4E00B4F915 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				E4F542882EB8AA030046681D /* Sorting */,
 				3FC8C38F29D245250081F015 /* Requests */,
 				0C79EE6B2A76DE2E00EE90EA /* ServicesAssemly.swift */,
 				558E39E62C68CE0900FB86AC /* NftService.swift */,
@@ -410,6 +412,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				E4F541272EB39D440046681D /* Collection */,
+				E4F542882EB8AA030046681D /* Sorting */,
 			);
 			name = FakeNFT;
 			packageProductDependencies = (
