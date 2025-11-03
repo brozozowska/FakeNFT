@@ -4,20 +4,26 @@ import Combine
 final class CatalogViewModel: ObservableObject {
     
     // MARK: - Published Properties
+    
     @Published var collections: [NFTCollection] = []
     @Published var isLoading: Bool = false
     @Published var errorModel: ErrorModel?
     
     // MARK: - Private Properties
+    
     private let collectionService: CollectionService
+    private var sortSettingsService: SortSettingsService
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Init
-    init(collectionService: CollectionService) {
+    
+    init(collectionService: CollectionService, sortSettingsService: SortSettingsService) {
         self.collectionService = collectionService
+        self.sortSettingsService = sortSettingsService
     }
     
     // MARK: - Public Methods
+    
     func loadCollections() {
         isLoading = true
         errorModel = nil
@@ -29,12 +35,23 @@ final class CatalogViewModel: ObservableObject {
                 
                 switch result {
                 case .success(let collections):
-                    self.collections = collections
+                    let sortedCollections = self.applySorting(to: collections)
+                    self.collections = sortedCollections
                 case .failure(let error):
                     self.errorModel = self.makeErrorModel(error)
                 }
             }
         }
+    }
+    
+    func updateSortOption(_ option: SortOption) {
+        sortSettingsService.currentSortOption = option
+        let sortedCollections = applySorting(to: collections)
+        collections = sortedCollections
+    }
+    
+    var currentSortOption: SortOption {
+        sortSettingsService.currentSortOption
     }
     
     func collection(at index: Int) -> NFTCollection {
@@ -46,6 +63,16 @@ final class CatalogViewModel: ObservableObject {
     }
     
     // MARK: - Private Methods
+    
+    private func applySorting(to collections: [NFTCollection]) -> [NFTCollection] {
+        switch sortSettingsService.currentSortOption {
+        case .byName:
+            return collections.sorted { $0.name < $1.name }
+        case .byNFTCount:
+            return collections.sorted { $0.nftCount > $1.nftCount }
+        }
+    }
+    
     private func makeErrorModel(_ error: Error) -> ErrorModel {
         let message: String
         if let urlError = error as? URLError {

@@ -11,7 +11,8 @@ final class ViewModelAssembly {
     // MARK: - View Models
     
     func makeCatalogViewModel() -> CatalogViewModel {
-        CatalogViewModel(collectionService: servicesAssembly.collectionService)
+        CatalogViewModel(collectionService: servicesAssembly.collectionService,
+                         sortSettingsService: servicesAssembly.sortSettingsService)
     }
     
     // MARK: - CollectionView Models
