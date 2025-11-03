@@ -85,7 +85,7 @@ final class CurrencyViewController: UIViewController, CurrencyView {
         return button
     }()
     
-    internal lazy var activityIndicator = UIActivityIndicatorView(style: .medium)
+    lazy var activityIndicator = UIActivityIndicatorView(style: .medium)
     
     // MARK: - Dependencies
     private let viewModel: CurrencyViewModelProtocol
@@ -101,7 +101,8 @@ final class CurrencyViewController: UIViewController, CurrencyView {
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        assertionFailure("init(coder:) has not been implemented")
+        return nil
     }
     
     // MARK: - Lifecycle

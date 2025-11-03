@@ -44,6 +44,12 @@ final class CartViewController: UIViewController, CartView {
             static let payButtonTitleKey = "Cart.pay"
             static let tabTitleKey = "Tab.cart"
             static let errorRepeatKey = "Error.repeat"
+
+            static let sortTitleKey = "Cart.sort.title"
+            static let sortByPriceKey = "Cart.sort.price"
+            static let sortByRatingKey = "Cart.sort.rating"
+            static let sortByNameKey = "Cart.sort.name"
+            static let sortCloseKey = "Cart.sort.close"
         }
 
         enum Images {
@@ -107,7 +113,7 @@ final class CartViewController: UIViewController, CartView {
         return label
     }()
     
-    internal lazy var activityIndicator = UIActivityIndicatorView(style: .medium)
+    lazy var activityIndicator = UIActivityIndicatorView(style: .medium)
 
     // MARK: - Formatting
     private lazy var priceFormatter: NumberFormatter = {
@@ -121,6 +127,7 @@ final class CartViewController: UIViewController, CartView {
     
     // MARK: - Dependencies
     private let viewModel: CartViewModelProtocol
+    private let currencyService: CurrencyServiceProtocol
     
     // MARK: - State
     private var selectedCurrency: String = Constants.Defaults.currency {
@@ -128,13 +135,15 @@ final class CartViewController: UIViewController, CartView {
     }
 
     // MARK: - Init
-    init(viewModel: CartViewModelProtocol) {
+    init(viewModel: CartViewModelProtocol, currencyService: CurrencyServiceProtocol) {
         self.viewModel = viewModel
+        self.currencyService = currencyService
         super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        assertionFailure("init(coder:) has not been implemented")
+        return nil
     }
 
     // MARK: - Lifecycle
@@ -243,7 +252,29 @@ final class CartViewController: UIViewController, CartView {
         selectedCurrency = currency.name
     }
     
-    @objc private func sortButtonTapped() { }
+    @objc private func sortButtonTapped() {
+        let title = NSLocalizedString(Constants.Strings.sortTitleKey, comment: "Sort")
+        let byPrice = NSLocalizedString(Constants.Strings.sortByPriceKey, comment: "By price")
+        let byRating = NSLocalizedString(Constants.Strings.sortByRatingKey, comment: "By rating")
+        let byName = NSLocalizedString(Constants.Strings.sortByNameKey, comment: "By name")
+        let close = NSLocalizedString(Constants.Strings.sortCloseKey, comment: "Close")
+
+        let sheet = UIAlertController(title: title, message: nil, preferredStyle: .actionSheet)
+
+        sheet.addAction(UIAlertAction(title: byPrice, style: .default, handler: { [weak self] _ in
+            self?.viewModel.applySort(.price)
+        }))
+        sheet.addAction(UIAlertAction(title: byRating, style: .default, handler: { [weak self] _ in
+            self?.viewModel.applySort(.rating)
+        }))
+        sheet.addAction(UIAlertAction(title: byName, style: .default, handler: { [weak self] _ in
+            self?.viewModel.applySort(.name)
+        }))
+
+        sheet.addAction(UIAlertAction(title: close, style: .cancel, handler: nil))
+
+        present(sheet, animated: true)
+    }
     
     // MARK: - State
     private func updateEmptyState(isEmpty: Bool) {
@@ -254,7 +285,6 @@ final class CartViewController: UIViewController, CartView {
     
     // MARK: - Navigation
     private func openCurrencySelection() {
-        let currencyService = CurrencyServiceMock()
         let currencyViewModel = CurrencyViewModel(currencyService: currencyService)
         let viewController = CurrencyViewController(viewModel: currencyViewModel)
         viewController.hidesBottomBarWhenPushed = true
@@ -271,6 +301,24 @@ final class CartViewController: UIViewController, CartView {
 
         itemsCountLabel.text = "\(count) NFT"
         totalPriceLabel.text = "\(totalString) \(selectedCurrency)"
+    }
+
+    // MARK: - Delete confirmation
+    private func showDeleteConfirmation(for item: CartItem) {
+        let overlay = DeleteConfirmationView()
+        overlay.configure(imageURL: item.imageURL)
+        overlay.onCancel = { [weak overlay] in
+            overlay?.dismiss()
+        }
+        overlay.onConfirm = { [weak self, weak overlay] in
+            overlay?.dismiss()
+            self?.viewModel.removeItem(id: item.id)
+        }
+        if let host = tabBarController?.view ?? navigationController?.view ?? view {
+            overlay.present(in: host)
+        } else {
+            overlay.present(in: view)
+        }
     }
 }
 
@@ -318,8 +366,10 @@ extension CartViewController: UITableViewDataSource {
         }
         let item = viewModel.items[indexPath.row]
         cell.configure(with: item, priceFormatter: priceFormatter, currencySuffix: Constants.Defaults.currency)
-        cell.onRemoveTapped = { [weak self] id in
-            self?.viewModel.removeItem(id: id)
+        cell.onRemoveTapped = { [weak self] _ in
+            guard let self else { return }
+            let item = self.viewModel.items[indexPath.row]
+            self.showDeleteConfirmation(for: item)
         }
         return cell
     }
