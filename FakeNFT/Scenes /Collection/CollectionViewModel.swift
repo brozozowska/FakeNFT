@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import UIKit
 
 final class CollectionViewModel: ObservableObject {
     
@@ -20,12 +21,14 @@ final class CollectionViewModel: ObservableObject {
     
     private let nftService: NftService
     private var cancellables = Set<AnyCancellable>()
+    private weak var navigationController: UINavigationController?
     
     // MARK: - Init
     
-    init(collection: NFTCollection, nftService: NftService) {
+    init(collection: NFTCollection, nftService: NftService, navigationController: UINavigationController?) {
         self.collection = collection
         self.nftService = nftService
+        self.navigationController = navigationController
     }
     
     // MARK: - Public Methods
@@ -93,8 +96,9 @@ final class CollectionViewModel: ObservableObject {
     }
     
     func openAuthorWebsite() {
-        // TODO: Open author website in web view
-        print("Open author website")
+        guard let authorURL = URL(string: "https://example.com/author") else { return }
+            let webViewController = WebViewViewController(url: authorURL)
+            navigationController?.pushViewController(webViewController, animated: true)
     }
     
     // MARK: - Private Methods

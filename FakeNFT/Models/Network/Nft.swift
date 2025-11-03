@@ -10,3 +10,4 @@ struct Nft: Decodable {
         let author: String
         let id: String
 }
+

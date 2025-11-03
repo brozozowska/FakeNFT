@@ -165,7 +165,10 @@ extension CatalogViewController: UITableViewDelegate {
         
         let collection = viewModel.collection(at: indexPath.row)
         guard let viewModelAssembly = (tabBarController as? TabBarController)?.viewModelAssembly else { return }
-        let collectionViewModel = viewModelAssembly.makeCollectionViewModel(collection: collection)
+        let collectionViewModel = viewModelAssembly.makeCollectionViewModel(
+            collection: collection,
+            navigationController: navigationController
+        )
         let collectionViewController = CollectionViewController(viewModel: collectionViewModel)
         navigationController?.pushViewController(collectionViewController, animated: true)
     }
