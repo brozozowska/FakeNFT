@@ -9,13 +9,12 @@ import Foundation
 
 final class StatisticsViewModel {
 
-    // Outputs (биндинги)
     var onLoading: ((Bool) -> Void)?
     var onUsers: (([User]) -> Void)?
     var onError: ((ErrorModel) -> Void)?
 
     private let service: UsersService
-    private var prefs: SortPreferences              // <-- было let, стало var
+    private var prefs: SortPreferences
     private(set) var users: [User] = []
 
     init(service: UsersService, prefs: SortPreferences = SortPreferences()) {
@@ -35,31 +34,32 @@ final class StatisticsViewModel {
             self.onLoading?(false)
             switch result {
             case .success(let list):
-                self.users = self.sortedUsers(list, by: self.currentSort)   // <-- новое имя
-                self.onUsers?(self.users)
+                let sorted = self.sortedUsers(list, by: self.currentSort)
+                self.users = sorted
+                self.onUsers?(sorted)
             case .failure:
-                self.onError?(
-                    ErrorModel(
-                        message: "Не удалось загрузить рейтинг",
-                        actionText: "Повторить",
-                        action: { [weak self] in self?.load() }
-                    )
+                let error = ErrorModel(
+                    message: "Не удалось загрузить рейтинг",
+                    actionText: "Повторить",
+                    action: { [weak self] in self?.load() }
                 )
+                self.onError?(error)
             }
         }
     }
 
     func changeSort(to sort: StatisticsSort) {
         currentSort = sort
-        users = sortedUsers(users, by: sort)        // <-- новое имя
+        users = sortedUsers(users, by: sort)
         onUsers?(users)
     }
 
-    // MARK: - Private
-    private func sortedUsers(_ items: [User], by sort: StatisticsSort) -> [User] { // <-- переименовано
+    private func sortedUsers(_ items: [User], by sort: StatisticsSort) -> [User] {
         switch sort {
         case .byName:
-            return items.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            return items.sorted {
+                $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending
+            }
         case .byRating:
             return items.sorted { $0.rating > $1.rating }
         }
