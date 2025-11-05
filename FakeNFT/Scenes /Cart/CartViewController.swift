@@ -128,11 +128,17 @@ final class CartViewController: UIViewController, CartView {
     // MARK: - Dependencies
     private let viewModel: CartViewModelProtocol
     private let currencyService: CurrencyServiceProtocol
+    private let cartService: CartServiceProtocol
 
     // MARK: - Init
-    init(viewModel: CartViewModelProtocol, currencyService: CurrencyServiceProtocol) {
+    init(
+        viewModel: CartViewModelProtocol,
+        currencyService: CurrencyServiceProtocol,
+        cartService: CartServiceProtocol
+    ) {
         self.viewModel = viewModel
         self.currencyService = currencyService
+        self.cartService = cartService
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -156,6 +162,12 @@ final class CartViewController: UIViewController, CartView {
 
         viewModel.output = self
         viewModel.viewDidLoad()
+
+        NotificationCenter.default.addObserver(self, selector: #selector(handleCartCleared), name: .cartDidClear, object: nil)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: .cartDidClear, object: nil)
     }
 
     // MARK: - Setup
@@ -272,7 +284,10 @@ final class CartViewController: UIViewController, CartView {
     
     // MARK: - Navigation
     private func openCurrencySelection() {
-        let currencyViewModel = CurrencyViewModel(currencyService: currencyService)
+        let currencyViewModel = CurrencyViewModel(
+            currencyService: currencyService,
+            cartService: cartService
+        )
         let viewController = CurrencyViewController(viewModel: currencyViewModel)
         viewController.hidesBottomBarWhenPushed = true
         navigationItem.backButtonTitle = ""
@@ -306,6 +321,11 @@ final class CartViewController: UIViewController, CartView {
         } else {
             overlay.present(in: view)
         }
+    }
+
+    // MARK: - Notifications
+    @objc private func handleCartCleared() {
+        viewModel.refresh()
     }
 }
 
