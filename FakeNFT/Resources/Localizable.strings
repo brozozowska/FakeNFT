@@ -72,3 +72,9 @@
 "Currency.header" = "Выберите способ оплаты";
 "Currency.terms" = "Совершая покупку, вы соглашаетесь с условиями\nПользовательского соглашения";
 "Currency.pay" = "Оплатить";
+
+"Payment.success.title" = "Успех! Оплата прошла, поздравляем с покупкой!";
+"Payment.success.button" = "Вернуться в корзину";
+"Payment.failed.title" = "Не удалось произвести оплату";
+"Payment.failed.cancel" = "Отмена";
+"Payment.failed.retry" = "Повторить";

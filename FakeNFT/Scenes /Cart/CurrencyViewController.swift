@@ -32,9 +32,9 @@ final class CurrencyViewController: UIViewController, CurrencyView {
         
         enum PayButton {
             static let sideInset: CGFloat = 16
-            static let bottomInset: CGFloat = 12
+            static let bottomInset: CGFloat = 50
             static let topInset: CGFloat = 12
-            static let height: CGFloat = 52
+            static let height: CGFloat = 60
             static let cornerRadius: CGFloat = 16
         }
         
@@ -43,6 +43,9 @@ final class CurrencyViewController: UIViewController, CurrencyView {
             static let termsKey = "Currency.terms"
             static let payButtonKey = "Currency.pay"
             static let errorRepeatKey = "Error.repeat"
+            static let paymentFailedTitleKey = "Payment.failed.title"
+            static let cancelKey = "Payment.failed.cancel"
+            static let retryKey = "Payment.failed.retry"
         }
     }
     
@@ -82,6 +85,7 @@ final class CurrencyViewController: UIViewController, CurrencyView {
         button.setTitleColor(.systemBackground, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: Constants.Typography.payButtonFontSize, weight: .bold)
         button.layer.cornerRadius = Constants.PayButton.cornerRadius
+        button.addTarget(self, action: #selector(payTapped), for: .touchUpInside)
         return button
     }()
     
@@ -154,7 +158,7 @@ final class CurrencyViewController: UIViewController, CurrencyView {
             
             bottomContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bottomContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            bottomContainer.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
             termsLabel.topAnchor.constraint(equalTo: bottomContainer.topAnchor, constant: Constants.PayButton.topInset),
             termsLabel.leadingAnchor.constraint(equalTo: bottomContainer.leadingAnchor, constant: Constants.PayButton.sideInset),
@@ -170,6 +174,49 @@ final class CurrencyViewController: UIViewController, CurrencyView {
     
     private func setupActivityIndicator() {
         activityIndicator.constraintCenters(to: view)
+    }
+    
+    // MARK: - Actions
+    @objc private func payTapped() {
+        viewModel.pay()
+    }
+    
+    private func showPaymentFailureAlert(error: Error) {
+        let title = NSLocalizedString(Constants.Strings.paymentFailedTitleKey, comment: "Payment failed")
+        let cancel = NSLocalizedString(Constants.Strings.cancelKey, comment: "Cancel payment")
+        let retry = NSLocalizedString(Constants.Strings.retryKey, comment: "Retry payment")
+        
+        let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: cancel, style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: retry, style: .default, handler: { [weak self] _ in
+            self?.viewModel.pay()
+        }))
+        present(alert, animated: true)
+    }
+    
+    private func showSuccessReplacingCurrency() {
+        NotificationCenter.default.post(name: .cartDidClear, object: nil)
+        
+        let success = PaymentSuccessViewController()
+        success.hidesBottomBarWhenPushed = true
+        success.navigationItem.hidesBackButton = true
+        
+        guard let nav = navigationController else {
+            present(success, animated: true)
+            return
+        }
+        let wasInteractivePopEnabled = nav.interactivePopGestureRecognizer?.isEnabled ?? true
+        nav.interactivePopGestureRecognizer?.isEnabled = false
+        
+        if let cartVC = nav.viewControllers.first(where: { $0 is CartViewController }) {
+            success.onClose = { [weak nav] in
+                nav?.popViewController(animated: true)
+                nav?.interactivePopGestureRecognizer?.isEnabled = wasInteractivePopEnabled
+            }
+            nav.setViewControllers([cartVC, success], animated: true)
+        } else {
+            nav.setViewControllers([success], animated: true)
+        }
     }
 }
 
@@ -194,6 +241,14 @@ extension CurrencyViewController: CurrencyViewModelOutput {
     }
     
     func didSelectCurrency(_ currency: Currency) {
+    }
+    
+    func didFinishPayment() {
+        showSuccessReplacingCurrency()
+    }
+    
+    func didFailPayment(_ error: Error) {
+        showPaymentFailureAlert(error: error)
     }
 }
 
@@ -267,5 +322,5 @@ extension CurrencyViewController: UICollectionViewDelegateFlowLayout {
 
 // MARK: - Notification
 extension Notification.Name {
-    static let didSelectCurrency = Notification.Name("didSelectCurrency")
+    static let cartDidClear = Notification.Name("cartDidClear")
 }
