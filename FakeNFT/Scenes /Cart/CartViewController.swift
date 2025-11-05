@@ -128,11 +128,6 @@ final class CartViewController: UIViewController, CartView {
     // MARK: - Dependencies
     private let viewModel: CartViewModelProtocol
     private let currencyService: CurrencyServiceProtocol
-    
-    // MARK: - State
-    private var selectedCurrency: String = Constants.Defaults.currency {
-        didSet { updateBottomBar() }
-    }
 
     // MARK: - Init
     init(viewModel: CartViewModelProtocol, currencyService: CurrencyServiceProtocol) {
@@ -160,9 +155,6 @@ final class CartViewController: UIViewController, CartView {
         tableView.register(NFTCartCell.self, forCellReuseIdentifier: NFTCartCell.defaultReuseIdentifier)
 
         viewModel.output = self
-
-        NotificationCenter.default.addObserver(self, selector: #selector(onCurrencySelected(_:)), name: .didSelectCurrency, object: nil)
-        
         viewModel.viewDidLoad()
     }
 
@@ -247,11 +239,6 @@ final class CartViewController: UIViewController, CartView {
         openCurrencySelection()
     }
     
-    @objc private func onCurrencySelected(_ notification: Notification) {
-        guard let currency = notification.object as? Currency else { return }
-        selectedCurrency = currency.name
-    }
-    
     @objc private func sortButtonTapped() {
         let title = NSLocalizedString(Constants.Strings.sortTitleKey, comment: "Sort")
         let byPrice = NSLocalizedString(Constants.Strings.sortByPriceKey, comment: "By price")
@@ -300,7 +287,7 @@ final class CartViewController: UIViewController, CartView {
         let totalString = priceFormatter.string(from: total as NSDecimalNumber) ?? "\(total)"
 
         itemsCountLabel.text = "\(count) NFT"
-        totalPriceLabel.text = "\(totalString) \(selectedCurrency)"
+        totalPriceLabel.text = "\(totalString) \(Constants.Defaults.currency)"
     }
 
     // MARK: - Delete confirmation

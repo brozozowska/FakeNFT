@@ -4,14 +4,12 @@ protocol CurrencyViewModelOutput: AnyObject {
     func didUpdateCurrencies()
     func didChangeLoading(_ isLoading: Bool)
     func didReceiveError(_ error: Error)
-    func didSelectCurrency(_ currency: Currency)
 }
 
 protocol CurrencyViewModelProtocol: AnyObject {
     var currencies: [Currency] { get }
     var output: CurrencyViewModelOutput? { get set }
     func viewDidLoad()
-    func selectCurrency(at index: Int)
 }
 
 final class CurrencyViewModel: CurrencyViewModelProtocol {
@@ -26,11 +24,6 @@ final class CurrencyViewModel: CurrencyViewModelProtocol {
     
     func viewDidLoad() {
         load()
-    }
-    
-    func selectCurrency(at index: Int) {
-        let currency = currencies[index]
-        output?.didSelectCurrency(currency)
     }
     
     private func load() {
