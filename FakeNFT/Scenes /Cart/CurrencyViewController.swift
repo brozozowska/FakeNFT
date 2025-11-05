@@ -90,6 +90,9 @@ final class CurrencyViewController: UIViewController, CurrencyView {
     // MARK: - Dependencies
     private let viewModel: CurrencyViewModelProtocol
     
+    // MARK: - Selection State
+    private var selectedIndex: IndexPath?
+    
     // MARK: - Init
     init(viewModel: CurrencyViewModelProtocol) {
         self.viewModel = viewModel
@@ -191,8 +194,6 @@ extension CurrencyViewController: CurrencyViewModelOutput {
     }
     
     func didSelectCurrency(_ currency: Currency) {
-        navigationController?.popViewController(animated: true)
-        NotificationCenter.default.post(name: .didSelectCurrency, object: currency)
     }
 }
 
@@ -212,6 +213,7 @@ extension CurrencyViewController: UICollectionViewDataSource, UICollectionViewDe
         let cell: CurrencyCell = collectionView.dequeueReusableCell(indexPath: indexPath)
         let currency = viewModel.currencies[indexPath.item]
         cell.configure(with: currency)
+        cell.setSelectedAppearance(indexPath == selectedIndex)
         return cell
     }
     
@@ -219,7 +221,14 @@ extension CurrencyViewController: UICollectionViewDataSource, UICollectionViewDe
         _ collectionView: UICollectionView,
         didSelectItemAt indexPath: IndexPath
     ) {
-        viewModel.selectCurrency(at: indexPath.item)
+        let previous = selectedIndex
+        selectedIndex = indexPath
+        
+        var toReload: [IndexPath] = [indexPath]
+        if let previous, previous != indexPath {
+            toReload.append(previous)
+        }
+        collectionView.reloadItems(at: toReload)
     }
 }
 

@@ -20,6 +20,7 @@ final class CurrencyCell: UICollectionViewCell, ReuseIdentifying {
             static let cornerRadius: CGFloat = 12
             static let iconCornerRadius: CGFloat = 6
             static let iconSize: CGFloat = 36
+            static let selectedBorderWidth: CGFloat = 1
         }
         
         enum Strings {
@@ -79,6 +80,24 @@ final class CurrencyCell: UICollectionViewCell, ReuseIdentifying {
             with: currency.imageURL,
             placeholder: UIImage(systemName: Constants.Strings.placeholderSystemImageName)
         )
+    }
+    
+    func setSelectedAppearance(_ isSelected: Bool) {
+        contentView.layer.borderWidth = isSelected ? Constants.Appearance.selectedBorderWidth : 0
+        contentView.layer.borderColor = isSelected ? UIColor.label.cgColor : UIColor.clear.cgColor
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        setSelectedAppearance(false)
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        guard traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) else { return }
+        if contentView.layer.borderWidth > 0 {
+            contentView.layer.borderColor = UIColor.label.cgColor
+        }
     }
     
     // MARK: - Setup
