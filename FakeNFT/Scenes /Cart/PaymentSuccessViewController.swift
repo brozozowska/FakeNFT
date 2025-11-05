@@ -60,7 +60,7 @@ final class PaymentSuccessViewController: UIViewController {
         button.setTitleColor(.systemBackground, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: Constants.Typography.buttonFontSize, weight: .bold)
         button.layer.cornerRadius = Constants.Appearance.buttonCornerRadius
-        button.addTarget(PaymentSuccessViewController.self, action: #selector(closeTapped), for: .touchUpInside)
+        button.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
         return button
     }()
     
