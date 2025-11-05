@@ -20,14 +20,16 @@ final class CollectionViewModel: ObservableObject {
     // MARK: - Private Properties
     
     private let nftService: NftService
+    private let likeService: LikeStorage
     private var cancellables = Set<AnyCancellable>()
     private weak var navigationController: UINavigationController?
     
     // MARK: - Init
     
-    init(collection: NFTCollection, nftService: NftService, navigationController: UINavigationController?) {
+    init(collection: NFTCollection, nftService: NftService,likeService: LikeStorage, navigationController: UINavigationController?) {
         self.collection = collection
         self.nftService = nftService
+        self.likeService = likeService
         self.navigationController = navigationController
     }
     
@@ -81,8 +83,13 @@ final class CollectionViewModel: ObservableObject {
     }
     
     func toggleLike(for nftId: String) {
-        // TODO: Implement like functionality
-        print("Toggle like for NFT: \(nftId)")
+        likeService.toggleLike(for: nftId)
+        
+        print("Toggle like for NFT: \(nftId). Now liked: \(likeService.isLiked(nftId: nftId))")
+    }
+    
+        func isLiked(nftId: String) -> Bool {
+                return likeService.isLiked(nftId: nftId)
     }
     
     func toggleCart(for nftId: String) {
@@ -96,9 +103,9 @@ final class CollectionViewModel: ObservableObject {
     }
     
     func openAuthorWebsite() {
-        guard let authorURL = URL(string: "https://example.com/author") else { return }
-            let webViewController = WebViewViewController(url: authorURL)
-            navigationController?.pushViewController(webViewController, animated: true)
+        guard let authorURL = URL(string: "https://practicum.yandex.com/ios-developer/?from=catalog") else { return }
+        let webViewController = WebViewViewController(url: authorURL)
+        navigationController?.pushViewController(webViewController, animated: true)
     }
     
     // MARK: - Private Methods

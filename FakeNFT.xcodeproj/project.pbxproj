@@ -55,6 +55,7 @@
 		E4F541242EB139050046681D /* CatalogViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F541232EB139050046681D /* CatalogViewModel.swift */; };
 		E4F541262EB39D2E0046681D /* RatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F541252EB39D2E0046681D /* RatingView.swift */; };
 		E4F5422B2EB7DEAC0046681D /* ViewModelAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F5422A2EB7DEAC0046681D /* ViewModelAssembly.swift */; };
+		E4F542AD2EBA4DA50046681D /* LikeStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F542AC2EBA4DA50046681D /* LikeStorage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -127,6 +128,7 @@
 		E4F541232EB139050046681D /* CatalogViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogViewModel.swift; sourceTree = "<group>"; };
 		E4F541252EB39D2E0046681D /* RatingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingView.swift; sourceTree = "<group>"; };
 		E4F5422A2EB7DEAC0046681D /* ViewModelAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelAssembly.swift; sourceTree = "<group>"; };
+		E4F542AC2EBA4DA50046681D /* LikeStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeStorage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -322,6 +324,7 @@
 			isa = PBXGroup;
 			children = (
 				3F6806D829CC979D00B4F915 /* Network */,
+				E4F542AC2EBA4DA50046681D /* LikeStorage.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -574,6 +577,7 @@
 				3F6806D729CBC50A00B4F915 /* CellsReusingUtils.swift in Sources */,
 				0C79EE612A76DCD600EE90EA /* NftByIdRequest.swift in Sources */,
 				E19CD5AB2A98B56600CA39A5 /* NftImageCollectionViewCell.swift in Sources */,
+				E4F542AD2EBA4DA50046681D /* LikeStorage.swift in Sources */,
 				0CF2C2E12A784C7000FDC837 /* LinePageControl.swift in Sources */,
 				3F6806D329CBBE9600B4F915 /* NetworkRequest.swift in Sources */,
 				E4F541262EB39D2E0046681D /* RatingView.swift in Sources */,

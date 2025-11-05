@@ -41,11 +41,20 @@ final class WebViewViewController: UIViewController {
         loadWebPage()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.tabBar.isHidden = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
+    }
+    
     // MARK: - Private Methods
     
     private func setupViews() {
         view.backgroundColor = .white
-        title = NSLocalizedString("WebView.title", comment: "Author website")
         
         view.addSubview(webView)
         view.addSubview(activityIndicator)
@@ -71,7 +80,6 @@ final class WebViewViewController: UIViewController {
         webView.load(request)
     }
 }
-
 // MARK: - WKNavigationDelegate
 
 extension WebViewViewController: WKNavigationDelegate {

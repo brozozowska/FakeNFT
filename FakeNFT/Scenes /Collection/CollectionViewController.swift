@@ -185,10 +185,12 @@ extension CollectionViewController: UICollectionViewDataSource {
         }
         
         let nft = viewModel.nft(at: indexPath.row)
-        cell.configure(with: nft)
+        let isLiked = viewModel.isLiked(nftId: nft.id)
+        cell.configure(with: nft, isLiked: isLiked)
         
         cell.onLikeTapped = { [weak self] in
             self?.viewModel.toggleLike(for: nft.id)
+            collectionView.reloadItems(at: [indexPath])
         }
         
         cell.onCartTapped = { [weak self] in

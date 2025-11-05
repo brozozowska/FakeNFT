@@ -2,6 +2,7 @@ final class ServicesAssembly {
     
     private let networkClient: NetworkClient
     private let nftStorage: NftStorage
+    private lazy var likeStorage: LikeStorage = LikeStorageImpl()
     
     init(
         networkClient: NetworkClient,
@@ -23,6 +24,10 @@ final class ServicesAssembly {
             networkClient: networkClient
         )
     }
+    
+    var likeService: LikeStorage {
+            return likeStorage
+        }
     
     var sortSettingsService: SortSettingsService {
             SortSettingsServiceImpl()

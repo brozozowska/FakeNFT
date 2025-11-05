@@ -22,6 +22,7 @@ final class ViewModelAssembly {
             return CollectionViewModel(
                 collection: collection,
                 nftService: servicesAssembly.nftService,
+                likeService: servicesAssembly.likeService,
                 navigationController: navigationController
             )
     }
