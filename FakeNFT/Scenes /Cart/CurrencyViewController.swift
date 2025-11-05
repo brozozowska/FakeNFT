@@ -1,4 +1,5 @@
 import UIKit
+import WebKit
 
 // MARK: - Protocol
 protocol CurrencyView: AnyObject, LoadingView, ErrorView { }
@@ -26,14 +27,15 @@ final class CurrencyViewController: UIViewController, CurrencyView {
         }
         
         enum Typography {
-            static let termsFontSize: CGFloat = 14
+            static let termsFontSize: CGFloat = 13
             static let payButtonFontSize: CGFloat = 17
+            static let termsLineSpacing: CGFloat = 8
         }
         
         enum PayButton {
             static let sideInset: CGFloat = 16
             static let bottomInset: CGFloat = 50
-            static let topInset: CGFloat = 12
+            static let topInset: CGFloat = 16
             static let height: CGFloat = 60
             static let cornerRadius: CGFloat = 16
         }
@@ -41,11 +43,13 @@ final class CurrencyViewController: UIViewController, CurrencyView {
         enum Strings {
             static let titleKey = "Currency.header"
             static let termsKey = "Currency.terms"
+            static let termsLinkTitleKey = "Currency.terms.linkTitle"
             static let payButtonKey = "Currency.pay"
             static let errorRepeatKey = "Error.repeat"
             static let paymentFailedTitleKey = "Payment.failed.title"
             static let cancelKey = "Payment.failed.cancel"
             static let retryKey = "Payment.failed.retry"
+            static let termsURLString = "https://yandex.ru/legal/practicum_termsofuse"
         }
     }
     
@@ -69,13 +73,18 @@ final class CurrencyViewController: UIViewController, CurrencyView {
         return view
     }()
     
-    private lazy var termsLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 0
-        label.textAlignment = .left
-        label.font = .systemFont(ofSize: Constants.Typography.termsFontSize)
-        label.text = NSLocalizedString(Constants.Strings.termsKey, comment: "Terms and conditions text")
-        return label
+    private lazy var termsTextView: UITextView = {
+        let textView = UITextView()
+        textView.isEditable = false
+        textView.isScrollEnabled = false
+        textView.backgroundColor = .clear
+        textView.textContainerInset = .zero
+        textView.textContainer.lineFragmentPadding = 0
+        textView.delegate = self
+        textView.linkTextAttributes = [
+            .foregroundColor: UIColor.systemBlue
+        ]
+        return textView
     }()
     
     private lazy var payButton: UIButton = {
@@ -120,6 +129,7 @@ final class CurrencyViewController: UIViewController, CurrencyView {
         setupHierarchy()
         setupConstraints()
         setupActivityIndicator()
+        configureTermsText()
         
         collectionView.backgroundColor = .clear
         collectionView.register(CurrencyCell.self)
@@ -141,7 +151,7 @@ final class CurrencyViewController: UIViewController, CurrencyView {
         }
 
         [
-            termsLabel,
+            termsTextView,
             payButton
         ].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -160,11 +170,11 @@ final class CurrencyViewController: UIViewController, CurrencyView {
             bottomContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             bottomContainer.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
-            termsLabel.topAnchor.constraint(equalTo: bottomContainer.topAnchor, constant: Constants.PayButton.topInset),
-            termsLabel.leadingAnchor.constraint(equalTo: bottomContainer.leadingAnchor, constant: Constants.PayButton.sideInset),
-            termsLabel.trailingAnchor.constraint(equalTo: bottomContainer.trailingAnchor, constant: -Constants.PayButton.sideInset),
+            termsTextView.topAnchor.constraint(equalTo: bottomContainer.topAnchor, constant: Constants.PayButton.topInset),
+            termsTextView.leadingAnchor.constraint(equalTo: bottomContainer.leadingAnchor, constant: Constants.PayButton.sideInset),
+            termsTextView.trailingAnchor.constraint(equalTo: bottomContainer.trailingAnchor, constant: -Constants.PayButton.sideInset),
             
-            payButton.topAnchor.constraint(equalTo: termsLabel.bottomAnchor, constant: Constants.PayButton.topInset),
+            payButton.topAnchor.constraint(equalTo: termsTextView.bottomAnchor, constant: Constants.PayButton.topInset),
             payButton.leadingAnchor.constraint(equalTo: bottomContainer.leadingAnchor, constant: Constants.PayButton.sideInset),
             payButton.trailingAnchor.constraint(equalTo: bottomContainer.trailingAnchor, constant: -Constants.PayButton.sideInset),
             payButton.bottomAnchor.constraint(equalTo: bottomContainer.bottomAnchor, constant: -Constants.PayButton.bottomInset),
@@ -176,9 +186,45 @@ final class CurrencyViewController: UIViewController, CurrencyView {
         activityIndicator.constraintCenters(to: view)
     }
     
+    private func configureTermsText() {
+        let linkTitle = NSLocalizedString(Constants.Strings.termsLinkTitleKey, comment: "User agreement")
+        let template = NSLocalizedString(Constants.Strings.termsKey, comment: "Terms and conditions text")
+        let fullText = String(format: template, linkTitle)
+        
+        let font = UIFont.systemFont(ofSize: Constants.Typography.termsFontSize)
+        let color = UIColor.label
+        
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.lineSpacing = Constants.Typography.termsLineSpacing
+        
+        let attributed = NSMutableAttributedString(string: fullText, attributes: [
+            .font: font,
+            .foregroundColor: color,
+            .paragraphStyle: paragraph
+        ])
+        
+        if let range = (fullText as NSString).range(of: linkTitle).toOptional(),
+           let url = URL(string: Constants.Strings.termsURLString) {
+            attributed.addAttributes([
+                .link: url,
+                .underlineStyle: 0
+            ], range: range)
+        }
+        termsTextView.attributedText = attributed
+    }
+    
     // MARK: - Actions
     @objc private func payTapped() {
         viewModel.pay()
+    }
+    
+    // MARK: - Private Methods
+    private func openTermsWebView() {
+        guard let url = URL(string: Constants.Strings.termsURLString) else { return }
+        navigationItem.backButtonTitle = ""
+        let web = WebViewController(url: url, title: nil)
+        web.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(web, animated: true)
     }
     
     private func showPaymentFailureAlert(error: Error) {
@@ -217,6 +263,19 @@ final class CurrencyViewController: UIViewController, CurrencyView {
         } else {
             nav.setViewControllers([success], animated: true)
         }
+    }
+}
+
+// MARK: - UITextViewDelegate
+extension CurrencyViewController: UITextViewDelegate {
+    func textView(
+        _ textView: UITextView,
+        shouldInteractWith URL: URL,
+        in characterRange: NSRange,
+        interaction: UITextItemInteraction
+    ) -> Bool {
+        openTermsWebView()
+        return false
     }
 }
 
@@ -323,4 +382,11 @@ extension CurrencyViewController: UICollectionViewDelegateFlowLayout {
 // MARK: - Notification
 extension Notification.Name {
     static let cartDidClear = Notification.Name("cartDidClear")
+}
+
+// MARK: - Helpers
+private extension NSRange {
+    func toOptional() -> NSRange? {
+        location != NSNotFound ? self : nil
+    }
 }
