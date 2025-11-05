@@ -166,6 +166,11 @@ final class CartViewController: UIViewController, CartView {
         NotificationCenter.default.addObserver(self, selector: #selector(handleCartCleared), name: .cartDidClear, object: nil)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.refresh()
+    }
+    
     deinit {
         NotificationCenter.default.removeObserver(self, name: .cartDidClear, object: nil)
     }
