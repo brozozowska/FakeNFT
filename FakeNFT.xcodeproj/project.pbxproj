@@ -56,6 +56,7 @@
 		E4F541262EB39D2E0046681D /* RatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F541252EB39D2E0046681D /* RatingView.swift */; };
 		E4F5422B2EB7DEAC0046681D /* ViewModelAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F5422A2EB7DEAC0046681D /* ViewModelAssembly.swift */; };
 		E4F542AD2EBA4DA50046681D /* LikeStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F542AC2EBA4DA50046681D /* LikeStorage.swift */; };
+		E4F542D22EBCCB4E0046681D /* CartStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F542D12EBCCB4E0046681D /* CartStorage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -129,6 +130,7 @@
 		E4F541252EB39D2E0046681D /* RatingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingView.swift; sourceTree = "<group>"; };
 		E4F5422A2EB7DEAC0046681D /* ViewModelAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelAssembly.swift; sourceTree = "<group>"; };
 		E4F542AC2EBA4DA50046681D /* LikeStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeStorage.swift; sourceTree = "<group>"; };
+		E4F542D12EBCCB4E0046681D /* CartStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartStorage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -325,6 +327,7 @@
 			children = (
 				3F6806D829CC979D00B4F915 /* Network */,
 				E4F542AC2EBA4DA50046681D /* LikeStorage.swift */,
+				E4F542D12EBCCB4E0046681D /* CartStorage.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -580,6 +583,7 @@
 				E4F542AD2EBA4DA50046681D /* LikeStorage.swift in Sources */,
 				0CF2C2E12A784C7000FDC837 /* LinePageControl.swift in Sources */,
 				3F6806D329CBBE9600B4F915 /* NetworkRequest.swift in Sources */,
+				E4F542D22EBCCB4E0046681D /* CartStorage.swift in Sources */,
 				E4F541262EB39D2E0046681D /* RatingView.swift in Sources */,
 				E4F5422B2EB7DEAC0046681D /* ViewModelAssembly.swift in Sources */,
 				0CFCB7492A7808900009A829 /* TestCatalogController.swift in Sources */,

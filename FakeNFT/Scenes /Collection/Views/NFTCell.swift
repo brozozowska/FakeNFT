@@ -73,7 +73,7 @@ final class NFTCell: UICollectionViewCell {
     
     // MARK: - Configuration
     
-    func configure(with nft: Nft, isLiked: Bool) {
+    func configure(with nft: Nft, isLiked: Bool, isInCart: Bool) {
         nameLabel.text = nft.name
         priceLabel.text = "\(nft.price) ETH"
         ratingView.rating = nft.rating
@@ -81,7 +81,7 @@ final class NFTCell: UICollectionViewCell {
         loadNFTImage(for: nft)
         
         likeButton.isSelected = isLiked
-        // cartButton.isSelected = nft.isInCart
+        cartButton.isSelected = isInCart
     }
     
     private func loadNFTImage(for nft: Nft) {

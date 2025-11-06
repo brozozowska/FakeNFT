@@ -23,6 +23,7 @@ final class ViewModelAssembly {
                 collection: collection,
                 nftService: servicesAssembly.nftService,
                 likeService: servicesAssembly.likeService,
+                cartService: servicesAssembly.cartService,
                 navigationController: navigationController
             )
     }

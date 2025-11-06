@@ -186,7 +186,9 @@ extension CollectionViewController: UICollectionViewDataSource {
         
         let nft = viewModel.nft(at: indexPath.row)
         let isLiked = viewModel.isLiked(nftId: nft.id)
-        cell.configure(with: nft, isLiked: isLiked)
+        let isInCart = viewModel.isInCart(nftId: nft.id)
+        
+        cell.configure(with: nft, isLiked: isLiked, isInCart: isInCart)
         
         cell.onLikeTapped = { [weak self] in
             self?.viewModel.toggleLike(for: nft.id)
@@ -195,6 +197,7 @@ extension CollectionViewController: UICollectionViewDataSource {
         
         cell.onCartTapped = { [weak self] in
             self?.viewModel.toggleCart(for: nft.id)
+                        collectionView.reloadItems(at: [indexPath]) 
         }
         
         return cell
