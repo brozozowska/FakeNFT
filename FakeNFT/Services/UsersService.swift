@@ -13,7 +13,7 @@ protocol UsersService {
     func loadUsers(completion: @escaping UsersCompletion)
 }
 
-/// Моки. Имитация сети через GCD с QoS.userInitiated.
+
 final class UsersServiceMock: UsersService {
     private let queue = DispatchQueue(label: "users.service.mock", qos: .userInitiated)
 

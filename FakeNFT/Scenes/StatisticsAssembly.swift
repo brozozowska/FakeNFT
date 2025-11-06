@@ -12,7 +12,7 @@ final class StatisticsAssembly {
     init(services: ServicesAssembly) { self.services = services }
 
     func build() -> UIViewController {
-        // пока моки; позже подменим на сетевой сервис
+
         let vm = StatisticsViewModel(service: UsersServiceMock())
         let vc = StatisticsViewController(viewModel: vm)
         return UINavigationController(rootViewController: vc)

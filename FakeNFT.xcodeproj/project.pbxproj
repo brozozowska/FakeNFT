@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -136,6 +136,13 @@
 		E1CD40D92A96BE7D00BE7FE8 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		E1CD40DB2A96BECC00BE7FE8 /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		60E768412EBC4EA70055AAEA /* Statistic */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Statistic; sourceTree = "<group>"; };
+		60E768552EBC542B0055AAEA /* Requests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Requests; sourceTree = "<group>"; };
+		60E768592EBC54520055AAEA /* DTO */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = DTO; sourceTree = "<group>"; };
+		60E7685D2EBC54780055AAEA /* Services */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Services; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		3F68069029CBBAF100B4F915 /* Frameworks */ = {
@@ -318,6 +325,7 @@
 		3F6806C929CBBCAF00B4F915 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				60E768412EBC4EA70055AAEA /* Statistic */,
 				6072D6302EB58A57003633AA /* User.swift */,
 				3F6806D829CC979D00B4F915 /* Network */,
 			);
@@ -350,6 +358,9 @@
 		3F6806D829CC979D00B4F915 /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				60E7685D2EBC54780055AAEA /* Services */,
+				60E768592EBC54520055AAEA /* DTO */,
+				60E768552EBC542B0055AAEA /* Requests */,
 				0CFCB7412A78013E0009A829 /* Nft.swift */,
 			);
 			path = Network;
@@ -432,6 +443,12 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				60E768412EBC4EA70055AAEA /* Statistic */,
+				60E768552EBC542B0055AAEA /* Requests */,
+				60E768592EBC54520055AAEA /* DTO */,
+				60E7685D2EBC54780055AAEA /* Services */,
 			);
 			name = FakeNFT;
 			packageProductDependencies = (
