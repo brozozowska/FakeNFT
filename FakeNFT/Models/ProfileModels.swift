@@ -12,10 +12,26 @@ struct PutProfileRequest: NetworkRequest {
     
     var httpMethod: HttpMethod { .put }
     
-    var dto: Dto? { nil }
+    var dto: Dto? {
+        ProfileDto(likes: likes, name: name, avatar: avatar)
+    }
     
     var headers: [String: String]? {
         ["X-Practicum-Mobile-Token": RequestConstants.token]
+    }
+}
+
+struct ProfileDto: Dto {
+    let likes: String
+    let name: String
+    let avatar: String
+    
+    func asDictionary() -> [String: String] {
+        return [
+            "likes": likes,
+            "name": name,
+            "avatar": avatar
+        ]
     }
 }
 

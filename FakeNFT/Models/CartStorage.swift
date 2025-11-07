@@ -65,7 +65,6 @@ final class CartStorageImpl: CartStorage {
                 print("Cart updated successfully. NFTs in cart: \(order.nfts)")
             case .failure(let error):
                 print("Failed to update cart: \(error)")
-                // В реальном приложении нужно откатить изменения или показать ошибку
             }
         }
     }

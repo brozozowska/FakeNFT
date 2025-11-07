@@ -10,10 +10,20 @@ struct PutOrderRequest: NetworkRequest {
     
     var httpMethod: HttpMethod { .put }
     
-    var dto: Dto? { nil }
+    var dto: Dto? {
+        OrderDto(nfts: nfts)
+    }
     
     var headers: [String: String]? {
         ["X-Practicum-Mobile-Token": RequestConstants.token]
+    }
+}
+
+struct OrderDto: Dto {
+    let nfts: String
+    
+    func asDictionary() -> [String: String] {
+        return ["nfts": nfts]
     }
 }
 

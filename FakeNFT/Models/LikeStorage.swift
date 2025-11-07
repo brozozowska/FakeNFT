@@ -44,6 +44,7 @@ final class LikeStorageImpl: LikeStorage {
                 self?.likedNFTs = Set(profile.likes)
                 self?.profileName = profile.name
                 self?.avatarURL = profile.avatar
+                print("Successfully loaded \(profile.likes.count) likes")
             case .failure(let error):
                 print("Failed to load likes: \(error)")
                 self?.likedNFTs = []
@@ -66,7 +67,6 @@ final class LikeStorageImpl: LikeStorage {
                 print("Likes updated successfully. Liked NFTs: \(profile.likes)")
             case .failure(let error):
                 print("Failed to update likes: \(error)")
-                // В реальном приложении нужно откатить изменения или показать ошибку
             }
         }
     }

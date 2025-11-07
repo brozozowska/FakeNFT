@@ -91,6 +91,7 @@ final class CollectionViewModel: ObservableObject {
     
     func toggleLike(for nftId: String) {
         likeService.toggleLike(for: nftId)
+        objectWillChange.send()
         print("Toggle like for NFT: \(nftId). Now liked: \(likeService.isLiked(nftId: nftId))")
     }
     

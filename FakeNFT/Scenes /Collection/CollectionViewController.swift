@@ -194,14 +194,17 @@ extension CollectionViewController: UICollectionViewDataSource {
         
         cell.onLikeTapped = { [weak self] in
             self?.viewModel.toggleLike(for: nft.id)
-            collectionView.reloadItems(at: [indexPath])
+            UIView.performWithoutAnimation {
+                collectionView.reloadItems(at: [indexPath])
+            }
         }
         
         cell.onCartTapped = { [weak self] in
             self?.viewModel.toggleCart(for: nft.id)
-            collectionView.reloadItems(at: [indexPath])
+            UIView.performWithoutAnimation {
+                collectionView.reloadItems(at: [indexPath])
+            }
         }
-        
         return cell
     }
     
