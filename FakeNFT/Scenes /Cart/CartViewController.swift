@@ -376,12 +376,20 @@ extension CartViewController: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: NFTCartCell.defaultReuseIdentifier, for: indexPath) as? NFTCartCell else {
             return UITableViewCell()
         }
+        
+        guard viewModel.items.indices.contains(indexPath.row) else {
+            assertionFailure("Index out of bounds in cellForRowAt")
+            return cell
+        }
+        
         let item = viewModel.items[indexPath.row]
         cell.configure(with: item, priceFormatter: priceFormatter, currencySuffix: Constants.Defaults.currency)
-        cell.onRemoveTapped = { [weak self] _ in
+
+        cell.onRemoveTapped = { [weak self] id in
             guard let self else { return }
-            let item = self.viewModel.items[indexPath.row]
-            self.showDeleteConfirmation(for: item)
+            if let currentItem = self.viewModel.items.first(where: { $0.id == id }) {
+                self.showDeleteConfirmation(for: currentItem)
+            }
         }
         return cell
     }
