@@ -28,6 +28,9 @@ final class CollectionViewModel: ObservableObject {
     private let cartService: CartStorage
     private var cancellables = Set<AnyCancellable>()
     
+    // ДОБАВЛЯЕМ: Трекер для отслеживания обновляющихся NFT
+    private var updatingNFTs: Set<String> = []
+    
     // MARK: - Init
     
     init(collection: NFTCollection,
@@ -90,23 +93,51 @@ final class CollectionViewModel: ObservableObject {
     }
     
     func toggleLike(for nftId: String) {
-        likeService.toggleLike(for: nftId)
+        guard !updatingNFTs.contains(nftId) else {
+            print("Like operation already in progress for NFT: \(nftId)")
+            return
+        }
+        
+        updatingNFTs.insert(nftId)
         objectWillChange.send()
-        print("Toggle like for NFT: \(nftId). Now liked: \(likeService.isLiked(nftId: nftId))")
+        
+        likeService.toggleLike(for: nftId) { [weak self] success in
+            DispatchQueue.main.async {
+                self?.updatingNFTs.remove(nftId)
+                self?.objectWillChange.send()
+                print("Like operation completed for NFT: \(nftId). Success: \(success)")
+            }
+        }
+    }
+    
+    func toggleCart(for nftId: String) {
+        guard !updatingNFTs.contains(nftId) else {
+            print("Cart operation already in progress for NFT: \(nftId)")
+            return
+        }
+        
+        updatingNFTs.insert(nftId)
+        objectWillChange.send()
+        
+        cartService.toggleCart(for: nftId) { [weak self] success in
+            DispatchQueue.main.async {
+                self?.updatingNFTs.remove(nftId)
+                self?.objectWillChange.send()
+                print("Cart operation completed for NFT: \(nftId). Success: \(success)")
+            }
+        }
     }
     
     func isLiked(nftId: String) -> Bool {
         return likeService.isLiked(nftId: nftId)
     }
     
-    func toggleCart(for nftId: String) {
-        cartService.toggleCart(for: nftId)
-        objectWillChange.send()
-        print("Toggle cart for NFT: \(nftId). Now in cart: \(cartService.isInCart(nftId: nftId))")
-    }
-    
     func isInCart(nftId: String) -> Bool {
         return cartService.isInCart(nftId: nftId)
+    }
+    
+    func isUpdating(nftId: String) -> Bool {
+        return updatingNFTs.contains(nftId)
     }
     
     func showNftDetail(_ nftId: String) {

@@ -2,7 +2,7 @@ import Foundation
 
 protocol LikeStorage {
     func getLikedNFTs() -> Set<String>
-    func toggleLike(for nftId: String)
+    func toggleLike(for nftId: String, completion: ((Bool) -> Void)?)
     func isLiked(nftId: String) -> Bool
 }
 
@@ -24,8 +24,10 @@ final class LikeStorageImpl: LikeStorage {
         return likedNFTs
     }
     
-    func toggleLike(for nftId: String) {
+    func toggleLike(for nftId: String, completion: ((Bool) -> Void)? = nil) {
         print("Toggle like for NFT: \(nftId). Currently liked: \(likedNFTs.contains(nftId))")
+        
+        let oldState = likedNFTs.contains(nftId)
         
         if likedNFTs.contains(nftId) {
             likedNFTs.remove(nftId)
@@ -33,7 +35,17 @@ final class LikeStorageImpl: LikeStorage {
             likedNFTs.insert(nftId)
         }
         
-        updateLikesOnServer()
+        updateLikesOnServer { [weak self] success in
+            if !success {
+                // Откатываем изменения при ошибке
+                if oldState {
+                    self?.likedNFTs.insert(nftId)
+                } else {
+                    self?.likedNFTs.remove(nftId)
+                }
+            }
+            completion?(success)
+        }
     }
     
     func isLiked(nftId: String) -> Bool {
@@ -61,7 +73,7 @@ final class LikeStorageImpl: LikeStorage {
         }
     }
     
-    private func updateLikesOnServer() {
+    private func updateLikesOnServer(completion: ((Bool) -> Void)? = nil) {
         let likesString = Array(likedNFTs).joined(separator: ",")
         print("Updating likes on server: \(likesString)")
         
@@ -73,15 +85,17 @@ final class LikeStorageImpl: LikeStorage {
         )
         
         if let dto = request.dto {
-                print("Sending DTO: \(dto.asDictionary())")
-            }
+            print("Sending DTO: \(dto.asDictionary())")
+        }
         
         networkClient.send(request: request, type: Profile.self) { result in
             switch result {
             case .success(let profile):
                 print("Likes updated successfully. Profile name: \(profile.name), liked NFTs: \(profile.likes.count)")
+                completion?(true)
             case .failure(let error):
                 print("Failed to update likes: \(error)")
+                completion?(false)
             }
         }
     }

@@ -1,7 +1,7 @@
 import Foundation
 
 protocol CartStorage {
-    func toggleCart(for nftId: String)
+    func toggleCart(for nftId: String, completion: ((Bool) -> Void)?)
     func isInCart(nftId: String) -> Bool
     func getCartItems() -> [String]
     func clearCart()
@@ -17,8 +17,10 @@ final class CartStorageImpl: CartStorage {
         loadCartFromServer()
     }
     
-    func toggleCart(for nftId: String) {
+    func toggleCart(for nftId: String, completion: ((Bool) -> Void)? = nil) {
         print("Toggle cart for NFT: \(nftId). Currently in cart: \(cartItems.contains(nftId))")
+        
+        let oldState = cartItems.contains(nftId)
         
         if let index = cartItems.firstIndex(of: nftId) {
             cartItems.remove(at: index)
@@ -26,8 +28,21 @@ final class CartStorageImpl: CartStorage {
             cartItems.append(nftId)
         }
         
-        updateCartOnServer()
-        NotificationCenter.default.post(name: NSNotification.Name("CartDidChange"), object: nil)
+        updateCartOnServer { [weak self] success in
+            if !success {
+                // Откатываем изменения при ошибке
+                if oldState {
+                    self?.cartItems.append(nftId)
+                } else {
+                    if let index = self?.cartItems.firstIndex(of: nftId) {
+                        self?.cartItems.remove(at: index)
+                    }
+                }
+            } else {
+                NotificationCenter.default.post(name: NSNotification.Name("CartDidChange"), object: nil)
+            }
+            completion?(success)
+        }
     }
     
     func isInCart(nftId: String) -> Bool {
@@ -60,7 +75,7 @@ final class CartStorageImpl: CartStorage {
         }
     }
     
-    private func updateCartOnServer() {
+    private func updateCartOnServer(completion: ((Bool) -> Void)? = nil) {
         let nftsString = cartItems.joined(separator: ",")
         print("Updating cart on server: '\(nftsString)'")
         
@@ -70,8 +85,10 @@ final class CartStorageImpl: CartStorage {
             switch result {
             case .success(let order):
                 print("Cart updated successfully. NFTs in cart: \(order.nfts.count)")
+                completion?(true)
             case .failure(let error):
                 print("Failed to update cart: \(error)")
+                completion?(false)
             }
         }
     }

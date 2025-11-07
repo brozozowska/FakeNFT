@@ -104,6 +104,27 @@ final class CollectionViewController: UIViewController {
                 }
             }
             .store(in: &cancellables)
+        
+        viewModel.objectWillChange
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateVisibleCells()
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func updateVisibleCells() {
+        collectionView.visibleCells.forEach { cell in
+            guard let indexPath = collectionView.indexPath(for: cell),
+                  let nftCell = cell as? NFTCell else { return }
+            
+            let nft = viewModel.nft(at: indexPath.row)
+            let isLiked = viewModel.isLiked(nftId: nft.id)
+            let isInCart = viewModel.isInCart(nftId: nft.id)
+            let isUpdating = viewModel.isUpdating(nftId: nft.id)
+            
+            nftCell.configure(with: nft, isLiked: isLiked, isInCart: isInCart, isUpdating: isUpdating)
+        }
     }
     
     private func setupViewModelCallbacks() {
@@ -189,25 +210,18 @@ extension CollectionViewController: UICollectionViewDataSource {
         let nft = viewModel.nft(at: indexPath.row)
         let isLiked = viewModel.isLiked(nftId: nft.id)
         let isInCart = viewModel.isInCart(nftId: nft.id)
+        let isUpdating = viewModel.isUpdating(nftId: nft.id)
         
-        cell.configure(with: nft, isLiked: isLiked, isInCart: isInCart)
+        cell.configure(with: nft, isLiked: isLiked, isInCart: isInCart, isUpdating: isUpdating)
         
         cell.onLikeTapped = { [weak self] in
-            self?.viewModel.toggleLike(for: nft.id)
-            if let cell = collectionView.cellForItem(at: indexPath) as? NFTCell {
-                let updatedIsLiked = self?.viewModel.isLiked(nftId: nft.id) ?? false
-                let updatedIsInCart = self?.viewModel.isInCart(nftId: nft.id) ?? false
-                cell.configure(with: nft, isLiked: updatedIsLiked, isInCart: updatedIsInCart)
-            }
+            guard let self = self, !viewModel.isUpdating(nftId: nft.id) else { return }
+            viewModel.toggleLike(for: nft.id)
         }
         
         cell.onCartTapped = { [weak self] in
-            self?.viewModel.toggleCart(for: nft.id)
-            if let cell = collectionView.cellForItem(at: indexPath) as? NFTCell {
-                let updatedIsLiked = self?.viewModel.isLiked(nftId: nft.id) ?? false
-                let updatedIsInCart = self?.viewModel.isInCart(nftId: nft.id) ?? false
-                cell.configure(with: nft, isLiked: updatedIsLiked, isInCart: updatedIsInCart)
-            }
+            guard let self = self, !viewModel.isUpdating(nftId: nft.id) else { return }
+            viewModel.toggleCart(for: nft.id)
         }
         
         return cell
