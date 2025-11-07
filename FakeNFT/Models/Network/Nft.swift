@@ -9,8 +9,5 @@ struct Nft: Decodable {
     let price: Float
     let author: String
     let id: String
-    var isInCart: Bool {
-        return false
-    }
 }
 

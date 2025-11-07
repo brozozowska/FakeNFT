@@ -1,0 +1,46 @@
+import Foundation
+
+struct PutProfileRequest: NetworkRequest {
+    let id: String
+    let likes: String
+    let name: String
+    let avatar: String
+    
+    var endpoint: URL? {
+        URL(string: "\(RequestConstants.baseURL)/api/v1/profile/\(id)")
+    }
+    
+    var httpMethod: HttpMethod { .put }
+    
+    var dto: Dto? { nil }
+    
+    var headers: [String: String]? {
+        ["X-Practicum-Mobile-Token": RequestConstants.token]
+    }
+}
+
+struct GetProfileRequest: NetworkRequest {
+    let id: String
+    
+    var endpoint: URL? {
+        URL(string: "\(RequestConstants.baseURL)/api/v1/profile/\(id)")
+    }
+    
+    var httpMethod: HttpMethod { .get }
+    
+    var dto: Dto? { nil }
+    
+    var headers: [String: String]? {
+        ["X-Practicum-Mobile-Token": RequestConstants.token]
+    }
+}
+
+struct Profile: Decodable {
+    let name: String
+    let avatar: String
+    let description: String
+    let website: String
+    let nfts: [String]
+    let likes: [String]
+    let id: String
+}

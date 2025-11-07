@@ -1,5 +1,4 @@
 import Foundation
-import UIKit
 
 final class ViewModelAssembly {
     
@@ -18,13 +17,12 @@ final class ViewModelAssembly {
     
     // MARK: - CollectionView Models
     
-    func makeCollectionViewModel(collection: NFTCollection, navigationController: UINavigationController?) -> CollectionViewModel {
+    func makeCollectionViewModel(collection: NFTCollection) -> CollectionViewModel {
             return CollectionViewModel(
                 collection: collection,
                 nftService: servicesAssembly.nftService,
                 likeService: servicesAssembly.likeService,
-                cartService: servicesAssembly.cartService,
-                navigationController: navigationController
+                cartService: servicesAssembly.cartService
             )
     }
 }

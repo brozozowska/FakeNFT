@@ -1,6 +1,5 @@
 import Foundation
 import Combine
-import UIKit
 
 final class CollectionViewModel: ObservableObject {
     
@@ -17,22 +16,28 @@ final class CollectionViewModel: ObservableObject {
     var authorName: String { collection.author }
     var nftsCount: Int { nfts.count }
     
+    // MARK: - Callbacks
+    
+    var onAuthorWebsiteTapped: (() -> Void)?
+    var onNFTSeeMoreTapped: ((String) -> Void)?
+    
     // MARK: - Private Properties
     
     private let nftService: NftService
     private let likeService: LikeStorage
     private let cartService: CartStorage
     private var cancellables = Set<AnyCancellable>()
-    private weak var navigationController: UINavigationController?
     
     // MARK: - Init
     
-    init(collection: NFTCollection, nftService: NftService,likeService: LikeStorage,cartService: CartStorage,navigationController: UINavigationController?) {
+    init(collection: NFTCollection,
+         nftService: NftService,
+         likeService: LikeStorage,
+         cartService: CartStorage) {
         self.collection = collection
         self.nftService = nftService
         self.likeService = likeService
         self.cartService = cartService
-        self.navigationController = navigationController
     }
     
     // MARK: - Public Methods
@@ -86,7 +91,6 @@ final class CollectionViewModel: ObservableObject {
     
     func toggleLike(for nftId: String) {
         likeService.toggleLike(for: nftId)
-        
         print("Toggle like for NFT: \(nftId). Now liked: \(likeService.isLiked(nftId: nftId))")
     }
     
@@ -96,9 +100,7 @@ final class CollectionViewModel: ObservableObject {
     
     func toggleCart(for nftId: String) {
         cartService.toggleCart(for: nftId)
-        
         objectWillChange.send()
-        
         print("Toggle cart for NFT: \(nftId). Now in cart: \(cartService.isInCart(nftId: nftId))")
     }
     
@@ -107,13 +109,11 @@ final class CollectionViewModel: ObservableObject {
     }
     
     func showNftDetail(_ nftId: String) {
-        print("Show detail for NFT: \(nftId)")
+        onNFTSeeMoreTapped?(nftId)
     }
     
     func openAuthorWebsite() {
-        guard let authorURL = URL(string: "https://practicum.yandex.com/ios-developer/?from=catalog") else { return }
-        let webViewController = WebViewViewController(url: authorURL)
-        navigationController?.pushViewController(webViewController, animated: true)
+        onAuthorWebsiteTapped?()
     }
     
     // MARK: - Private Methods
