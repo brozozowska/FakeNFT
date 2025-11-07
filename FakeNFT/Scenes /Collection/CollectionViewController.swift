@@ -56,8 +56,7 @@ final class CollectionViewController: UIViewController {
     // MARK: - Private Methods
     
     private func setupNavigationBar() {
-        navigationItem.title = ""
-        navigationController?.navigationBar.tintColor = .clear
+        navigationController?.navigationBar.tintColor = .black
     }
     
     private func setupViews() {
@@ -122,7 +121,6 @@ final class CollectionViewController: UIViewController {
         
         navigationItem.backButtonTitle = ""
         let webViewController = WebViewViewController(url: authorURL)
-        webViewController.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(webViewController, animated: true)
     }
     
