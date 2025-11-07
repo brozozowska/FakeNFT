@@ -13,10 +13,6 @@ struct PutOrderRequest: NetworkRequest {
     var dto: Dto? {
         OrderDto(nfts: nfts)
     }
-    
-    var headers: [String: String]? {
-        ["X-Practicum-Mobile-Token": RequestConstants.token]
-    }
 }
 
 struct OrderDto: Dto {
@@ -37,10 +33,6 @@ struct GetOrderRequest: NetworkRequest {
     var httpMethod: HttpMethod { .get }
     
     var dto: Dto? { nil }
-    
-    var headers: [String: String]? {
-        ["X-Practicum-Mobile-Token": RequestConstants.token]
-    }
 }
 
 struct Order: Decodable {

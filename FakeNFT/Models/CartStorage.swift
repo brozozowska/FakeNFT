@@ -18,6 +18,8 @@ final class CartStorageImpl: CartStorage {
     }
     
     func toggleCart(for nftId: String) {
+        print("Toggle cart for NFT: \(nftId). Currently in cart: \(cartItems.contains(nftId))")
+        
         if let index = cartItems.firstIndex(of: nftId) {
             cartItems.remove(at: index)
         } else {
@@ -44,9 +46,12 @@ final class CartStorageImpl: CartStorage {
     
     private func loadCartFromServer() {
         let request = GetOrderRequest(id: orderId)
+        print("Loading cart from server...")
+        
         networkClient.send(request: request, type: Order.self) { [weak self] result in
             switch result {
             case .success(let order):
+                print("Successfully loaded cart. NFTs in cart: \(order.nfts)")
                 self?.cartItems = order.nfts
             case .failure(let error):
                 print("Failed to load cart: \(error)")
@@ -57,12 +62,14 @@ final class CartStorageImpl: CartStorage {
     
     private func updateCartOnServer() {
         let nftsString = cartItems.joined(separator: ",")
+        print("Updating cart on server: '\(nftsString)'")
+        
         let request = PutOrderRequest(id: orderId, nfts: nftsString)
         
         networkClient.send(request: request, type: Order.self) { result in
             switch result {
             case .success(let order):
-                print("Cart updated successfully. NFTs in cart: \(order.nfts)")
+                print("Cart updated successfully. NFTs in cart: \(order.nfts.count)")
             case .failure(let error):
                 print("Failed to update cart: \(error)")
             }

@@ -15,10 +15,6 @@ struct PutProfileRequest: NetworkRequest {
     var dto: Dto? {
         ProfileDto(likes: likes, name: name, avatar: avatar)
     }
-    
-    var headers: [String: String]? {
-        ["X-Practicum-Mobile-Token": RequestConstants.token]
-    }
 }
 
 struct ProfileDto: Dto {
@@ -42,21 +38,7 @@ struct GetProfileRequest: NetworkRequest {
         URL(string: "\(RequestConstants.baseURL)/api/v1/profile/\(id)")
     }
     
-    var httpMethod: HttpMethod { .get }
-    
     var dto: Dto? { nil }
     
-    var headers: [String: String]? {
-        ["X-Practicum-Mobile-Token": RequestConstants.token]
-    }
-}
-
-struct Profile: Decodable {
-    let name: String
-    let avatar: String
-    let description: String
-    let website: String
-    let nfts: [String]
-    let likes: [String]
-    let id: String
+    var httpMethod: HttpMethod { .get }
 }

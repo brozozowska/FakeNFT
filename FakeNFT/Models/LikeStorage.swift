@@ -12,6 +12,8 @@ final class LikeStorageImpl: LikeStorage {
     private var likedNFTs: Set<String> = []
     private var profileName = "Студентус Практикумс"
     private var avatarURL = "https://photo.bank/1.png"
+    private var profileDescription: String?
+    private var website = "https://practicum.yandex.ru/interface-designer/"
     
     init(networkClient: NetworkClient) {
         self.networkClient = networkClient
@@ -23,6 +25,8 @@ final class LikeStorageImpl: LikeStorage {
     }
     
     func toggleLike(for nftId: String) {
+        print("Toggle like for NFT: \(nftId). Currently liked: \(likedNFTs.contains(nftId))")
+        
         if likedNFTs.contains(nftId) {
             likedNFTs.remove(nftId)
         } else {
@@ -38,12 +42,17 @@ final class LikeStorageImpl: LikeStorage {
     
     private func loadLikesFromServer() {
         let request = GetProfileRequest(id: profileId)
+        print("Loading likes from server...")
+        
         networkClient.send(request: request, type: Profile.self) { [weak self] result in
             switch result {
             case .success(let profile):
+                print("Successfully loaded profile: \(profile.name), likes: \(profile.likes)")
                 self?.likedNFTs = Set(profile.likes)
                 self?.profileName = profile.name
                 self?.avatarURL = profile.avatar
+                self?.profileDescription = profile.description
+                self?.website = profile.website
                 print("Successfully loaded \(profile.likes.count) likes")
             case .failure(let error):
                 print("Failed to load likes: \(error)")
@@ -54,6 +63,8 @@ final class LikeStorageImpl: LikeStorage {
     
     private func updateLikesOnServer() {
         let likesString = Array(likedNFTs).joined(separator: ",")
+        print("Updating likes on server: \(likesString)")
+        
         let request = PutProfileRequest(
             id: profileId,
             likes: likesString,
@@ -61,10 +72,14 @@ final class LikeStorageImpl: LikeStorage {
             avatar: avatarURL
         )
         
+        if let dto = request.dto {
+                print("Sending DTO: \(dto.asDictionary())")
+            }
+        
         networkClient.send(request: request, type: Profile.self) { result in
             switch result {
             case .success(let profile):
-                print("Likes updated successfully. Liked NFTs: \(profile.likes)")
+                print("Likes updated successfully. Profile name: \(profile.name), liked NFTs: \(profile.likes.count)")
             case .failure(let error):
                 print("Failed to update likes: \(error)")
             }
