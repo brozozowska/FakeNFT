@@ -9,3 +9,10 @@ struct Profile: Decodable {
     let likes: [String]
     let id: String
 }
+
+struct ProfileUpdate: Encodable {
+    let name: String
+    let avatar: String
+    let description: String
+    let website: String
+}

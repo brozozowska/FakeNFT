@@ -49,6 +49,7 @@
 		E4F142882EBDE60C00D3AF8C /* OrderModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F142872EBDE60C00D3AF8C /* OrderModels.swift */; };
 		E4F1428A2EBDE64200D3AF8C /* ProfileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F142892EBDE64200D3AF8C /* ProfileModel.swift */; };
 		E4F142A02EBE0D6900D3AF8C /* ProfileRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F1429F2EBE0D6900D3AF8C /* ProfileRequest.swift */; };
+		E4F1433A2EC1123500D3AF8C /* ProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F143392EC1123500D3AF8C /* ProfileService.swift */; };
 		E4F541132EABB3AB0046681D /* NFTCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F541122EABB3AB0046681D /* NFTCollection.swift */; };
 		E4F541152EABC6370046681D /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F541142EABC6370046681D /* User.swift */; };
 		E4F541172EACF23D0046681D /* CollectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F541162EACF23D0046681D /* CollectionService.swift */; };
@@ -126,6 +127,7 @@
 		E4F142872EBDE60C00D3AF8C /* OrderModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderModels.swift; sourceTree = "<group>"; };
 		E4F142892EBDE64200D3AF8C /* ProfileModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileModel.swift; sourceTree = "<group>"; };
 		E4F1429F2EBE0D6900D3AF8C /* ProfileRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileRequest.swift; sourceTree = "<group>"; };
+		E4F143392EC1123500D3AF8C /* ProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileService.swift; sourceTree = "<group>"; };
 		E4F541122EABB3AB0046681D /* NFTCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTCollection.swift; sourceTree = "<group>"; };
 		E4F541142EABC6370046681D /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		E4F541162EACF23D0046681D /* CollectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionService.swift; sourceTree = "<group>"; };
@@ -301,6 +303,7 @@
 				0CFCB73F2A78002A0009A829 /* ExamplePutService.swift */,
 				E4F541162EACF23D0046681D /* CollectionService.swift */,
 				E4F5422A2EB7DEAC0046681D /* ViewModelAssembly.swift */,
+				E4F143392EC1123500D3AF8C /* ProfileService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -587,6 +590,7 @@
 				E4F142A02EBE0D6900D3AF8C /* ProfileRequest.swift in Sources */,
 				0CFCB7462A78064B0009A829 /* NftDetailCellModel.swift in Sources */,
 				E4F5411B2EACFA980046681D /* CatalogViewController.swift in Sources */,
+				E4F1433A2EC1123500D3AF8C /* ProfileService.swift in Sources */,
 				E4F142882EBDE60C00D3AF8C /* OrderModels.swift in Sources */,
 				0CFCB74B2A780EA80009A829 /* UIView+Constraints.swift in Sources */,
 				3F6806D729CBC50A00B4F915 /* CellsReusingUtils.swift in Sources */,
