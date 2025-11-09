@@ -30,9 +30,9 @@ final class ServicesAssembly {
     
     var likeService: LikeStorage {
         LikeStorageImpl(networkClient: networkClient)
-        }
+    }
     
     var sortSettingsService: SortSettingsService {
-            SortSettingsServiceImpl()
-        }
+        SortSettingsServiceImpl()
+    }
 }

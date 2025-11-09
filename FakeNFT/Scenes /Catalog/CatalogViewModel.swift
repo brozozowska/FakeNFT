@@ -25,30 +25,28 @@ final class CatalogViewModel: ObservableObject {
     // MARK: - Public Methods
     
     func loadCollections() {
-        isLoading = true
-        errorModel = nil
-        
-        collectionService.loadCollections { [weak self] result in
-            DispatchQueue.main.async {
-                guard let self else { return }
-                self.isLoading = false
-                
-                switch result {
-                case .success(let collections):
-                    let sortedCollections = self.applySorting(to: collections)
-                    self.collections = sortedCollections
-                case .failure(let error):
-                    self.errorModel = self.makeErrorModel(error)
-                }
+            isLoading = true
+            errorModel = nil
+            
+            collectionService.loadCollections { [weak self] result in
+                DispatchQueue.main.async {
+                    guard let self else { return }
+                    self.isLoading = false
+                    
+                    switch result {
+                    case .success(let collections):
+                        self.collections = self.applySorting(to: collections)
+                    case .failure(let error):
+                        self.errorModel = self.makeErrorModel(error)
+                    }
             }
         }
     }
     
     func updateSortOption(_ option: SortOption) {
-        sortSettingsService.currentSortOption = option
-        let sortedCollections = applySorting(to: collections)
-        collections = sortedCollections
-    }
+            sortSettingsService.currentSortOption = option
+            collections = applySorting(to: collections)
+        }
     
     var currentSortOption: SortOption {
         sortSettingsService.currentSortOption

@@ -29,28 +29,30 @@ final class CartStorageImpl: CartStorage {
         }
         
         updateCartOnServer { [weak self] success in
-            if !success {
-                // Откатываем изменения при ошибке
+            guard let self else { return }
+            
+            if success {
+                NotificationCenter.default.post(name: NSNotification.Name("CartDidChange"), object: nil)
+                completion?(true)
+            } else {
                 if oldState {
-                    self?.cartItems.append(nftId)
+                    self.cartItems.append(nftId)
                 } else {
-                    if let index = self?.cartItems.firstIndex(of: nftId) {
-                        self?.cartItems.remove(at: index)
+                    if let index = self.cartItems.firstIndex(of: nftId) {
+                        self.cartItems.remove(at: index)
                     }
                 }
-            } else {
-                NotificationCenter.default.post(name: NSNotification.Name("CartDidChange"), object: nil)
+                completion?(false)
             }
-            completion?(success)
         }
     }
     
     func isInCart(nftId: String) -> Bool {
-        return cartItems.contains(nftId)
+        cartItems.contains(nftId)
     }
     
     func getCartItems() -> [String] {
-        return cartItems
+        cartItems
     }
     
     func clearCart() {
