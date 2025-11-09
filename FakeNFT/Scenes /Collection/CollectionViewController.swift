@@ -49,34 +49,14 @@ final class CollectionViewController: UIViewController {
         setupViews()
         setupConstraints()
         setupBindings()
+        setupViewModelCallbacks()
         viewModel.loadCollectionData()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        tabBarController?.tabBar.isHidden = true
-        
-        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        navigationController?.navigationBar.shadowImage = UIImage()
-        navigationController?.navigationBar.isTranslucent = true
-        navigationController?.navigationBar.tintColor = .clear
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        tabBarController?.tabBar.isHidden = false
-        
-        navigationController?.navigationBar.setBackgroundImage(nil, for: .default)
-        navigationController?.navigationBar.shadowImage = nil
-        navigationController?.navigationBar.tintColor = nil
     }
     
     // MARK: - Private Methods
     
     private func setupNavigationBar() {
-        navigationItem.title = ""
-        
-        navigationController?.navigationBar.tintColor = .clear
+        navigationController?.navigationBar.tintColor = .black
     }
     
     private func setupViews() {
@@ -124,6 +104,49 @@ final class CollectionViewController: UIViewController {
                 }
             }
             .store(in: &cancellables)
+        
+        viewModel.objectWillChange
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateVisibleCells()
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func updateVisibleCells() {
+        collectionView.visibleCells.forEach { cell in
+            guard let indexPath = collectionView.indexPath(for: cell),
+                  let nftCell = cell as? NFTCell else { return }
+            
+            let nft = viewModel.nft(at: indexPath.row)
+            let isLiked = viewModel.isLiked(nftId: nft.id)
+            let isInCart = viewModel.isInCart(nftId: nft.id)
+            let isUpdating = viewModel.isUpdating(nftId: nft.id)
+            
+            nftCell.configure(with: nft, isLiked: isLiked, isInCart: isInCart, isUpdating: isUpdating)
+        }
+    }
+    
+    private func setupViewModelCallbacks() {
+        viewModel.onAuthorWebsiteTapped = { [weak self] in
+            self?.openAuthorWebsite()
+        }
+        
+        viewModel.onNFTSeeMoreTapped = { [weak self] nftId in
+            self?.showNftDetail(nftId)
+        }
+    }
+    
+    private func openAuthorWebsite() {
+        guard let authorURL = URL(string: "https://practicum.yandex.com/ios-developer/?from=catalog") else { return }
+        
+        navigationItem.backButtonTitle = ""
+        let webViewController = WebViewViewController(url: authorURL)
+        navigationController?.pushViewController(webViewController, animated: true)
+    }
+    
+    private func showNftDetail(_ nftId: String) {
+        print("Show detail for NFT: \(nftId)")
     }
     
     private func createLayout() -> UICollectionViewLayout {
@@ -185,14 +208,20 @@ extension CollectionViewController: UICollectionViewDataSource {
         }
         
         let nft = viewModel.nft(at: indexPath.row)
-        cell.configure(with: nft)
+        let isLiked = viewModel.isLiked(nftId: nft.id)
+        let isInCart = viewModel.isInCart(nftId: nft.id)
+        let isUpdating = viewModel.isUpdating(nftId: nft.id)
+        
+        cell.configure(with: nft, isLiked: isLiked, isInCart: isInCart, isUpdating: isUpdating)
         
         cell.onLikeTapped = { [weak self] in
-            self?.viewModel.toggleLike(for: nft.id)
+            guard let self = self, !viewModel.isUpdating(nftId: nft.id) else { return }
+            viewModel.toggleLike(for: nft.id)
         }
         
         cell.onCartTapped = { [weak self] in
-            self?.viewModel.toggleCart(for: nft.id)
+            guard let self = self, !viewModel.isUpdating(nftId: nft.id) else { return }
+            viewModel.toggleCart(for: nft.id)
         }
         
         return cell

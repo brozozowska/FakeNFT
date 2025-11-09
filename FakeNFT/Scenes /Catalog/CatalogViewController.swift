@@ -89,6 +89,8 @@ final class CatalogViewController: UIViewController {
     
     private func setupNavigationBar() {
         navigationItem.rightBarButtonItem = sortButton
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+            navigationController?.navigationBar.tintColor = .black
     }
     
     private func setupBindings() {
@@ -119,16 +121,23 @@ final class CatalogViewController: UIViewController {
     // MARK: - Actions
     
     @objc private func sortButtonTapped() {
-        // TODO: Реализовать выбор сортировки в третьей части
         let alert = UIAlertController(
-            title: "Сортировка",
-            message: nil,
+            title: NSLocalizedString("Catalog.sort.title", comment: ""),
+            message: NSLocalizedString("Catalog.sort.message", comment: ""),
             preferredStyle: .actionSheet
         )
         
-        alert.addAction(UIAlertAction(title: "По названию", style: .default))
-        alert.addAction(UIAlertAction(title: "По количеству NFT", style: .default))
-        alert.addAction(UIAlertAction(title: "Закрыть", style: .cancel))
+        for option in SortOption.allCases {
+            let action = UIAlertAction(title: option.title, style: .default) { [weak self] _ in
+                self?.viewModel.updateSortOption(option)
+            }
+            alert.addAction(action)
+        }
+        
+        alert.addAction(UIAlertAction(
+            title: NSLocalizedString("Catalog.sort.cancel", comment: ""),
+            style: .cancel
+        ))
         
         present(alert, animated: true)
     }

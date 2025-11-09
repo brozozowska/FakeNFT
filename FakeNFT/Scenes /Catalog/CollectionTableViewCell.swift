@@ -41,7 +41,7 @@ final class CollectionTableViewCell: UITableViewCell, ReuseIdentifying {
     func configure(with collection: NFTCollection) {
         let nftCount = collection.nfts.count
         let nftText = NSLocalizedString("Catalog.nftCount", value: "NFT", comment: "")
-        let titleText = "\(collection.name) (\(nftCount))"
+        let titleText = "\(collection.name) (\(nftCount) \(nftText))"
         
         let attributedString = NSMutableAttributedString(string: titleText)
         

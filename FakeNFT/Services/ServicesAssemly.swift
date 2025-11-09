@@ -17,9 +17,22 @@ final class ServicesAssembly {
             storage: nftStorage
         )
     }
+    
     var collectionService: CollectionService {
         CollectionServiceImpl(
             networkClient: networkClient
         )
+    }
+    
+    var cartService: CartStorage {
+        CartStorageImpl(networkClient: networkClient)
+    }
+    
+    var likeService: LikeStorage {
+        LikeStorageImpl(networkClient: networkClient)
+    }
+    
+    var sortSettingsService: SortSettingsService {
+        SortSettingsServiceImpl()
     }
 }

@@ -16,16 +16,31 @@ final class CollectionViewModel: ObservableObject {
     var authorName: String { collection.author }
     var nftsCount: Int { nfts.count }
     
+    // MARK: - Callbacks
+    
+    var onAuthorWebsiteTapped: (() -> Void)?
+    var onNFTSeeMoreTapped: ((String) -> Void)?
+    
     // MARK: - Private Properties
     
     private let nftService: NftService
+    private let likeService: LikeStorage
+    private let cartService: CartStorage
     private var cancellables = Set<AnyCancellable>()
+    
+    // ДОБАВЛЯЕМ: Трекер для отслеживания обновляющихся NFT
+    private var updatingNFTs: Set<String> = []
     
     // MARK: - Init
     
-    init(collection: NFTCollection, nftService: NftService) {
+    init(collection: NFTCollection,
+         nftService: NftService,
+         likeService: LikeStorage,
+         cartService: CartStorage) {
         self.collection = collection
         self.nftService = nftService
+        self.likeService = likeService
+        self.cartService = cartService
     }
     
     // MARK: - Public Methods
@@ -78,23 +93,59 @@ final class CollectionViewModel: ObservableObject {
     }
     
     func toggleLike(for nftId: String) {
-        // TODO: Implement like functionality
-        print("Toggle like for NFT: \(nftId)")
+        guard !updatingNFTs.contains(nftId) else {
+            print("Like operation already in progress for NFT: \(nftId)")
+            return
+        }
+        
+        updatingNFTs.insert(nftId)
+        objectWillChange.send()
+        
+        likeService.toggleLike(for: nftId) { [weak self] success in
+            DispatchQueue.main.async {
+                self?.updatingNFTs.remove(nftId)
+                self?.objectWillChange.send()
+                print("Like operation completed for NFT: \(nftId). Success: \(success)")
+            }
+        }
     }
     
     func toggleCart(for nftId: String) {
-        // TODO: Implement cart functionality
-        print("Toggle cart for NFT: \(nftId)")
+        guard !updatingNFTs.contains(nftId) else {
+            print("Cart operation already in progress for NFT: \(nftId)")
+            return
+        }
+        
+        updatingNFTs.insert(nftId)
+        objectWillChange.send()
+        
+        cartService.toggleCart(for: nftId) { [weak self] success in
+            DispatchQueue.main.async {
+                self?.updatingNFTs.remove(nftId)
+                self?.objectWillChange.send()
+                print("Cart operation completed for NFT: \(nftId). Success: \(success)")
+            }
+        }
+    }
+    
+    func isLiked(nftId: String) -> Bool {
+        return likeService.isLiked(nftId: nftId)
+    }
+    
+    func isInCart(nftId: String) -> Bool {
+        return cartService.isInCart(nftId: nftId)
+    }
+    
+    func isUpdating(nftId: String) -> Bool {
+        return updatingNFTs.contains(nftId)
     }
     
     func showNftDetail(_ nftId: String) {
-        // TODO: Navigate to NFT detail screen
-        print("Show detail for NFT: \(nftId)")
+        onNFTSeeMoreTapped?(nftId)
     }
     
     func openAuthorWebsite() {
-        // TODO: Open author website in web view
-        print("Open author website")
+        onAuthorWebsiteTapped?()
     }
     
     // MARK: - Private Methods
