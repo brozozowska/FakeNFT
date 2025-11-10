@@ -121,17 +121,28 @@ extension EditProfileViewController {
     }
     
     func loadImageFromURL(_ urlString: String) {
-        var fullURLString = urlString
-        if !fullURLString.hasPrefix("http://") && !fullURLString.hasPrefix("https://") {
-            fullURLString = "https://" + fullURLString
+            var fullURLString = urlString
+            
+            if !fullURLString.hasPrefix("http://") && !fullURLString.hasPrefix("https://") {
+                if fullURLString.contains(".") {
+                    fullURLString = "https://" + fullURLString
+                } else {
+                    showAlert(message: "Пожалуйста, введите полный URL изображения (например: example.com/image.jpg)")
+                    return
+                }
+            }
+            
+            if fullURLString.contains("photo.bank") {
+                showAlert(message: "Этот домен недоступен. Используйте другой URL.")
+                return
+            }
+            
+            guard let url = URL(string: fullURLString) else {
+                showAlert(message: NSLocalizedString("Некорректная ссылка", comment: "Invalid URL"))
+                return
+            }
+            
+            avatarImageView.loadImage(from: url)
+            checkForChanges()
         }
-        
-        guard let url = URL(string: fullURLString) else {
-            showAlert(message: NSLocalizedString("Некорректная ссылка", comment: "Invalid URL"))
-            return
-        }
-        
-        avatarImageView.loadImage(from: url)
-        checkForChanges()
-    }
 }

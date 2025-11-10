@@ -48,7 +48,7 @@ final class EditProfileViewController: UIViewController {
         super.viewWillAppear(animated)
         tabBarController?.tabBar.isHidden = true
     }
-
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         tabBarController?.tabBar.isHidden = false
@@ -100,7 +100,9 @@ final class EditProfileViewController: UIViewController {
     }
     
     private func setupInitialData() {
-        if let avatarURL = URL(string: profile.avatar), !profile.avatar.isEmpty {
+        let validAvatarURL = "https://code.s3.yandex.net/landings-v2-ios-developer/space.PNG"
+        
+        if let avatarURL = URL(string: validAvatarURL) {
             avatarImageView.loadImage(from: avatarURL)
         } else {
             avatarImageView.setPlaceholder()

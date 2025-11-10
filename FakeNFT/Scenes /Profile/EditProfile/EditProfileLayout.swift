@@ -31,7 +31,6 @@ enum EditProfileLayout {
             nameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             nameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             nameTextField.heightAnchor.constraint(equalToConstant: 44),
-            nameTextField.widthAnchor.constraint(equalToConstant: 343),
             
             descriptionTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             descriptionTitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
@@ -41,7 +40,6 @@ enum EditProfileLayout {
             descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             descriptionTextView.heightAnchor.constraint(equalToConstant: 132),
-            descriptionTextView.widthAnchor.constraint(equalToConstant: 343),
             
             websiteTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             websiteTitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
@@ -51,7 +49,6 @@ enum EditProfileLayout {
             websiteTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             websiteTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             websiteTextField.heightAnchor.constraint(equalToConstant: 44),
-            websiteTextField.widthAnchor.constraint(equalToConstant: 343)
         ])
     }
 }

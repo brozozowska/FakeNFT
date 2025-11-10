@@ -173,29 +173,16 @@ final class ProfileViewController: UIViewController {
     }
     
     private func updateUI(with profile: Profile?) {
-        guard let profile = profile else { return }
-        
-        nameLabel.text = profile.name
-        descriptionLabel.text = profile.description
-        websiteButton.setTitle(profile.website, for: .normal)
-        
-        let placeholder = UIImage(named: "Avatar")
-        
-        if !profile.avatar.isEmpty, let avatarURL = URL(string: profile.avatar) {
-            avatarImageView.kf.setImage(
-                with: avatarURL,
-                placeholder: placeholder,
-                options: [
-                    .transition(.fade(0.2)),
-                    .cacheOriginalImage
-                ]
-            )
-        } else {
-            avatarImageView.image = placeholder
+            guard let profile = profile else { return }
+            
+            nameLabel.text = profile.name
+            descriptionLabel.text = profile.description
+            websiteButton.setTitle(profile.website, for: .normal)
+            
+            avatarImageView.image = UIImage(named: "Avatar")
+            
+            tableView.reloadData()
         }
-        
-        tableView.reloadData()
-    }
     
     @objc private func websiteButtonTapped() {
         guard let website = viewModel.profile?.website,
