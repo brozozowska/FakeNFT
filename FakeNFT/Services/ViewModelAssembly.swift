@@ -18,34 +18,34 @@ final class ViewModelAssembly {
     // MARK: - CollectionView Models
     
     func makeCollectionViewModel(collection: NFTCollection) -> CollectionViewModel {
-            return CollectionViewModel(
-                collection: collection,
-                nftService: servicesAssembly.nftService,
-                likeService: servicesAssembly.likeService,
-                cartService: servicesAssembly.cartService
-            )
+        return CollectionViewModel(
+            collection: collection,
+            nftService: servicesAssembly.nftService,
+            likeService: servicesAssembly.likeService,
+            cartService: servicesAssembly.cartService
+        )
     }
-  
+    
     // MARK: - ProfileView Models
     
     func makeProfileViewModel() -> ProfileViewModel {
-            ProfileViewModel(
-                profileService: servicesAssembly.profileService,
-                nftService: servicesAssembly.nftService
-            )
-        }
-        
-        func makeMyNFTsViewModel() -> MyNFTsViewModel {
-            MyNFTsViewModel(
-                profileService: servicesAssembly.profileService,
-                nftService: servicesAssembly.nftService
-            )
-        }
-        
-        func makeFavoritesViewModel() -> FavoritesViewModel {
-            FavoritesViewModel(
-                likeService: servicesAssembly.likeService,
-                nftService: servicesAssembly.nftService
-            )
-        }
+        ProfileViewModel(
+            profileService: servicesAssembly.profileService,
+            nftService: servicesAssembly.nftService
+        )
+    }
+    
+    func makeMyNFTsViewModel() -> MyNFTsViewModel {
+        MyNFTsViewModel(
+            cartService: servicesAssembly.cartService,
+            nftService: servicesAssembly.nftService
+        )
+    }
+    
+    func makeFavoritesViewModel() -> FavoritesViewModel {
+        FavoritesViewModel(
+            likeService: servicesAssembly.likeService,
+            nftService: servicesAssembly.nftService
+        )
+    }
 }

@@ -5,11 +5,13 @@ import Combine
 final class ProfileViewController: UIViewController {
     
     // MARK: - Properties
+    
     private let viewModel: ProfileViewModel
     private let servicesAssembly: ServicesAssembly
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - UI Components
+    
     private lazy var profileContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
@@ -78,6 +80,7 @@ final class ProfileViewController: UIViewController {
     }()
     
     // MARK: - Init
+    
     init(viewModel: ProfileViewModel, servicesAssembly: ServicesAssembly) {
         self.viewModel = viewModel
         self.servicesAssembly = servicesAssembly
@@ -91,6 +94,7 @@ final class ProfileViewController: UIViewController {
     }
     
     // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
@@ -100,6 +104,7 @@ final class ProfileViewController: UIViewController {
     }
     
     // MARK: - Private Methods
+    
     private func setupNavigationBar() {
         navigationItem.rightBarButtonItem = editButton
     }
@@ -173,7 +178,7 @@ final class ProfileViewController: UIViewController {
     }
     
     private func updateUI(with profile: Profile?) {
-            guard let profile = profile else { return }
+            guard let profile else { return }
             
             nameLabel.text = profile.name
             descriptionLabel.text = profile.description
@@ -212,9 +217,10 @@ final class ProfileViewController: UIViewController {
 }
 
 // MARK: - UITableViewDataSource & Delegate
+
 extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        2
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -251,6 +257,6 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 54
+        54
     }
 }

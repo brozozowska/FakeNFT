@@ -3,6 +3,7 @@ import UIKit
 final class EditProfileViewController: UIViewController {
     
     // MARK: - Properties
+    
     private let profile: Profile
     private let onSave: (String, String, String, String) -> Void
     var hasUnsavedChanges = false
@@ -12,6 +13,7 @@ final class EditProfileViewController: UIViewController {
     private var originalWebsite = ""
     
     // MARK: - UI Components
+    
     let avatarImageView = AvatarImageView()
     private let nameTitleLabel = TitleLabel()
     let nameTextField = EditProfileTextField()
@@ -22,6 +24,7 @@ final class EditProfileViewController: UIViewController {
     let saveButton = SaveButton()
     
     // MARK: - Init
+    
     init(profile: Profile, onSave: @escaping (String, String, String, String) -> Void) {
         self.profile = profile
         self.onSave = onSave
@@ -35,6 +38,7 @@ final class EditProfileViewController: UIViewController {
     }
     
     // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
@@ -55,6 +59,7 @@ final class EditProfileViewController: UIViewController {
     }
     
     // MARK: - Setup
+    
     private func setupViews() {
         view.backgroundColor = .white
         
@@ -136,6 +141,7 @@ final class EditProfileViewController: UIViewController {
     }
     
     // MARK: - Actions
+    
     @objc private func dismissKeyboard() {
         view.endEditing(true)
     }
@@ -175,6 +181,7 @@ final class EditProfileViewController: UIViewController {
     }
     
     // MARK: - Change Detection
+    
     func checkForChanges() {
         let currentName = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let currentDescription = descriptionTextView.text.trimmingCharacters(in: .whitespacesAndNewlines)

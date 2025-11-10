@@ -36,16 +36,17 @@ final class LikeStorageImpl: LikeStorage {
         }
         
         updateLikesOnServer { [weak self] success in
-            if !success {
-                // Откатываем изменения при ошибке
-                if oldState {
-                    self?.likedNFTs.insert(nftId)
-                } else {
-                    self?.likedNFTs.remove(nftId)
+                    if !success {
+                        if oldState {
+                            self?.likedNFTs.insert(nftId)
+                        } else {
+                            self?.likedNFTs.remove(nftId)
+                        }
+                    } else {
+                        NotificationCenter.default.post(name: NSNotification.Name("LikesDidChange"), object: nil)
+                    }
+                    completion?(success)
                 }
-            }
-            completion?(success)
-        }
     }
     
     func isLiked(nftId: String) -> Bool {

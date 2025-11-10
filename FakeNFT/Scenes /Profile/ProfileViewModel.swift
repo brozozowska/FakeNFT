@@ -4,6 +4,7 @@ import Combine
 final class ProfileViewModel: ObservableObject {
     
     // MARK: - Published Properties
+    
     @Published var profile: Profile?
     @Published var isLoading: Bool = false
     @Published var errorModel: ErrorModel?
@@ -15,6 +16,7 @@ final class ProfileViewModel: ObservableObject {
     private let profileId = "1"
     
     // MARK: - Init
+    
     init(profileService: ProfileService, nftService: NftService) {
         self.profileService = profileService
         self.nftService = nftService
@@ -22,6 +24,7 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - Public Methods
+    
     func loadProfile() {
         isLoading = true
         errorModel = nil
@@ -64,6 +67,7 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - Private Methods
+    
     private func makeErrorModel(_ error: Error) -> ErrorModel {
         let message = NSLocalizedString("Error.network", comment: "Network error")
         let actionText = NSLocalizedString("Error.repeat", comment: "Try again")

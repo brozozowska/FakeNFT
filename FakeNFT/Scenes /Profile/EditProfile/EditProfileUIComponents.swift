@@ -2,6 +2,7 @@ import UIKit
 import Kingfisher
 
 // MARK: - Avatar Image View
+
 final class AvatarImageView: UIImageView {
     var hasCustomImage: Bool {
         return image != UIImage(named: "changeAvatar")
@@ -45,6 +46,7 @@ final class AvatarImageView: UIImageView {
 }
 
 // MARK: - Title Label
+
 final class TitleLabel: UILabel {
     init() {
         super.init(frame: .zero)
@@ -52,7 +54,8 @@ final class TitleLabel: UILabel {
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        assertionFailure("init(coder:) has not been implemented")
+        return nil
     }
     
     private func configure() {
@@ -62,6 +65,7 @@ final class TitleLabel: UILabel {
 }
 
 // MARK: - Text Field
+
 final class EditProfileTextField: UITextField {
     init() {
         super.init(frame: .zero)
@@ -69,7 +73,8 @@ final class EditProfileTextField: UITextField {
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        assertionFailure("init(coder:) has not been implemented")
+        return nil
     }
     
     private func configure() {
@@ -90,6 +95,7 @@ final class EditProfileTextField: UITextField {
 }
 
 // MARK: - Text View
+
 final class EditProfileTextView: UITextView {
     init() {
         super.init(frame: .zero, textContainer: nil)
@@ -97,7 +103,8 @@ final class EditProfileTextView: UITextView {
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        assertionFailure("init(coder:) has not been implemented")
+        return nil
     }
     
     private func configure() {
@@ -112,6 +119,7 @@ final class EditProfileTextView: UITextView {
 }
 
 // MARK: - Save Button
+
 final class SaveButton: UIButton {
     init() {
         super.init(frame: .zero)
@@ -119,7 +127,8 @@ final class SaveButton: UIButton {
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        assertionFailure("init(coder:) has not been implemented")
+        return nil
     }
     
     private func configure() {

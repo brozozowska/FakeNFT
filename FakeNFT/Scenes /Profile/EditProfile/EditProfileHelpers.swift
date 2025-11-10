@@ -1,6 +1,7 @@
 import UIKit
 
 // MARK: - Validation Helper
+
 enum ValidationHelper {
     static func isValidURL(_ string: String) -> Bool {
         if let url = URL(string: string), url.scheme != nil {
@@ -16,6 +17,7 @@ enum ValidationHelper {
 }
 
 // MARK: - Alert Helper
+
 extension EditProfileViewController {
     func showAlert(message: String) {
         let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
@@ -48,6 +50,7 @@ extension EditProfileViewController {
 }
 
 // MARK: - Photo Picker Helper
+
 extension EditProfileViewController {
     func showPhotoActionSheet() {
         let actionSheet = UIAlertController(
