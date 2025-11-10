@@ -11,6 +11,12 @@ final class TabBarController: UITabBarController {
         selectedImage: UIImage(named: "catalog_active")
     )
     
+    private let profileTabBarItem = UITabBarItem(
+        title: NSLocalizedString("Tab.profile", comment: ""),
+        image: UIImage(named: "profile_Noactive"),
+        selectedImage: UIImage(named: "profile_active")
+    )
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -19,7 +25,12 @@ final class TabBarController: UITabBarController {
         let catalogNavigationController = UINavigationController(rootViewController: catalogController)
         catalogNavigationController.tabBarItem = catalogTabBarItem
         
-        viewControllers = [catalogNavigationController]
+        let profileViewModel = viewModelAssembly.makeProfileViewModel()
+        let profileController = ProfileViewController(viewModel: profileViewModel, servicesAssembly: servicesAssembly)
+        let profileNavigationController = UINavigationController(rootViewController: profileController)
+        profileNavigationController.tabBarItem = profileTabBarItem
+        
+        viewControllers = [profileNavigationController, catalogNavigationController]
         
         view.backgroundColor = .systemBackground
     }
