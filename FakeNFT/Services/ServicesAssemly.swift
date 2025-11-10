@@ -35,4 +35,8 @@ final class ServicesAssembly {
     var sortSettingsService: SortSettingsService {
         SortSettingsServiceImpl()
     }
+    
+    var profileService: ProfileService {
+        ProfileServiceImpl(networkClient: networkClient)
+    }
 }

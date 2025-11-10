@@ -25,4 +25,27 @@ final class ViewModelAssembly {
                 cartService: servicesAssembly.cartService
             )
     }
+  
+    // MARK: - ProfileView Models
+    
+    func makeProfileViewModel() -> ProfileViewModel {
+            ProfileViewModel(
+                profileService: servicesAssembly.profileService,
+                nftService: servicesAssembly.nftService
+            )
+        }
+        
+        func makeMyNFTsViewModel() -> MyNFTsViewModel {
+            MyNFTsViewModel(
+                profileService: servicesAssembly.profileService,
+                nftService: servicesAssembly.nftService
+            )
+        }
+        
+        func makeFavoritesViewModel() -> FavoritesViewModel {
+            FavoritesViewModel(
+                likeService: servicesAssembly.likeService,
+                nftService: servicesAssembly.nftService
+            )
+        }
 }

@@ -28,7 +28,12 @@ final class ProfileServiceImpl: ProfileService {
     }
     
     func updateProfile(_ profile: ProfileUpdate, completion: @escaping ProfileUpdateCompletion) {
-        let request = PutProfileRequest(profile: profile)
+        let request = PutProfileRequest(
+            id: "1",
+            likes: "",
+            name: profile.name,
+            avatar: profile.avatar
+        )
         networkClient.send(request: request, type: Profile.self) { result in
             switch result {
             case .success(let updatedProfile):
