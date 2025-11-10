@@ -15,4 +15,5 @@ struct ProfileUpdate: Encodable {
     let avatar: String
     let description: String
     let website: String
+    let likes: String?
 }
