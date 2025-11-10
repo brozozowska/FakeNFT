@@ -13,3 +13,19 @@
 "Catalog.sort.cancel" = "Отмена";
 "Catalog.collection.selected" = "Коллекция";
 "Catalog.collection.message" = "Выбрана коллекция: %@";
+
+"Tab.profile" = "Профиль";
+"Profile.title" = "Профиль";
+"Profile.myNFTs" = "Мои NFT";
+"Profile.favorites" = "Избранные NFT";
+"Profile.about" = "О разработчике";
+"MyNFTs.title" = "Мои NFT";
+"MyNFTs.empty" = "У Вас ещё нет NFT";
+"MyNFTs.price" = "Цена";
+"Favorites.title" = "Избранные NFT";
+"Favorites.empty" = "У Вас ещё нет избранных NFT";
+"Sort.title" = "Сортировка";
+"Sort.byPrice" = "По цене";
+"Sort.byRating" = "По рейтингу";
+"Sort.byName" = "По названию";
+"Sort.cancel" = "Отмена";
