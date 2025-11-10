@@ -118,11 +118,18 @@ extension UserCollectionViewController: UICollectionViewDataSource {
         viewModel.items.count
     }
 
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: UserCollectionCell.identifier, for: indexPath
-        ) as! UserCollectionCell
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+
+        guard indexPath.item < viewModel.items.count else { return UICollectionViewCell() }
+
+        let id = UserCollectionCell.identifier
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: id,
+                                                            for: indexPath) as? UserCollectionCell
+        else { return UICollectionViewCell() }
+
         cell.configure(with: viewModel.items[indexPath.item])
         return cell
     }
+
 }

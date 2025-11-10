@@ -31,6 +31,15 @@ final class UserViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
 
+        navigationItem.hidesBackButton = true
+        let backImage = UIImage(named: "back_icon")?.withRenderingMode(.alwaysOriginal)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            image: backImage,
+            style: .plain,
+            target: self,
+            action: #selector(didTapBack)
+        )
+
         avatar.translatesAutoresizingMaskIntoConstraints = false
         avatar.contentMode = .scaleAspectFill
         avatar.clipsToBounds = true
@@ -99,6 +108,11 @@ final class UserViewController: UIViewController {
 
         bind()
         viewModel.viewDidLoad()
+      
+    }
+    
+    @objc private func didTapBack() {
+        navigationController?.popViewController(animated: true)
     }
 
     private func bind() {
@@ -169,14 +183,27 @@ private final class UserProfileCollectionCell: UITableViewCell {
 
 extension UserViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { 1 }
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "UserProfileCollectionCell", for: indexPath) as! UserProfileCollectionCell
+
+    func tableView(_ tableView: UITableView,
+                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+
+        let reuseID = "UserProfileCollectionCell"
+
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: reuseID,
+                                                       for: indexPath) as? UserProfileCollectionCell
+        else {
+            // fallback, чтобы не упасть
+            return UITableViewCell(style: .default, reuseIdentifier: nil)
+        }
+
         cell.configure(count: nftCount)
         return cell
     }
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard nftCount > 0 else { return }
         let vc = StatisticsCollectionViewController()
         navigationController?.pushViewController(vc, animated: true)
     }
 }
+

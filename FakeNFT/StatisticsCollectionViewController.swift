@@ -66,11 +66,20 @@ extension StatisticsCollectionViewController: UICollectionViewDataSource {
         items.count
     }
 
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "StatisticsNFTCell", for: indexPath) as! StatisticsNFTCell
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+
+        guard indexPath.item < items.count else { return UICollectionViewCell() }
+
+        let id = "StatisticsNFTCell"
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: id,
+                                                            for: indexPath) as? StatisticsNFTCell
+        else { return UICollectionViewCell() }
+
         cell.configure(title: items[indexPath.item])
         return cell
     }
+
 }
 
 extension StatisticsCollectionViewController: UICollectionViewDelegateFlowLayout {

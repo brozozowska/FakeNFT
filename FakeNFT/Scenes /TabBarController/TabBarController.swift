@@ -4,14 +4,12 @@ final class TabBarController: UITabBarController {
     
     var servicesAssembly: ServicesAssembly!
     
-    private let catalogTabBarItem = UITabBarItem(
-        title: NSLocalizedString("Tab.catalog", comment: ""),
-        image: UIImage(systemName: "square.stack.3d.up.fill"),
-        tag: 0
-    )
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        guard let servicesAssembly else {
+                   assertionFailure("servicesAssembly is nil")
+                   return
+               }
         
         let catalogController = TestCatalogViewController(servicesAssembly: servicesAssembly)
         catalogController.tabBarItem = UITabBarItem(
@@ -23,7 +21,7 @@ final class TabBarController: UITabBarController {
         let statisticsNav = StatisticsAssembly(services: servicesAssembly).build()
         statisticsNav.tabBarItem = UITabBarItem(
             title: "Статистика",
-            image: UIImage(systemName: "chart.bar"),
+            image: UIImage(named: "stat_bar_icon")?.withRenderingMode(.alwaysTemplate),
             tag: 1
         )
         

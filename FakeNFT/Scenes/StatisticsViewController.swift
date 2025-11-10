@@ -27,11 +27,13 @@ final class StatisticsViewController: UIViewController, LoadingView, ErrorView {
        
         view.backgroundColor = .systemBackground
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "line.3.horizontal"),
-            style: .plain,
-            target: self, action: #selector(showSort)
-        )
+        let sortImage = UIImage(named: "sort_icon")?.withRenderingMode(.alwaysOriginal)
+                navigationItem.rightBarButtonItem = UIBarButtonItem(
+                    image: sortImage,
+                    style: .plain,
+                    target: self,
+                    action: #selector(showSort)
+                )
 
         tableView.register(UserRatingCell.self)
         tableView.dataSource = self
