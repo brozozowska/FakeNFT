@@ -29,3 +29,12 @@
 "Sort.byRating" = "По рейтингу";
 "Sort.byName" = "По названию";
 "Sort.cancel" = "Отмена";
+"EditProfile.photoProfile" = "Фото профиля";
+"EditProfile.changePhoto" = "Изменить фото";
+"EditProfile.deletePhoto" = "Удалить фото";
+"EditProfile.cancel" = "Отмена";
+"EditProfile.save" = "Сохранить";
+"Exit confirmation title" = "Уверены, что хотите выйти?";
+"EditProfile.exit" = "Выйти";
+"EditProfile.stay" = "Остаться";
+

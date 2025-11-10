@@ -22,6 +22,7 @@ final class ProfileViewController: UIViewController {
         imageView.layer.cornerRadius = 35
         imageView.layer.masksToBounds = true
         imageView.backgroundColor = .lightGray
+        imageView.image = UIImage(named: "Avatar")
         return imageView
     }()
     
@@ -106,60 +107,50 @@ final class ProfileViewController: UIViewController {
     private func setupViews() {
         view.backgroundColor = .white
         
-        // Добавляем контейнер для профиля
         profileContainerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(profileContainerView)
         
-        // Добавляем элементы профиля в контейнер (без websiteButton)
         [avatarImageView, nameLabel, descriptionLabel].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             profileContainerView.addSubview($0)
         }
         
-        // Добавляем websiteButton, таблицу и индикатор напрямую в view
         [websiteButton, tableView, activityIndicator].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
         }
     }
-
+    
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            // Контейнер профиля - соответствует макету
             profileContainerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             profileContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             profileContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             profileContainerView.heightAnchor.constraint(equalToConstant: 162),
             
-            // Аватарка - слева в контейнере
             avatarImageView.topAnchor.constraint(equalTo: profileContainerView.topAnchor, constant: 20),
             avatarImageView.leadingAnchor.constraint(equalTo: profileContainerView.leadingAnchor, constant: 16),
             avatarImageView.widthAnchor.constraint(equalToConstant: 70),
             avatarImageView.heightAnchor.constraint(equalToConstant: 70),
             
-            // Имя - на одном уровне с аватаркой, справа от нее
             nameLabel.centerYAnchor.constraint(equalTo: avatarImageView.centerYAnchor),
             nameLabel.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 16),
             nameLabel.trailingAnchor.constraint(equalTo: profileContainerView.trailingAnchor, constant: -16),
             
-            // Описание - под аватаркой и именем
             descriptionLabel.topAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: 20),
             descriptionLabel.leadingAnchor.constraint(equalTo: profileContainerView.leadingAnchor, constant: 16),
             descriptionLabel.trailingAnchor.constraint(equalTo: profileContainerView.trailingAnchor, constant: -16),
             
-            // Кнопка сайта - под контейнером профиля с отступом 278pt от верха экрана
             websiteButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 278),
             websiteButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             websiteButton.widthAnchor.constraint(equalToConstant: 147),
             websiteButton.heightAnchor.constraint(equalToConstant: 28),
             
-            // Таблица - под кнопкой сайта
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 346),
-                   tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                   tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                   tableView.heightAnchor.constraint(equalToConstant: 54 * 2 + 8),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.heightAnchor.constraint(equalToConstant: 54 * 2 + 8),
             
-            // Индикатор загрузки - по центру
             activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
@@ -188,8 +179,19 @@ final class ProfileViewController: UIViewController {
         descriptionLabel.text = profile.description
         websiteButton.setTitle(profile.website, for: .normal)
         
-        if let avatarURL = URL(string: profile.avatar) {
-            avatarImageView.kf.setImage(with: avatarURL)
+        let placeholder = UIImage(named: "Avatar")
+        
+        if !profile.avatar.isEmpty, let avatarURL = URL(string: profile.avatar) {
+            avatarImageView.kf.setImage(
+                with: avatarURL,
+                placeholder: placeholder,
+                options: [
+                    .transition(.fade(0.2)),
+                    .cacheOriginalImage
+                ]
+            )
+        } else {
+            avatarImageView.image = placeholder
         }
         
         tableView.reloadData()
@@ -218,8 +220,7 @@ final class ProfileViewController: UIViewController {
             }
         )
         
-        let navigationController = UINavigationController(rootViewController: editViewController)
-        present(navigationController, animated: true)
+        navigationController?.pushViewController(editViewController, animated: true)
     }
 }
 
