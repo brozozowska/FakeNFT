@@ -4,6 +4,7 @@ import Kingfisher
 final class MyNFTCell: UITableViewCell, ReuseIdentifying {
     
     // MARK: - UI Components
+    
     private lazy var nftImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -42,6 +43,7 @@ final class MyNFTCell: UITableViewCell, ReuseIdentifying {
     }()
     
     // MARK: - Init
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupViews()
@@ -49,10 +51,12 @@ final class MyNFTCell: UITableViewCell, ReuseIdentifying {
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        assertionFailure("init(coder:) has not been implemented")
+        return nil
     }
     
     // MARK: - Configuration
+    
     func configure(with nft: Nft) {
         nameLabel.text = nft.name
         authorLabel.text = "от \(nft.author)"
@@ -64,6 +68,7 @@ final class MyNFTCell: UITableViewCell, ReuseIdentifying {
     }
     
     // MARK: - Private Methods
+    
     private func setupViews() {
         contentView.backgroundColor = .white
         selectionStyle = .none

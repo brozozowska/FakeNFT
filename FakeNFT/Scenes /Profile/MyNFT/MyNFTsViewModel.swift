@@ -4,43 +4,67 @@ import Combine
 final class MyNFTsViewModel: ObservableObject {
     
     // MARK: - Published Properties
+    
     @Published var nfts: [Nft] = []
     @Published var isLoading: Bool = false
     @Published var errorModel: ErrorModel?
     
     // MARK: - Private Properties
-    private let profileService: ProfileService
+    
+    private let cartService: CartStorage
     private let nftService: NftService
     private var cancellables = Set<AnyCancellable>()
-    private let profileId = "1"
     
     // MARK: - Init
-    init(profileService: ProfileService, nftService: NftService) {
-        self.profileService = profileService
+    
+    init(cartService: CartStorage, nftService: NftService) {
+        self.cartService = cartService
         self.nftService = nftService
         loadMyNFTs()
+        
+        NotificationCenter.default.publisher(for: NSNotification.Name("CartDidChange"))
+            .sink { [weak self] _ in
+                self?.loadMyNFTs()
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Public Methods
+    
     func loadMyNFTs() {
         isLoading = true
         errorModel = nil
         
-        profileService.loadProfile(id: profileId) { [weak self] result in
-            switch result {
-            case .success(let profile):
-                self?.loadNFTs(by: profile.nfts)
-            case .failure(let error):
+        let cartNFTs = cartService.getCartItems()
+        loadNFTs(by: cartNFTs)
+    }
+    
+    func removeFromCart(nftId: String) {
+        cartService.toggleCart(for: nftId) { [weak self] success in
+            if success {
+                print("Successfully removed NFT \(nftId) from cart")
+            } else {
+                print("Failed to remove NFT from cart")
                 DispatchQueue.main.async {
-                    self?.isLoading = false
-                    self?.errorModel = self?.makeErrorModel(error)
+                    self?.errorModel = ErrorModel(
+                        message: NSLocalizedString("Error.removeFromCart", comment: "Failed to remove from cart"),
+                        actionText: NSLocalizedString("Error.repeat", comment: "Try again"),
+                        action: { self?.removeFromCart(nftId: nftId) }
+                    )
                 }
             }
         }
     }
     
     // MARK: - Private Methods
+    
     private func loadNFTs(by ids: [String]) {
+        guard !ids.isEmpty else {
+            self.isLoading = false
+            self.nfts = []
+            return
+        }
+        
         let group = DispatchGroup()
         var loadedNFTs: [Nft] = []
         var loadError: Error?

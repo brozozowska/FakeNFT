@@ -1,15 +1,18 @@
 import UIKit
+import Combine
 
 final class MyNFTsViewController: UIViewController {
     
     // MARK: - Properties
+    
     private let viewModel: MyNFTsViewModel
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - UI Components
+    
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(MyNFTCell.self, forCellReuseIdentifier: MyNFTCell.reuseIdentifier)
+        tableView.register(MyNFTCell.self)
         tableView.dataSource = self
         tableView.delegate = self
         tableView.separatorStyle = .none
@@ -19,7 +22,7 @@ final class MyNFTsViewController: UIViewController {
     private lazy var emptyStateLabel: UILabel = {
         let label = UILabel()
         label.text = NSLocalizedString("MyNFTs.empty", comment: "No NFTs yet")
-        label.font = .headline3
+        label.font = .bodyBold
         label.textColor = .black
         label.textAlignment = .center
         label.isHidden = true
@@ -44,16 +47,19 @@ final class MyNFTsViewController: UIViewController {
     }()
     
     // MARK: - Init
+    
     init(viewModel: MyNFTsViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        assertionFailure("init(coder:) has not been implemented")
+        return nil
     }
     
     // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
@@ -61,7 +67,13 @@ final class MyNFTsViewController: UIViewController {
         setupBindings()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.loadMyNFTs()
+    }
+    
     // MARK: - Private Methods
+    
     private func setupViews() {
         view.backgroundColor = .white
         title = NSLocalizedString("MyNFTs.title", comment: "My NFTs")
@@ -143,18 +155,14 @@ final class MyNFTsViewController: UIViewController {
 }
 
 // MARK: - UITableViewDataSource & Delegate
+
 extension MyNFTsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.nfts.count
+        viewModel.nfts.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(
-            withReuseIdentifier: MyNFTCell.reuseIdentifier,
-            for: indexPath
-        ) as? MyNFTCell else {
-            return UITableViewCell()
-        }
+        let cell: MyNFTCell = tableView.dequeueReusableCell()
         
         let nft = viewModel.nfts[indexPath.row]
         cell.configure(with: nft)
@@ -162,6 +170,6 @@ extension MyNFTsViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 140
+        140
     }
 }
