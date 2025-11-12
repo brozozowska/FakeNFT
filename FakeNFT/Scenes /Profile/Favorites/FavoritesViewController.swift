@@ -4,12 +4,10 @@ import Combine
 final class FavoritesViewController: UIViewController {
     
     // MARK: - Properties
-    
     private let viewModel: FavoritesViewModel
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - UI Components
-    
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 8
@@ -17,7 +15,7 @@ final class FavoritesViewController: UIViewController {
         layout.sectionInset = UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.register(FavoriteNFTCell.self)
+        collectionView.register(FavoriteNFTCell.self, forCellWithReuseIdentifier: "FavoriteNFTCell")
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.backgroundColor = .white
@@ -41,7 +39,6 @@ final class FavoritesViewController: UIViewController {
     }()
     
     // MARK: - Init
-    
     init(viewModel: FavoritesViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -54,21 +51,27 @@ final class FavoritesViewController: UIViewController {
     }
     
     // MARK: - Lifecycle
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
         setupConstraints()
         setupBindings()
+        setupNotifications()
+        
+        print("FavoritesViewController loaded")
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.loadFavorites()
+        print("FavoritesViewController will appear - loading favorites")
+        loadFavoritesWithDelay()
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - Private Methods
-    
     private func setupViews() {
         view.backgroundColor = .white
         title = NSLocalizedString("Favorites.title", comment: "Favorites")
@@ -98,32 +101,69 @@ final class FavoritesViewController: UIViewController {
         viewModel.$nfts
             .receive(on: DispatchQueue.main)
             .sink { [weak self] nfts in
+                print("Favorites updated in ViewModel: \(nfts.count) items")
                 self?.collectionView.reloadData()
                 self?.emptyStateLabel.isHidden = !nfts.isEmpty
+                print("Collection view reloaded, empty state hidden: \(nfts.isEmpty)")
             }
             .store(in: &cancellables)
         
         viewModel.$isLoading
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isLoading in
+                print("Favorites loading state: \(isLoading)")
                 isLoading ? self?.activityIndicator.startAnimating() : self?.activityIndicator.stopAnimating()
             }
             .store(in: &cancellables)
     }
+    
+    private func setupNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(likesDidLoadFromServer),
+            name: NSNotification.Name("LikesDidLoadFromServer"),
+            object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(likesDidChange),
+            name: NSNotification.Name("LikesDidChange"),
+            object: nil
+        )
+    }
+    
+    private func loadFavoritesWithDelay() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.viewModel.loadFavorites()
+        }
+    }
+    
+    @objc private func likesDidLoadFromServer() {
+        print("Likes data loaded from server - reloading Favorites")
+        viewModel.loadFavorites()
+    }
+    
+    @objc private func likesDidChange() {
+        print("Likes changed - reloading Favorites")
+        viewModel.loadFavorites()
+    }
 }
 
 // MARK: - UICollectionViewDataSource & Delegate
-
 extension FavoritesViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         viewModel.nfts.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell: FavoriteNFTCell = collectionView.dequeueReusableCell(indexPath: indexPath)
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FavoriteNFTCell", for: indexPath) as? FavoriteNFTCell else {
+            return UICollectionViewCell()
+        }
         
         let nft = viewModel.nfts[indexPath.row]
         let isLiked = viewModel.isLiked(nftId: nft.id)
+        print("Configuring favorite cell for NFT: \(nft.name) at index \(indexPath.row)")
         cell.configure(with: nft, isLiked: isLiked)
         
         cell.onLikeTapped = { [weak self] in

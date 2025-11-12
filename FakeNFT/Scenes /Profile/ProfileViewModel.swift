@@ -45,12 +45,14 @@ final class ProfileViewModel: ObservableObject {
     func updateProfile(name: String, description: String, website: String, avatar: String) {
         isLoading = true
         
+        let currentLikes = profile?.likes.joined(separator: ",") ?? ""
+        
         let profileUpdate = ProfileUpdate(
             name: name,
             avatar: avatar,
             description: description,
             website: website,
-            likes: nil
+            likes: currentLikes
         )
         
         profileService.updateProfile(profileUpdate) { [weak self] result in

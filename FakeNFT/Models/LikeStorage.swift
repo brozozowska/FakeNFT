@@ -10,10 +10,7 @@ final class LikeStorageImpl: LikeStorage {
     private let networkClient: NetworkClient
     private let profileId = "1"
     private var likedNFTs: Set<String> = []
-    private var profileName = "Студентус Практикумс"
-    private var avatarURL = "https://photo.bank/1.png"
-    private var profileDescription: String?
-    private var website = "https://practicum.yandex.ru/interface-designer/"
+    private var currentProfile: Profile?
     
     init(networkClient: NetworkClient) {
         self.networkClient = networkClient
@@ -36,17 +33,17 @@ final class LikeStorageImpl: LikeStorage {
         }
         
         updateLikesOnServer { [weak self] success in
-                    if !success {
-                        if oldState {
-                            self?.likedNFTs.insert(nftId)
-                        } else {
-                            self?.likedNFTs.remove(nftId)
-                        }
-                    } else {
-                        NotificationCenter.default.post(name: NSNotification.Name("LikesDidChange"), object: nil)
-                    }
-                    completion?(success)
+            if !success {
+                if oldState {
+                    self?.likedNFTs.insert(nftId)
+                } else {
+                    self?.likedNFTs.remove(nftId)
                 }
+            } else {
+                NotificationCenter.default.post(name: NSNotification.Name("LikesDidChange"), object: nil)
+            }
+            completion?(success)
+        }
     }
     
     func isLiked(nftId: String) -> Bool {
@@ -62,10 +59,13 @@ final class LikeStorageImpl: LikeStorage {
             case .success(let profile):
                 print("Successfully loaded profile: \(profile.name), likes: \(profile.likes)")
                 self?.likedNFTs = Set(profile.likes)
-                self?.profileName = profile.name
-                self?.avatarURL = profile.avatar
-                self?.profileDescription = profile.description
-                self?.website = profile.website
+                self?.currentProfile = profile
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(
+                        name: NSNotification.Name("LikesDidLoadFromServer"),
+                        object: nil
+                    )
+                }
                 print("Successfully loaded \(profile.likes.count) likes")
             case .failure(let error):
                 print("Failed to load likes: \(error)")
@@ -78,21 +78,29 @@ final class LikeStorageImpl: LikeStorage {
         let likesString = Array(likedNFTs).joined(separator: ",")
         print("Updating likes on server: \(likesString)")
         
+        let profileName = currentProfile?.name ?? "Студентус Практикумс"
+        let avatarURL = currentProfile?.avatar ?? "https://code.s3.yandex.net/landings-v2-ios-developer/space.PNG"
+        let profileDescription = currentProfile?.description ?? "Прошел 5-й спринт, и этот пройду"
+        let website = currentProfile?.website ?? "https://practicum.yandex.ru/ios-developer"
+        
         let request = PutProfileRequest(
             id: profileId,
             likes: likesString,
             name: profileName,
-            avatar: avatarURL
+            avatar: avatarURL,
+            description: profileDescription,
+            website: website
         )
         
         if let dto = request.dto {
             print("Sending DTO: \(dto.asDictionary())")
         }
         
-        networkClient.send(request: request, type: Profile.self) { result in
+        networkClient.send(request: request, type: Profile.self) { [weak self] result in
             switch result {
             case .success(let profile):
                 print("Likes updated successfully. Profile name: \(profile.name), liked NFTs: \(profile.likes.count)")
+                self?.currentProfile = profile
                 completion?(true)
             case .failure(let error):
                 print("Failed to update likes: \(error)")

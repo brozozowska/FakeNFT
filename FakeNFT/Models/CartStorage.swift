@@ -70,6 +70,12 @@ final class CartStorageImpl: CartStorage {
             case .success(let order):
                 print("Successfully loaded cart. NFTs in cart: \(order.nfts)")
                 self?.cartItems = order.nfts
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(
+                        name: NSNotification.Name("CartDidLoadFromServer"),
+                        object: nil
+                    )
+                }
             case .failure(let error):
                 print("Failed to load cart: \(error)")
                 self?.cartItems = []

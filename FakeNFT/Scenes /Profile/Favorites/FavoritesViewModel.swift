@@ -4,34 +4,43 @@ import Combine
 final class FavoritesViewModel: ObservableObject {
     
     // MARK: - Published Properties
-    
     @Published var nfts: [Nft] = []
     @Published var isLoading: Bool = false
     @Published var errorModel: ErrorModel?
     
     // MARK: - Private Properties
-    
     private let likeService: LikeStorage
     private let nftService: NftService
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Init
-    
     init(likeService: LikeStorage, nftService: NftService) {
         self.likeService = likeService
         self.nftService = nftService
-        loadFavorites()
         
-        setupLikesObserver()
+        NotificationCenter.default.publisher(for: NSNotification.Name("LikesDidChange"))
+            .sink { [weak self] _ in
+                print("LikesDidChange notification received in FavoritesViewModel")
+                self?.loadFavorites()
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Public Methods
-    
     func loadFavorites() {
         isLoading = true
         errorModel = nil
         
         let likedNFTs = Array(likeService.getLikedNFTs())
+        print("Loading Favorites from likes: \(likedNFTs.count) items - \(likedNFTs)")
+        
+        if likedNFTs.isEmpty {
+            self.isLoading = false
+            self.nfts = []
+            print("No favorite NFTs")
+            return
+        }
+        
         loadNFTs(by: likedNFTs)
     }
     
@@ -53,27 +62,19 @@ final class FavoritesViewModel: ObservableObject {
     }
     
     func isLiked(nftId: String) -> Bool {
-        likeService.isLiked(nftId: nftId)
+        return likeService.isLiked(nftId: nftId)
     }
     
     // MARK: - Private Methods
-    
-    private func setupLikesObserver() {
-        NotificationCenter.default.addObserver(
-            forName: NSNotification.Name("LikesDidChange"),
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            self?.loadFavorites()
-        }
-    }
-    
     private func loadNFTs(by ids: [String]) {
         guard !ids.isEmpty else {
             self.isLoading = false
             self.nfts = []
+            print("No NFT IDs to load")
             return
         }
+        
+        print("Loading \(ids.count) NFTs: \(ids)")
         
         let group = DispatchGroup()
         var loadedNFTs: [Nft] = []
@@ -84,8 +85,10 @@ final class FavoritesViewModel: ObservableObject {
             nftService.loadNft(id: nftId) { result in
                 switch result {
                 case .success(let nft):
+                    print("Successfully loaded NFT: \(nft.name), id: \(nft.id)")
                     loadedNFTs.append(nft)
                 case .failure(let error):
+                    print("Failed to load NFT \(nftId): \(error)")
                     loadError = error
                 }
                 group.leave()
@@ -95,8 +98,10 @@ final class FavoritesViewModel: ObservableObject {
         group.notify(queue: .main) { [weak self] in
             self?.isLoading = false
             if let error = loadError {
+                print("Error loading NFTs: \(error)")
                 self?.errorModel = self?.makeErrorModel(error)
             } else {
+                print("Successfully loaded \(loadedNFTs.count) NFTs for Favorites")
                 self?.nfts = loadedNFTs
             }
         }
@@ -108,9 +113,5 @@ final class FavoritesViewModel: ObservableObject {
         return ErrorModel(message: message, actionText: actionText) { [weak self] in
             self?.loadFavorites()
         }
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
     }
 }

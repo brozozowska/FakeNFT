@@ -4,18 +4,17 @@ import Combine
 final class MyNFTsViewController: UIViewController {
     
     // MARK: - Properties
-    
     private let viewModel: MyNFTsViewModel
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - UI Components
-    
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(MyNFTCell.self)
+        tableView.register(MyNFTCell.self, forCellReuseIdentifier: "MyNFTCell")
         tableView.dataSource = self
         tableView.delegate = self
         tableView.separatorStyle = .none
+        tableView.backgroundColor = .white
         return tableView
     }()
     
@@ -47,7 +46,6 @@ final class MyNFTsViewController: UIViewController {
     }()
     
     // MARK: - Init
-    
     init(viewModel: MyNFTsViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -59,21 +57,27 @@ final class MyNFTsViewController: UIViewController {
     }
     
     // MARK: - Lifecycle
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
         setupConstraints()
         setupBindings()
+        setupNotifications()
+        
+        print("MyNFTsViewController loaded")
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.loadMyNFTs()
+        print("MyNFTsViewController will appear - loading NFTs")
+        loadMyNFTsWithDelay()
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - Private Methods
-    
     private func setupViews() {
         view.backgroundColor = .white
         title = NSLocalizedString("MyNFTs.title", comment: "My NFTs")
@@ -104,17 +108,52 @@ final class MyNFTsViewController: UIViewController {
         viewModel.$nfts
             .receive(on: DispatchQueue.main)
             .sink { [weak self] nfts in
+                print("NFTs updated in ViewModel: \(nfts.count) items")
                 self?.tableView.reloadData()
                 self?.emptyStateLabel.isHidden = !nfts.isEmpty
+                print("Table view reloaded, empty state hidden: \(nfts.isEmpty)")
             }
             .store(in: &cancellables)
         
         viewModel.$isLoading
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isLoading in
+                print("Loading state: \(isLoading)")
                 isLoading ? self?.activityIndicator.startAnimating() : self?.activityIndicator.stopAnimating()
             }
             .store(in: &cancellables)
+    }
+    
+    private func setupNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(cartDidLoadFromServer),
+            name: NSNotification.Name("CartDidLoadFromServer"),
+            object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(cartDidChange),
+            name: NSNotification.Name("CartDidChange"),
+            object: nil
+        )
+    }
+    
+    private func loadMyNFTsWithDelay() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.viewModel.loadMyNFTs()
+        }
+    }
+    
+    @objc private func cartDidLoadFromServer() {
+        print("Cart data loaded from server - reloading MyNFTs")
+        viewModel.loadMyNFTs()
+    }
+    
+    @objc private func cartDidChange() {
+        print("Cart changed - reloading MyNFTs")
+        viewModel.loadMyNFTs()
     }
     
     @objc private func sortButtonTapped() {
@@ -155,21 +194,27 @@ final class MyNFTsViewController: UIViewController {
 }
 
 // MARK: - UITableViewDataSource & Delegate
-
 extension MyNFTsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         viewModel.nfts.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: MyNFTCell = tableView.dequeueReusableCell()
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "MyNFTCell", for: indexPath) as? MyNFTCell else {
+            return UITableViewCell()
+        }
         
         let nft = viewModel.nfts[indexPath.row]
+        print("Configuring cell for NFT: \(nft.name) at index \(indexPath.row)")
         cell.configure(with: nft)
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         140
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
