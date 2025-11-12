@@ -24,7 +24,6 @@ final class ProfileViewController: UIViewController {
         imageView.layer.cornerRadius = 35
         imageView.layer.masksToBounds = true
         imageView.backgroundColor = .lightGray
-        imageView.image = UIImage(named: "Avatar")
         return imageView
     }()
     
@@ -178,16 +177,42 @@ final class ProfileViewController: UIViewController {
     }
     
     private func updateUI(with profile: Profile?) {
-            guard let profile else { return }
-            
-            nameLabel.text = profile.name
-            descriptionLabel.text = profile.description
-            websiteButton.setTitle(profile.website, for: .normal)
-            
-            avatarImageView.image = UIImage(named: "Avatar")
-            
-            tableView.reloadData()
+        guard let profile else { return }
+        
+        nameLabel.text = profile.name
+        descriptionLabel.text = profile.description
+        websiteButton.setTitle(profile.website, for: .normal)
+        
+        loadAvatar(from: profile.avatar)
+        
+        tableView.reloadData()
+    }
+    
+    private func loadAvatar(from urlString: String) {
+        let fullURLString: String
+        if urlString.hasPrefix("http://") || urlString.hasPrefix("https://") {
+            fullURLString = urlString
+        } else {
+            fullURLString = "\(RequestConstants.baseURL)\(urlString)"
         }
+        
+        guard let url = URL(string: fullURLString) else {
+            avatarImageView.image = UIImage(named: "Avatar")
+            return
+        }
+        
+        let modifier = AnyModifier { request in
+            var r = request
+            r.setValue(RequestConstants.token, forHTTPHeaderField: "X-Practicum-Mobile-Token")
+            return r
+        }
+        
+        avatarImageView.kf.setImage(
+            with: url,
+            placeholder: UIImage(named: "Avatar"),
+            options: [.requestModifier(modifier)]
+        )
+    }
     
     @objc private func websiteButtonTapped() {
         guard let website = viewModel.profile?.website,
