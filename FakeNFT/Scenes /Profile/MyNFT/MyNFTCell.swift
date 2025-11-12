@@ -18,6 +18,7 @@ final class MyNFTCell: UITableViewCell, ReuseIdentifying {
         let label = UILabel()
         label.font = .headline4
         label.textColor = .black
+        label.numberOfLines = 1
         return label
     }()
     
@@ -25,6 +26,7 @@ final class MyNFTCell: UITableViewCell, ReuseIdentifying {
         let label = UILabel()
         label.font = .caption2
         label.textColor = .black
+        label.numberOfLines = 1
         return label
     }()
     
@@ -32,6 +34,7 @@ final class MyNFTCell: UITableViewCell, ReuseIdentifying {
         let label = UILabel()
         label.font = .caption2
         label.textColor = .black
+        label.text = NSLocalizedString("MyNFTs.price", comment: "Price")
         return label
     }()
     
@@ -39,7 +42,13 @@ final class MyNFTCell: UITableViewCell, ReuseIdentifying {
         let label = UILabel()
         label.font = .bodyBold
         label.textColor = .black
+        label.numberOfLines = 1
         return label
+    }()
+    
+    private lazy var ratingView: RatingView = {
+        let view = RatingView()
+        return view
     }()
     
     // MARK: - Init
@@ -61,6 +70,7 @@ final class MyNFTCell: UITableViewCell, ReuseIdentifying {
         nameLabel.text = nft.name
         authorLabel.text = "от \(nft.author)"
         priceValueLabel.text = "\(nft.price) ETH"
+        ratingView.rating = nft.rating
         
         if let imageURL = nft.images.first {
             nftImageView.kf.setImage(with: imageURL)
@@ -73,12 +83,10 @@ final class MyNFTCell: UITableViewCell, ReuseIdentifying {
         contentView.backgroundColor = .white
         selectionStyle = .none
         
-        [nftImageView, nameLabel, authorLabel, priceLabel, priceValueLabel].forEach {
+        [nftImageView, nameLabel, authorLabel, priceLabel, priceValueLabel, ratingView].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview($0)
         }
-        
-        priceLabel.text = NSLocalizedString("MyNFTs.price", comment: "Price")
     }
     
     private func setupConstraints() {
@@ -88,19 +96,25 @@ final class MyNFTCell: UITableViewCell, ReuseIdentifying {
             nftImageView.widthAnchor.constraint(equalToConstant: 108),
             nftImageView.heightAnchor.constraint(equalToConstant: 108),
             
-            nameLabel.topAnchor.constraint(equalTo: nftImageView.topAnchor, constant: 8),
-            nameLabel.leadingAnchor.constraint(equalTo: nftImageView.trailingAnchor, constant: 16),
+            nameLabel.topAnchor.constraint(equalTo: nftImageView.topAnchor, constant: 23),
+            nameLabel.leadingAnchor.constraint(equalTo: nftImageView.trailingAnchor, constant: 20),
             nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
-            authorLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 4),
+            ratingView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 4),
+            ratingView.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
+            ratingView.widthAnchor.constraint(equalToConstant: 68),
+            ratingView.heightAnchor.constraint(equalToConstant: 12),
+            
+            authorLabel.topAnchor.constraint(equalTo: ratingView.bottomAnchor, constant: 4),
             authorLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
             authorLabel.trailingAnchor.constraint(equalTo: nameLabel.trailingAnchor),
             
-            priceLabel.topAnchor.constraint(equalTo: authorLabel.bottomAnchor, constant: 16),
+            priceLabel.topAnchor.constraint(equalTo: authorLabel.bottomAnchor, constant: 12),
             priceLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
             
             priceValueLabel.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 2),
-            priceValueLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor)
+            priceValueLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
+            priceValueLabel.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -16)
         ])
     }
     
@@ -108,5 +122,6 @@ final class MyNFTCell: UITableViewCell, ReuseIdentifying {
         super.prepareForReuse()
         nftImageView.kf.cancelDownloadTask()
         nftImageView.image = nil
+        ratingView.rating = 0
     }
 }

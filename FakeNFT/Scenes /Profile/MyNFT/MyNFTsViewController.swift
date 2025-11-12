@@ -63,6 +63,7 @@ final class MyNFTsViewController: UIViewController {
         setupConstraints()
         setupBindings()
         setupNotifications()
+        setupNavigationBar()
         
         print("MyNFTsViewController loaded")
     }
@@ -102,6 +103,16 @@ final class MyNFTsViewController: UIViewController {
             activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
+    }
+    
+    private func setupNavigationBar() {
+        let backButton = UIBarButtonItem()
+        backButton.title = ""
+        navigationItem.backBarButtonItem = backButton
+        
+        navigationController?.navigationBar.tintColor = .black
+        
+        navigationItem.rightBarButtonItem = sortButton
     }
     
     private func setupBindings() {
@@ -158,34 +169,20 @@ final class MyNFTsViewController: UIViewController {
     
     @objc private func sortButtonTapped() {
         let alert = UIAlertController(
-            title: NSLocalizedString("Sort.title", comment: "Sorting"),
+            title: NSLocalizedString("MyNFTs.sort.title", comment: "Sorting"),
             message: nil,
             preferredStyle: .actionSheet
         )
         
-        alert.addAction(UIAlertAction(
-            title: NSLocalizedString("Sort.byPrice", comment: "By price"),
-            style: .default
-        ) { _ in
-            // Implement sorting
-        })
+        for option in MyNFTSortOption.allCases {
+            let action = UIAlertAction(title: option.title, style: .default) { [weak self] _ in
+                self?.viewModel.updateSortOption(option)
+            }
+            alert.addAction(action)
+        }
         
         alert.addAction(UIAlertAction(
-            title: NSLocalizedString("Sort.byRating", comment: "By rating"),
-            style: .default
-        ) { _ in
-            // Implement sorting
-        })
-        
-        alert.addAction(UIAlertAction(
-            title: NSLocalizedString("Sort.byName", comment: "By name"),
-            style: .default
-        ) { _ in
-            // Implement sorting
-        })
-        
-        alert.addAction(UIAlertAction(
-            title: NSLocalizedString("Sort.cancel", comment: "Cancel"),
+            title: NSLocalizedString("MyNFTs.sort.cancel", comment: "Cancel"),
             style: .cancel
         ))
         

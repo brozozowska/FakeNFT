@@ -106,11 +106,13 @@ final class ProfileViewController: UIViewController {
     
     private func setupNavigationBar() {
         navigationItem.rightBarButtonItem = editButton
-        
+        configureNavigationBarAppearance()
+    }
+    
+    private func configureNavigationBarAppearance() {
         let backButton = UIBarButtonItem()
         backButton.title = ""
         navigationItem.backBarButtonItem = backButton
-        
         navigationController?.navigationBar.tintColor = .black
     }
     
@@ -243,16 +245,8 @@ final class ProfileViewController: UIViewController {
             }
         )
         
-        setupNavigationAppearance()
+        configureNavigationBarAppearance()
         navigationController?.pushViewController(editViewController, animated: true)
-    }
-    
-    private func setupNavigationAppearance() {
-        let backButton = UIBarButtonItem()
-        backButton.title = ""
-        navigationItem.backBarButtonItem = backButton
-        
-        navigationController?.navigationBar.tintColor = .black
     }
 }
 

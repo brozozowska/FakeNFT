@@ -37,4 +37,8 @@
 "Exit confirmation title" = "Уверены, что хотите выйти?";
 "EditProfile.exit" = "Выйти";
 "EditProfile.stay" = "Остаться";
-
+"MyNFTs.sort.title" = "Сортировка";
+"MyNFTs.sort.byPrice" = "По цене";
+"MyNFTs.sort.byRating" = "По рейтингу";
+"MyNFTs.sort.byName" = "По названию";
+"MyNFTs.sort.cancel" = "Закрыть";

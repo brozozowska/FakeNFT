@@ -11,19 +11,21 @@ final class MyNFTsViewModel: ObservableObject {
     // MARK: - Private Properties
     private let cartService: CartStorage
     private let nftService: NftService
+    private let sortSettingsService: MyNFTSortSettingsServiceImpl
     private var cancellables = Set<AnyCancellable>()
     
+    // MARK: - Computed Properties
+    var currentSortOption: MyNFTSortOption {
+        sortSettingsService.currentSortOption
+    }
+    
     // MARK: - Init
-    init(cartService: CartStorage, nftService: NftService) {
+    init(cartService: CartStorage, nftService: NftService, sortSettingsService: MyNFTSortSettingsServiceImpl) {
         self.cartService = cartService
         self.nftService = nftService
+        self.sortSettingsService = sortSettingsService
         
-        NotificationCenter.default.publisher(for: NSNotification.Name("CartDidChange"))
-            .sink { [weak self] _ in
-                print("CartDidChange notification received in MyNFTsViewModel")
-                self?.loadMyNFTs()
-            }
-            .store(in: &cancellables)
+        setupNotifications()
     }
     
     // MARK: - Public Methods
@@ -44,6 +46,11 @@ final class MyNFTsViewModel: ObservableObject {
         loadNFTs(by: cartNFTs)
     }
     
+    func updateSortOption(_ option: MyNFTSortOption) {
+        sortSettingsService.currentSortOption = option
+        nfts = applySorting(to: nfts)
+    }
+    
     func removeFromCart(nftId: String) {
         cartService.toggleCart(for: nftId) { [weak self] success in
             if success {
@@ -62,6 +69,15 @@ final class MyNFTsViewModel: ObservableObject {
     }
     
     // MARK: - Private Methods
+    private func setupNotifications() {
+        NotificationCenter.default.publisher(for: NSNotification.Name("CartDidChange"))
+            .sink { [weak self] _ in
+                print("CartDidChange notification received in MyNFTsViewModel")
+                self?.loadMyNFTs()
+            }
+            .store(in: &cancellables)
+    }
+    
     private func loadNFTs(by ids: [String]) {
         guard !ids.isEmpty else {
             self.isLoading = false
@@ -98,8 +114,19 @@ final class MyNFTsViewModel: ObservableObject {
                 self?.errorModel = self?.makeErrorModel(error)
             } else {
                 print("Successfully loaded \(loadedNFTs.count) NFTs for MyNFTs")
-                self?.nfts = loadedNFTs
+                self?.nfts = self?.applySorting(to: loadedNFTs) ?? []
             }
+        }
+    }
+    
+    private func applySorting(to nfts: [Nft]) -> [Nft] {
+        switch sortSettingsService.currentSortOption {
+        case .byPrice:
+            return nfts.sorted { $0.price > $1.price }
+        case .byRating:
+            return nfts.sorted { $0.rating > $1.rating }
+        case .byName:
+            return nfts.sorted { $0.name < $1.name }
         }
     }
     

@@ -36,9 +36,11 @@ final class ViewModelAssembly {
     }
     
     func makeMyNFTsViewModel() -> MyNFTsViewModel {
-        MyNFTsViewModel(
+        let sortSettingsService = MyNFTSortSettingsServiceImpl()
+        return MyNFTsViewModel(
             cartService: servicesAssembly.cartService,
-            nftService: servicesAssembly.nftService
+            nftService: servicesAssembly.nftService,
+            sortSettingsService: sortSettingsService
         )
     }
     
