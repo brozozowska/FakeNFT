@@ -22,20 +22,28 @@ final class AvatarImageView: UIImageView {
         contentMode = .scaleAspectFill
         layer.cornerRadius = 35
         layer.masksToBounds = true
-        backgroundColor = .clear
+        backgroundColor = .lightGray
         image = UIImage(named: "changeAvatar")
         isUserInteractionEnabled = true
     }
     
     func loadImage(from url: URL) {
-        kf.setImage(with: url) { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let value):
-                    self?.image = value.image
-                case .failure:
-                    self?.setPlaceholder()
-                }
+        let modifier = AnyModifier { request in
+            var r = request
+            r.setValue(RequestConstants.token, forHTTPHeaderField: "X-Practicum-Mobile-Token")
+            return r
+        }
+        
+        kf.setImage(
+            with: url,
+            placeholder: UIImage(named: "changeAvatar"),
+            options: [.requestModifier(modifier)]
+        ) { result in
+            switch result {
+            case .success(let value):
+                print("Successfully loaded avatar image from: \(url)")
+            case .failure(let error):
+                print("Failed to load avatar image: \(error.localizedDescription)")
             }
         }
     }

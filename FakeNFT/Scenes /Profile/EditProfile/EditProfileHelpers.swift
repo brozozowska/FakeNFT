@@ -71,6 +71,7 @@ extension EditProfileViewController {
             style: .destructive
         ) { [weak self] _ in
             self?.avatarImageView.setPlaceholder()
+            self?.currentAvatar = ""
             self?.checkForChanges()
         }
         
@@ -124,28 +125,27 @@ extension EditProfileViewController {
     }
     
     func loadImageFromURL(_ urlString: String) {
-            var fullURLString = urlString
-            
-            if !fullURLString.hasPrefix("http://") && !fullURLString.hasPrefix("https://") {
-                if fullURLString.contains(".") {
-                    fullURLString = "https://" + fullURLString
-                } else {
-                    showAlert(message: "Пожалуйста, введите полный URL изображения (например: example.com/image.jpg)")
-                    return
-                }
-            }
-            
-            if fullURLString.contains("photo.bank") {
-                showAlert(message: "Этот домен недоступен. Используйте другой URL.")
-                return
-            }
-            
-            guard let url = URL(string: fullURLString) else {
-                showAlert(message: NSLocalizedString("Некорректная ссылка", comment: "Invalid URL"))
-                return
-            }
-            
-            avatarImageView.loadImage(from: url)
-            checkForChanges()
+        var fullURLString = urlString
+        
+        if !fullURLString.hasPrefix("http://") && !fullURLString.hasPrefix("https://") {
+            fullURLString = "https://" + fullURLString
         }
+        
+        guard let url = URL(string: fullURLString) else {
+            showAlert(message: NSLocalizedString("Некорректная ссылка", comment: "Invalid URL"))
+            return
+        }
+        
+        guard let _ = URLComponents(string: fullURLString) else {
+            showAlert(message: NSLocalizedString("Некорректная ссылка", comment: "Invalid URL"))
+            return
+        }
+        
+        print("Loading avatar from URL: \(fullURLString)")
+        
+        currentAvatar = fullURLString
+        
+        avatarImageView.loadImage(from: url)
+        checkForChanges()
+    }
 }

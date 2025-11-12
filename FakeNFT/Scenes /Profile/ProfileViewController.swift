@@ -153,12 +153,12 @@ final class ProfileViewController: UIViewController {
             descriptionLabel.leadingAnchor.constraint(equalTo: profileContainerView.leadingAnchor, constant: 16),
             descriptionLabel.trailingAnchor.constraint(equalTo: profileContainerView.trailingAnchor, constant: -16),
             
-            websiteButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 278),
+            websiteButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 200),
             websiteButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             websiteButton.widthAnchor.constraint(equalToConstant: 147),
             websiteButton.heightAnchor.constraint(equalToConstant: 28),
             
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 346),
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 278),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.heightAnchor.constraint(equalToConstant: 54 * 2 + 8),

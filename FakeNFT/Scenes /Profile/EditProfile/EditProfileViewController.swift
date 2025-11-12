@@ -11,6 +11,8 @@ final class EditProfileViewController: UIViewController {
     private var originalName = ""
     private var originalDescription = ""
     private var originalWebsite = ""
+    private var originalAvatar = ""
+    var currentAvatar = ""
     
     // MARK: - UI Components
     
@@ -46,6 +48,7 @@ final class EditProfileViewController: UIViewController {
         setupInitialData()
         setupKeyboardDismiss()
         setupAvatarTapGesture()
+        setupSaveButton()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -70,7 +73,6 @@ final class EditProfileViewController: UIViewController {
             action: #selector(backButtonTapped)
         )
         navigationItem.leftBarButtonItem?.tintColor = .black
-        navigationItem.title = nil
         
         [avatarImageView, nameTitleLabel, nameTextField, descriptionTitleLabel,
          descriptionTextView, websiteTitleLabel, websiteTextField, saveButton].forEach {
@@ -90,6 +92,10 @@ final class EditProfileViewController: UIViewController {
         websiteTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
     }
     
+    private func setupSaveButton() {
+        saveButton.addTarget(self, action: #selector(saveTapped), for: .touchUpInside)
+    }
+    
     private func setupConstraints() {
         EditProfileLayout.applyConstraints(
             for: view,
@@ -105,10 +111,11 @@ final class EditProfileViewController: UIViewController {
     }
     
     private func setupInitialData() {
-        let validAvatarURL = "https://code.s3.yandex.net/landings-v2-ios-developer/space.PNG"
-        
-        if let avatarURL = URL(string: validAvatarURL) {
-            avatarImageView.loadImage(from: avatarURL)
+        if !profile.avatar.isEmpty {
+            let fullURLString = profile.avatar.hasPrefix("http") ? profile.avatar : "\(RequestConstants.baseURL)\(profile.avatar)"
+            if let avatarURL = URL(string: fullURLString) {
+                avatarImageView.loadImage(from: avatarURL)
+            }
         } else {
             avatarImageView.setPlaceholder()
         }
@@ -120,13 +127,15 @@ final class EditProfileViewController: UIViewController {
         originalName = profile.name
         originalDescription = profile.description ?? ""
         originalWebsite = profile.website
+        originalAvatar = profile.avatar
+        currentAvatar = profile.avatar
         
         nameTextField.configure(placeholder: NSLocalizedString("EditProfile.namePlaceholder", comment: "Name"))
         websiteTextField.configure(placeholder: NSLocalizedString("EditProfile.websitePlaceholder", comment: "Website"))
         
-        nameTitleLabel.text = NSLocalizedString("Имя", comment: "Name")
-        descriptionTitleLabel.text = NSLocalizedString("Описание", comment: "Description")
-        websiteTitleLabel.text = NSLocalizedString("Сайт", comment: "Website")
+        nameTitleLabel.text = NSLocalizedString("EditProfile.name", comment: "Name")
+        descriptionTitleLabel.text = NSLocalizedString("EditProfile.description", comment: "Description")
+        websiteTitleLabel.text = NSLocalizedString("EditProfile.website", comment: "Website")
     }
     
     private func setupKeyboardDismiss() {
@@ -168,7 +177,15 @@ final class EditProfileViewController: UIViewController {
             return
         }
         
-        onSave(name, description, website, profile.avatar)
+        let avatarToSave = currentAvatar.isEmpty ? originalAvatar : currentAvatar
+        
+        print("Saving profile changes:")
+        print("Name: \(name)")
+        print("Description: \(description)")
+        print("Website: \(website)")
+        print("Avatar: \(avatarToSave)")
+        
+        onSave(name, description, website, avatarToSave)
         navigationController?.popViewController(animated: true)
     }
     
@@ -190,9 +207,11 @@ final class EditProfileViewController: UIViewController {
         let nameChanged = currentName != originalName
         let descriptionChanged = currentDescription != originalDescription
         let websiteChanged = currentWebsite != originalWebsite
-        let avatarChanged = avatarImageView.hasCustomImage
+        let avatarChanged = avatarImageView.hasCustomImage && currentAvatar != originalAvatar
         
         hasUnsavedChanges = nameChanged || descriptionChanged || websiteChanged || avatarChanged
         saveButton.isHidden = !hasUnsavedChanges
+        
+        print("Changes detected - Name: \(nameChanged), Description: \(descriptionChanged), Website: \(websiteChanged), Avatar: \(avatarChanged)")
     }
 }

@@ -34,6 +34,9 @@
 "EditProfile.deletePhoto" = "Удалить фото";
 "EditProfile.cancel" = "Отмена";
 "EditProfile.save" = "Сохранить";
+"EditProfile.name" = "Имя";
+"EditProfile.website" = "Сайт";
+"EditProfile.description" = "Описание";
 "Exit confirmation title" = "Уверены, что хотите выйти?";
 "EditProfile.exit" = "Выйти";
 "EditProfile.stay" = "Остаться";
