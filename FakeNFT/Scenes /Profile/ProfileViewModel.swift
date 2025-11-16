@@ -47,7 +47,7 @@ final class ProfileViewModel: ObservableObject {
             avatar: avatar,
             description: description,
             website: website,
-            likes: currentLikes
+            likes: nil
         )
         
         profileService.updateProfile(profileUpdate) { [weak self] result in

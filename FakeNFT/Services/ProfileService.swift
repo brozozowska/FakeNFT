@@ -30,7 +30,7 @@ final class ProfileServiceImpl: ProfileService {
     }
     
     func updateProfile(_ profile: ProfileUpdate, completion: @escaping ProfileUpdateCompletion) {
-        let likesString = profile.likes.isEmpty ? currentLikes.joined(separator: ",") : profile.likes
+        let likesString = profile.likes ?? currentLikes.joined(separator: ",")
         
         let request = PutProfileRequest(
             id: "1",
