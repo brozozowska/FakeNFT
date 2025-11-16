@@ -10,18 +10,18 @@ protocol ProfileService {
 
 final class ProfileServiceImpl: ProfileService {
     private let networkClient: NetworkClient
-    private var currentLikes: [String] = []
+    private let likeStorage: LikeStorage
     
-    init(networkClient: NetworkClient) {
+    init(networkClient: NetworkClient, likeStorage: LikeStorage) {
         self.networkClient = networkClient
+        self.likeStorage = likeStorage
     }
     
     func loadProfile(id: String, completion: @escaping ProfileCompletion) {
         let request = GetProfileRequest(id: id)
-        networkClient.send(request: request, type: Profile.self) { [weak self] result in
+        networkClient.send(request: request, type: Profile.self) { result in
             switch result {
             case .success(let profile):
-                self?.currentLikes = profile.likes
                 completion(.success(profile))
             case .failure(let error):
                 completion(.failure(error))
@@ -30,7 +30,8 @@ final class ProfileServiceImpl: ProfileService {
     }
     
     func updateProfile(_ profile: ProfileUpdate, completion: @escaping ProfileUpdateCompletion) {
-        let likesString = profile.likes ?? currentLikes.joined(separator: ",")
+        let likedNFTs = likeStorage.getLikedNFTs()
+        let likesString = Array(likedNFTs).joined(separator: ",")
         
         let request = PutProfileRequest(
             id: "1",
@@ -43,10 +44,9 @@ final class ProfileServiceImpl: ProfileService {
         
         print("Updating profile with: name=\(profile.name), avatar=\(profile.avatar), description=\(profile.description), website=\(profile.website), likes=\(likesString)")
         
-        networkClient.send(request: request, type: Profile.self) { [weak self] result in
+        networkClient.send(request: request, type: Profile.self) { result in
             switch result {
             case .success(let updatedProfile):
-                self?.currentLikes = updatedProfile.likes
                 completion(.success(updatedProfile))
             case .failure(let error):
                 completion(.failure(error))

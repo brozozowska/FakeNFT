@@ -11,12 +11,14 @@ final class ProfileViewModel: ObservableObject {
     
     // MARK: - Private Properties
     private let profileService: ProfileService
+    private let likeStorage: LikeStorage
     private let profileId = "1"
     
     // MARK: - Init
     
-    init(profileService: ProfileService) {
+    init(profileService: ProfileService, likeStorage: LikeStorage) {
         self.profileService = profileService
+        self.likeStorage = likeStorage
         loadProfile()
     }
     
@@ -39,8 +41,6 @@ final class ProfileViewModel: ObservableObject {
     
     func updateProfile(name: String, description: String, website: String, avatar: String) {
         isLoading = true
-        
-        let currentLikes = profile?.likes.joined(separator: ",") ?? ""
         
         let profileUpdate = ProfileUpdate(
             name: name,

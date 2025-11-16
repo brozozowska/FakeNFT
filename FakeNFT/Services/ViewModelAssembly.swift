@@ -25,7 +25,8 @@ final class ViewModelAssembly: ViewModelFactory {
     
     func makeProfileViewModel() -> ProfileViewModel {
         ProfileViewModel(
-            profileService: servicesAssembly.profileService
+            profileService: servicesAssembly.profileService,
+            likeStorage: servicesAssembly.likeService
         )
     }
     
