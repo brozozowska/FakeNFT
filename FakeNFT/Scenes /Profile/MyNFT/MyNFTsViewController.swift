@@ -4,15 +4,13 @@ import Combine
 final class MyNFTsViewController: UIViewController {
     
     // MARK: - Properties
-    
     private let viewModel: MyNFTsViewModel
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - UI Components
-    
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(MyNFTCell.self, forCellReuseIdentifier: "MyNFTCell")
+        tableView.register(MyNFTCell.self)
         tableView.dataSource = self
         tableView.delegate = self
         tableView.separatorStyle = .none
@@ -32,7 +30,7 @@ final class MyNFTsViewController: UIViewController {
     
     private lazy var sortButton: UIBarButtonItem = {
         let button = UIBarButtonItem(
-            image: UIImage(resource: .sortLines),
+            image: UIImage(named: "sort-lines"),
             style: .plain,
             target: self,
             action: #selector(sortButtonTapped)
@@ -48,7 +46,6 @@ final class MyNFTsViewController: UIViewController {
     }()
     
     // MARK: - Init
-    
     init(viewModel: MyNFTsViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -60,21 +57,20 @@ final class MyNFTsViewController: UIViewController {
     }
     
     // MARK: - Lifecycle
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
         setupConstraints()
         setupBindings()
+        setupNotifications()
         setupNavigationBar()
         
         print("MyNFTsViewController loaded")
-        viewModel.loadMyNFTs()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print("MyNFTsViewController will appear")
+        print("MyNFTsViewController will appear - loading NFTs")
     }
     
     deinit {
@@ -82,7 +78,6 @@ final class MyNFTsViewController: UIViewController {
     }
     
     // MARK: - Private Methods
-    
     private func setupViews() {
         view.backgroundColor = .white
         title = NSLocalizedString("MyNFTs.title", comment: "My NFTs")
@@ -115,6 +110,7 @@ final class MyNFTsViewController: UIViewController {
         navigationItem.backBarButtonItem = backButton
         
         navigationController?.navigationBar.tintColor = .black
+        
         navigationItem.rightBarButtonItem = sortButton
     }
     
@@ -136,6 +132,32 @@ final class MyNFTsViewController: UIViewController {
                 isLoading ? self?.activityIndicator.startAnimating() : self?.activityIndicator.stopAnimating()
             }
             .store(in: &cancellables)
+    }
+    
+    private func setupNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(cartDidLoadFromServer),
+            name: NSNotification.Name("CartDidLoadFromServer"),
+            object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(cartDidChange),
+            name: NSNotification.Name("CartDidChange"),
+            object: nil
+        )
+    }
+    
+    @objc private func cartDidLoadFromServer() {
+        print("Cart data loaded from server - reloading MyNFTs")
+        viewModel.loadMyNFTs()
+    }
+    
+    @objc private func cartDidChange() {
+        print("Cart changed - reloading MyNFTs")
+        viewModel.loadMyNFTs()
     }
     
     @objc private func sortButtonTapped() {
@@ -162,16 +184,13 @@ final class MyNFTsViewController: UIViewController {
 }
 
 // MARK: - UITableViewDataSource & Delegate
-
 extension MyNFTsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         viewModel.nfts.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "MyNFTCell", for: indexPath) as? MyNFTCell else {
-            return UITableViewCell()
-        }
+        let cell: MyNFTCell = tableView.dequeueReusableCell()
         
         let nft = viewModel.nfts[indexPath.row]
         print("Configuring cell for NFT: \(nft.name) at index \(indexPath.row)")
