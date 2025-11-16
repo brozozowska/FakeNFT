@@ -1,15 +1,10 @@
 import UIKit
-import Kingfisher
 
 // MARK: - Avatar Image View
 
 final class AvatarWithCameraView: UIView {
-    let avatarImageView = UIImageView()
+    private let avatarImageView = UIImageView()
     private let cameraIconView = UIImageView()
-    
-    var hasCustomImage: Bool {
-        return avatarImageView.image != UIImage(named: "Avatar")
-    }
     
     init() {
         super.init(frame: .zero)
@@ -59,25 +54,7 @@ final class AvatarWithCameraView: UIView {
             cameraIconView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 6)
         ])
     }
-    func loadImage(from url: URL) {
-            let modifier = AnyModifier { request in
-                var r = request
-                r.setValue(RequestConstants.token, forHTTPHeaderField: "X-Practicum-Mobile-Token")
-                return r
-            }
-            
-            avatarImageView.kf.setImage(
-                with: url,
-                placeholder: UIImage(named: "Avatar"),
-                options: [.requestModifier(modifier)]
-            )
-        }
-        
-        func setPlaceholder() {
-            avatarImageView.image = UIImage(named: "Avatar")
-        }
-    }
-
+}
 // MARK: - Title Label
 
 final class TitleLabel: UILabel {

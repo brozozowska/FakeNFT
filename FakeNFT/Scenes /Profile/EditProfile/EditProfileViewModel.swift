@@ -7,7 +7,6 @@ final class EditProfileViewModel: ObservableObject {
     @Published var name: String
     @Published var description: String
     @Published var website: String
-    @Published var avatarURL: String
     @Published var hasChanges = false
     @Published var saveButtonHidden = true
     
@@ -24,14 +23,13 @@ final class EditProfileViewModel: ObservableObject {
         self.name = profile.name
         self.description = profile.description ?? ""
         self.website = profile.website
-        self.avatarURL = profile.avatar
         
         setupBindings()
     }
     
     // MARK: - Public Methods
     func updateAvatar(_ urlString: String) {
-        avatarURL = urlString
+        // Сохраняем URL аватара, но не загружаем изображение
         checkForChanges()
     }
     
@@ -43,7 +41,7 @@ final class EditProfileViewModel: ObservableObject {
         
         let profileUpdate = ProfileUpdate(
             name: name,
-            avatar: avatarURL,
+            avatar: originalProfile.avatar, // Сохраняем оригинальный аватар
             description: description,
             website: website,
             likes: originalProfile.likes.joined(separator: ",")
@@ -93,9 +91,8 @@ final class EditProfileViewModel: ObservableObject {
         let nameChanged = name != originalProfile.name
         let descriptionChanged = description != (originalProfile.description ?? "")
         let websiteChanged = website != originalProfile.website
-        let avatarChanged = avatarURL != originalProfile.avatar
         
-        hasChanges = nameChanged || descriptionChanged || websiteChanged || avatarChanged
+        hasChanges = nameChanged || descriptionChanged || websiteChanged
         saveButtonHidden = !hasChanges
     }
     

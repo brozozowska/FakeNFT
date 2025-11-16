@@ -187,41 +187,18 @@ final class EditProfileViewController: UIViewController {
                 self?.saveButton.isHidden = hidden
             }
             .store(in: &cancellables)
-        
-        viewModel.$avatarURL
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] avatarURL in
-                self?.loadAvatar(avatarURL)
-            }
-            .store(in: &cancellables)
     }
     
     private func setupInitialData() {
         nameTextField.text = viewModel.name
         descriptionTextView.text = viewModel.description
         websiteTextField.text = viewModel.website
-        loadAvatar(viewModel.avatarURL)
     }
     
     private func setupKeyboardDismiss() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
         view.addGestureRecognizer(tapGesture)
-    }
-    
-    private func loadAvatar(_ urlString: String) {
-        guard !urlString.isEmpty else {
-            avatarImageView.setPlaceholder()
-            return
-        }
-        
-        let fullURLString = urlString.hasPrefix("http") ? urlString : "\(RequestConstants.baseURL)\(urlString)"
-        
-        if let url = URL(string: fullURLString) {
-            avatarImageView.loadImage(from: url)
-        } else {
-            avatarImageView.setPlaceholder()
-        }
     }
     
     private func showPhotoActionSheet() {
@@ -238,20 +215,12 @@ final class EditProfileViewController: UIViewController {
             self?.showPhotoURLAlert()
         }
         
-        let deleteAction = UIAlertAction(
-            title: NSLocalizedString("EditProfile.deletePhoto", comment: "Delete photo"),
-            style: .destructive
-        ) { [weak self] _ in
-            self?.viewModel.updateAvatar("")
-        }
-        
         let cancelAction = UIAlertAction(
             title: NSLocalizedString("EditProfile.cancel", comment: "Cancel"),
             style: .cancel
         )
         
         actionSheet.addAction(changeAction)
-        actionSheet.addAction(deleteAction)
         actionSheet.addAction(cancelAction)
         
         present(actionSheet, animated: true)
@@ -260,7 +229,7 @@ final class EditProfileViewController: UIViewController {
     private func showPhotoURLAlert() {
         let alert = UIAlertController(
             title: NSLocalizedString("EditProfile.photoURL.title", comment: "Photo URL"),
-            message: nil,
+            message: NSLocalizedString("EditProfile.photoURL.message", comment: "This will only update the avatar URL in your profile"),
             preferredStyle: .alert
         )
         
@@ -306,7 +275,7 @@ final class EditProfileViewController: UIViewController {
     private func showUnsavedChangesAlert() {
         let alert = UIAlertController(
             title: NSLocalizedString("EditProfile.unsavedChanges.title", comment: "Unsaved changes title"),
-            message: nil,
+            message: NSLocalizedString("EditProfile.unsavedChanges.message", comment: "You have unsaved changes"),
             preferredStyle: .alert
         )
         
