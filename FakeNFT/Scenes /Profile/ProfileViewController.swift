@@ -233,19 +233,10 @@ final class ProfileViewController: UIViewController {
     @objc private func editButtonTapped() {
         guard let profile = viewModel.profile else { return }
         
-        let editViewController = EditProfileViewController(
-            profile: profile,
-            onSave: { [weak self] name, description, website, avatar in
-                self?.viewModel.updateProfile(
-                    name: name,
-                    description: description,
-                    website: website,
-                    avatar: avatar
-                )
-            }
-        )
+        let editViewModel = ViewModelAssembly(servicesAssembly: servicesAssembly)
+            .makeEditProfileViewModel(profile: profile)
         
-        configureNavigationBarAppearance()
+        let editViewController = EditProfileViewController(viewModel: editViewModel)
         navigationController?.pushViewController(editViewController, animated: true)
     }
 }

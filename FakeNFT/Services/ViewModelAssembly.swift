@@ -35,6 +35,13 @@ final class ViewModelAssembly {
         )
     }
     
+    func makeEditProfileViewModel(profile: Profile) -> EditProfileViewModel {
+        EditProfileViewModel(
+            profile: profile,
+            profileService: servicesAssembly.profileService
+        )
+    }
+    
     func makeMyNFTsViewModel() -> MyNFTsViewModel {
         let sortSettingsService = MyNFTSortSettingsServiceImpl()
         return MyNFTsViewModel(

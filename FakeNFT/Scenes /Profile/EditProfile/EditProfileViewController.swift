@@ -1,54 +1,67 @@
 import UIKit
+import Combine
 
 final class EditProfileViewController: UIViewController {
     
     // MARK: - Properties
-    
-    private let profile: Profile
-    private let onSave: (String, String, String, String) -> Void
-    var hasUnsavedChanges = false
-    
-    private var originalName = ""
-    private var originalDescription = ""
-    private var originalWebsite = ""
-    private var originalAvatar = ""
-    var currentAvatar = ""
+    private let viewModel: EditProfileViewModel
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - UI Components
+    private lazy var avatarImageView: AvatarImageView = {
+        let imageView = AvatarImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(avatarTapped))
+        imageView.addGestureRecognizer(tapGesture)
+        return imageView
+    }()
     
-    let avatarImageView = AvatarImageView()
-    private let nameTitleLabel = TitleLabel()
-    let nameTextField = EditProfileTextField()
-    private let descriptionTitleLabel = TitleLabel()
-    let descriptionTextView = EditProfileTextView()
-    private let websiteTitleLabel = TitleLabel()
-    let websiteTextField = EditProfileTextField()
-    let saveButton = SaveButton()
+    private lazy var nameTextField: EditProfileTextField = {
+        let textField = EditProfileTextField()
+        textField.placeholder = NSLocalizedString("EditProfile.namePlaceholder", comment: "Name")
+        textField.delegate = self
+        textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        return textField
+    }()
+    
+    private lazy var descriptionTextView: EditProfileTextView = {
+        let textView = EditProfileTextView()
+        textView.delegate = self
+        return textView
+    }()
+    
+    private lazy var websiteTextField: EditProfileTextField = {
+        let textField = EditProfileTextField()
+        textField.placeholder = NSLocalizedString("EditProfile.websitePlaceholder", comment: "Website")
+        textField.delegate = self
+        textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        return textField
+    }()
+    
+    private lazy var saveButton: SaveButton = {
+        let button = SaveButton()
+        button.addTarget(self, action: #selector(saveTapped), for: .touchUpInside)
+        return button
+    }()
     
     // MARK: - Init
-    
-    init(profile: Profile, onSave: @escaping (String, String, String, String) -> Void) {
-        self.profile = profile
-        self.onSave = onSave
+    init(viewModel: EditProfileViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
-    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        assertionFailure("init(coder:) has not been implemented")
-        return nil
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - Lifecycle
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupViews()
+        setupUI()
         setupConstraints()
+        setupBindings()
         setupInitialData()
         setupKeyboardDismiss()
-        setupAvatarTapGesture()
-        setupSaveButton()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -61,9 +74,8 @@ final class EditProfileViewController: UIViewController {
         tabBarController?.tabBar.isHidden = false
     }
     
-    // MARK: - Setup
-    
-    private func setupViews() {
+    // MARK: - Private Methods
+    private func setupUI() {
         view.backgroundColor = .white
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(
@@ -74,68 +86,62 @@ final class EditProfileViewController: UIViewController {
         )
         navigationItem.leftBarButtonItem?.tintColor = .black
         
-        [avatarImageView, nameTitleLabel, nameTextField, descriptionTitleLabel,
-         descriptionTextView, websiteTitleLabel, websiteTextField, saveButton].forEach {
+        [avatarImageView, nameTextField, descriptionTextView, websiteTextField, saveButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
         }
-        
-        setupTextFieldsDelegates()
-    }
-    
-    private func setupTextFieldsDelegates() {
-        nameTextField.delegate = self
-        websiteTextField.delegate = self
-        descriptionTextView.delegate = self
-        
-        nameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-        websiteTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-    }
-    
-    private func setupSaveButton() {
-        saveButton.addTarget(self, action: #selector(saveTapped), for: .touchUpInside)
     }
     
     private func setupConstraints() {
-        EditProfileLayout.applyConstraints(
-            for: view,
-            avatarImageView: avatarImageView,
-            nameTitleLabel: nameTitleLabel,
-            nameTextField: nameTextField,
-            descriptionTitleLabel: descriptionTitleLabel,
-            descriptionTextView: descriptionTextView,
-            websiteTitleLabel: websiteTitleLabel,
-            websiteTextField: websiteTextField,
-            saveButton: saveButton
-        )
+        NSLayoutConstraint.activate([
+            saveButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            saveButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            saveButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            saveButton.heightAnchor.constraint(equalToConstant: 60),
+            
+            avatarImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            avatarImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            avatarImageView.widthAnchor.constraint(equalToConstant: 70),
+            avatarImageView.heightAnchor.constraint(equalToConstant: 70),
+            
+            nameTextField.topAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: 24),
+            nameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            nameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            nameTextField.heightAnchor.constraint(equalToConstant: 44),
+            
+            descriptionTextView.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 24),
+            descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            descriptionTextView.heightAnchor.constraint(equalToConstant: 132),
+            
+            websiteTextField.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 24),
+            websiteTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            websiteTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            websiteTextField.heightAnchor.constraint(equalToConstant: 44),
+        ])
+    }
+    
+    private func setupBindings() {
+        viewModel.$saveButtonHidden
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] hidden in
+                self?.saveButton.isHidden = hidden
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$avatarURL
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] avatarURL in
+                self?.loadAvatar(avatarURL)
+            }
+            .store(in: &cancellables)
     }
     
     private func setupInitialData() {
-        if !profile.avatar.isEmpty {
-            let fullURLString = profile.avatar.hasPrefix("http") ? profile.avatar : "\(RequestConstants.baseURL)\(profile.avatar)"
-            if let avatarURL = URL(string: fullURLString) {
-                avatarImageView.loadImage(from: avatarURL)
-            }
-        } else {
-            avatarImageView.setPlaceholder()
-        }
-        
-        nameTextField.text = profile.name
-        descriptionTextView.text = profile.description ?? ""
-        websiteTextField.text = profile.website
-        
-        originalName = profile.name
-        originalDescription = profile.description ?? ""
-        originalWebsite = profile.website
-        originalAvatar = profile.avatar
-        currentAvatar = profile.avatar
-        
-        nameTextField.configure(placeholder: NSLocalizedString("EditProfile.namePlaceholder", comment: "Name"))
-        websiteTextField.configure(placeholder: NSLocalizedString("EditProfile.websitePlaceholder", comment: "Website"))
-        
-        nameTitleLabel.text = NSLocalizedString("EditProfile.name", comment: "Name")
-        descriptionTitleLabel.text = NSLocalizedString("EditProfile.description", comment: "Description")
-        websiteTitleLabel.text = NSLocalizedString("EditProfile.website", comment: "Website")
+        nameTextField.text = viewModel.name
+        descriptionTextView.text = viewModel.description
+        websiteTextField.text = viewModel.website
+        loadAvatar(viewModel.avatarURL)
     }
     
     private func setupKeyboardDismiss() {
@@ -144,19 +150,115 @@ final class EditProfileViewController: UIViewController {
         view.addGestureRecognizer(tapGesture)
     }
     
-    private func setupAvatarTapGesture() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(avatarTapped))
-        avatarImageView.addGestureRecognizer(tapGesture)
+    private func loadAvatar(_ urlString: String) {
+        guard !urlString.isEmpty else {
+            avatarImageView.setPlaceholder()
+            return
+        }
+        
+        let fullURLString = urlString.hasPrefix("http") ? urlString : "\(RequestConstants.baseURL)\(urlString)"
+        
+        if let url = URL(string: fullURLString) {
+            avatarImageView.loadImage(from: url)
+        } else {
+            avatarImageView.setPlaceholder()
+        }
+    }
+    
+    private func showPhotoActionSheet() {
+        let actionSheet = UIAlertController(
+            title: NSLocalizedString("EditProfile.photoProfile", comment: "Profile photo"),
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+        
+        let changeAction = UIAlertAction(
+            title: NSLocalizedString("EditProfile.changePhoto", comment: "Change photo"),
+            style: .default
+        ) { [weak self] _ in
+            self?.showPhotoURLAlert()
+        }
+        
+        let deleteAction = UIAlertAction(
+            title: NSLocalizedString("EditProfile.deletePhoto", comment: "Delete photo"),
+            style: .destructive
+        ) { [weak self] _ in
+            self?.viewModel.updateAvatar("")
+        }
+        
+        let cancelAction = UIAlertAction(
+            title: NSLocalizedString("EditProfile.cancel", comment: "Cancel"),
+            style: .cancel
+        )
+        
+        actionSheet.addAction(changeAction)
+        actionSheet.addAction(deleteAction)
+        actionSheet.addAction(cancelAction)
+        
+        present(actionSheet, animated: true)
+    }
+    
+    private func showPhotoURLAlert() {
+        let alert = UIAlertController(
+            title: NSLocalizedString("Ссылка на фото", comment: "Photo URL"),
+            message: nil,
+            preferredStyle: .alert
+        )
+        
+        alert.addTextField { textField in
+            textField.placeholder = NSLocalizedString("Введите ссылку на фото", comment: "Enter photo URL")
+            textField.keyboardType = .URL
+            textField.autocapitalizationType = .none
+        }
+        
+        let saveAction = UIAlertAction(
+            title: NSLocalizedString("Сохранить", comment: "Save"),
+            style: .default
+        ) { [weak self] _ in
+            guard let urlString = alert.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines),
+                  !urlString.isEmpty else { return }
+            
+            self?.viewModel.updateAvatar(urlString)
+        }
+        
+        let cancelAction = UIAlertAction(
+            title: NSLocalizedString("Отмена", comment: "Cancel"),
+            style: .cancel
+        )
+        
+        alert.addAction(saveAction)
+        alert.addAction(cancelAction)
+        present(alert, animated: true)
+    }
+    
+    private func showAlert(message: String) {
+        let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+    
+    private func showUnsavedChangesAlert() {
+        let alert = UIAlertController(
+            title: "Уверены, что хотите выйти?",
+            message: nil,
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "Остаться", style: .default))
+        alert.addAction(UIAlertAction(title: "Выйти", style: .default) { [weak self] _ in
+            self?.navigationController?.popViewController(animated: true)
+        })
+        
+        present(alert, animated: true)
     }
     
     // MARK: - Actions
-    
     @objc private func dismissKeyboard() {
         view.endEditing(true)
     }
     
     @objc private func backButtonTapped() {
-        if hasUnsavedChanges {
+        if viewModel.hasChanges {
             showUnsavedChangesAlert()
         } else {
             navigationController?.popViewController(animated: true)
@@ -164,54 +266,46 @@ final class EditProfileViewController: UIViewController {
     }
     
     @objc private func saveTapped() {
-        guard let name = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !name.isEmpty,
-              let website = websiteTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !website.isEmpty else {
-            showAlert(message: NSLocalizedString("EditProfile.fillAllFields", comment: "Please fill all fields"))
-            return
+        viewModel.saveProfile { [weak self] success in
+            if success {
+                self?.navigationController?.popViewController(animated: true)
+            } else {
+                self?.showAlert(message: NSLocalizedString("EditProfile.saveError", comment: "Save error"))
+            }
         }
-        
-        let description = descriptionTextView.text.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        if !ValidationHelper.isValidURL(website) {
-            showAlert(message: NSLocalizedString("EditProfile.invalidURL", comment: "Please enter a valid URL"))
-            return
-        }
-        
-        let avatarToSave = currentAvatar.isEmpty ? originalAvatar : currentAvatar
-        
-        print("Saving profile changes:")
-        print("Name: \(name)")
-        print("Description: \(description)")
-        print("Website: \(website)")
-        print("Avatar: \(avatarToSave)")
-        
-        onSave(name, description, website, avatarToSave)
-        navigationController?.popViewController(animated: true)
     }
     
-    @objc func avatarTapped() {
+    @objc private func avatarTapped() {
         showPhotoActionSheet()
     }
     
-    @objc func textFieldDidChange() {
-        checkForChanges()
+    @objc private func textFieldDidChange() {
+        viewModel.name = nameTextField.text ?? ""
+        viewModel.website = websiteTextField.text ?? ""
+    }
+}
+
+// MARK: - UITextFieldDelegate
+
+extension EditProfileViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+}
+
+// MARK: - UITextViewDelegate
+
+extension EditProfileViewController: UITextViewDelegate {
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if text == "\n" {
+            textView.resignFirstResponder()
+            return false
+        }
+        return true
     }
     
-    // MARK: - Change Detection
-    
-    func checkForChanges() {
-        let currentName = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        let currentDescription = descriptionTextView.text.trimmingCharacters(in: .whitespacesAndNewlines)
-        let currentWebsite = websiteTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        
-        let nameChanged = currentName != originalName
-        let descriptionChanged = currentDescription != originalDescription
-        let websiteChanged = currentWebsite != originalWebsite
-        let avatarChanged = avatarImageView.hasCustomImage && currentAvatar != originalAvatar
-        
-        hasUnsavedChanges = nameChanged || descriptionChanged || websiteChanged || avatarChanged
-        saveButton.isHidden = !hasUnsavedChanges
-        
-        print("Changes detected - Name: \(nameChanged), Description: \(descriptionChanged), Website: \(websiteChanged), Avatar: \(avatarChanged)")
+    func textViewDidChange(_ textView: UITextView) {
+        viewModel.description = textView.text
     }
 }
