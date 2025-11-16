@@ -19,8 +19,10 @@ final class ViewModelAssembly: ViewModelFactory {
     // MARK: - View Models
     
     func makeCatalogViewModel() -> CatalogViewModel {
-        CatalogViewModel(collectionService: servicesAssembly.collectionService,
-                         sortSettingsService: servicesAssembly.sortSettingsService)
+        CatalogViewModel(
+            collectionService: servicesAssembly.collectionService,
+            sortSettingsService: servicesAssembly.sortSettingsService
+        )
     }
     
     func makeProfileViewModel() -> ProfileViewModel {
@@ -40,11 +42,10 @@ final class ViewModelAssembly: ViewModelFactory {
     }
     
     func makeMyNFTsViewModel() -> MyNFTsViewModel {
-        let sortSettingsService = MyNFTSortSettingsServiceImpl()
-        return MyNFTsViewModel(
+        MyNFTsViewModel(
             cartService: servicesAssembly.cartService,
             nftService: servicesAssembly.nftService,
-            sortSettingsService: sortSettingsService
+            sortSettingsService: servicesAssembly.myNFTSortSettingsService
         )
     }
     
@@ -58,7 +59,7 @@ final class ViewModelAssembly: ViewModelFactory {
     // MARK: - CollectionView Models
     
     func makeCollectionViewModel(collection: NFTCollection) -> CollectionViewModel {
-        return CollectionViewModel(
+        CollectionViewModel(
             collection: collection,
             nftService: servicesAssembly.nftService,
             likeService: servicesAssembly.likeService,

@@ -11,7 +11,7 @@ final class MyNFTsViewModel: ObservableObject {
     // MARK: - Private Properties
     private let cartService: CartStorage
     private let nftService: NftService
-    private let sortSettingsService: MyNFTSortSettingsServiceImpl
+    private let sortSettingsService: MyNFTSortSettingsService
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Computed Properties
@@ -20,7 +20,7 @@ final class MyNFTsViewModel: ObservableObject {
     }
     
     // MARK: - Init
-    init(cartService: CartStorage, nftService: NftService, sortSettingsService: MyNFTSortSettingsServiceImpl) {
+    init(cartService: CartStorage, nftService: NftService, sortSettingsService: MyNFTSortSettingsService) {
         self.cartService = cartService
         self.nftService = nftService
         self.sortSettingsService = sortSettingsService

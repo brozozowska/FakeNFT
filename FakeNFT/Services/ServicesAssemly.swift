@@ -36,6 +36,10 @@ final class ServicesAssembly {
         SortSettingsServiceImpl()
     }
     
+    var myNFTSortSettingsService: MyNFTSortSettingsService {
+        MyNFTSortSettingsServiceImpl()
+    }
+    
     var profileService: ProfileService {
         ProfileServiceImpl(
             networkClient: networkClient,
