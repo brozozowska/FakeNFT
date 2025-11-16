@@ -34,14 +34,14 @@ final class ProfileServiceImpl: ProfileService {
         
         let request = PutProfileRequest(
             id: "1",
-            likes: likesString,
+            likes: profile.likes ?? likesString,
             name: profile.name,
             avatar: profile.avatar,
             description: profile.description,
             website: profile.website
         )
         
-        print("Updating profile with: name=\(profile.name), avatar=\(profile.avatar), description=\(profile.description), website=\(profile.website), likes=\(likesString)")
+        print("Updating profile with: name=\(profile.name ?? "nil"), avatar=\(profile.avatar ?? "nil"), description=\(profile.description ?? "nil"), website=\(profile.website ?? "nil"), likes=\(likesString)")
         
         networkClient.send(request: request, type: Profile.self) { result in
             switch result {

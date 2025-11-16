@@ -75,21 +75,22 @@ final class LikeStorageImpl: LikeStorage {
     }
     
     private func updateLikesOnServer(completion: ((Bool) -> Void)? = nil) {
+        guard let currentProfile else {
+            print("Error: Cannot update likes - current profile is not loaded")
+            completion?(false)
+            return
+        }
+        
         let likesString = Array(likedNFTs).joined(separator: ",")
         print("Updating likes on server: \(likesString)")
-        
-        let profileName = currentProfile?.name ?? "Студентус Практикумс"
-        let avatarURL = currentProfile?.avatar ?? "https://code.s3.yandex.net/landings-v2-ios-developer/space.PNG"
-        let profileDescription = currentProfile?.description ?? "Прошел 5-й спринт, и этот пройду"
-        let website = currentProfile?.website ?? "https://practicum.yandex.ru/ios-developer"
         
         let request = PutProfileRequest(
             id: profileId,
             likes: likesString,
-            name: profileName,
-            avatar: avatarURL,
-            description: profileDescription,
-            website: website
+            name: nil,
+            avatar: nil,
+            description: nil,
+            website: nil
         )
         
         if let dto = request.dto {
