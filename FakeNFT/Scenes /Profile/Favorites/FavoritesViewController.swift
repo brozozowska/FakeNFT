@@ -4,10 +4,12 @@ import Combine
 final class FavoritesViewController: UIViewController {
     
     // MARK: - Properties
+    
     private let viewModel: FavoritesViewModel
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - UI Components
+    
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 8
@@ -39,6 +41,7 @@ final class FavoritesViewController: UIViewController {
     }()
     
     // MARK: - Init
+    
     init(viewModel: FavoritesViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -51,19 +54,20 @@ final class FavoritesViewController: UIViewController {
     }
     
     // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
         setupConstraints()
         setupBindings()
-        setupNotifications()
         
         print("FavoritesViewController loaded")
+        viewModel.loadFavorites()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print("FavoritesViewController will appear - loading favorites")
+        print("FavoritesViewController will appear")
     }
     
     deinit {
@@ -115,35 +119,10 @@ final class FavoritesViewController: UIViewController {
             }
             .store(in: &cancellables)
     }
-    
-    private func setupNotifications() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(likesDidLoadFromServer),
-            name: NSNotification.Name("LikesDidLoadFromServer"),
-            object: nil
-        )
-        
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(likesDidChange),
-            name: NSNotification.Name("LikesDidChange"),
-            object: nil
-        )
-    }
-    
-    @objc private func likesDidLoadFromServer() {
-        print("Likes data loaded from server - reloading Favorites")
-        viewModel.loadFavorites()
-    }
-    
-    @objc private func likesDidChange() {
-        print("Likes changed - reloading Favorites")
-        viewModel.loadFavorites()
-    }
 }
 
 // MARK: - UICollectionViewDataSource & Delegate
+
 extension FavoritesViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         viewModel.nfts.count

@@ -4,16 +4,19 @@ import Combine
 final class FavoritesViewModel: ObservableObject {
     
     // MARK: - Published Properties
+    
     @Published var nfts: [Nft] = []
     @Published var isLoading: Bool = false
     @Published var errorModel: ErrorModel?
     
     // MARK: - Private Properties
+    
     private let likeService: LikeStorage
     private let nftService: NftService
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Init
+    
     init(likeService: LikeStorage, nftService: NftService) {
         self.likeService = likeService
         self.nftService = nftService
@@ -27,6 +30,7 @@ final class FavoritesViewModel: ObservableObject {
     }
     
     // MARK: - Public Methods
+    
     func loadFavorites() {
         isLoading = true
         errorModel = nil
@@ -64,6 +68,7 @@ final class FavoritesViewModel: ObservableObject {
     }
     
     // MARK: - Private Methods
+    
     private func loadNFTs(by ids: [String]) {
         guard !ids.isEmpty else {
             self.isLoading = false

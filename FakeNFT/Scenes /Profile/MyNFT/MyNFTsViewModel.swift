@@ -4,22 +4,26 @@ import Combine
 final class MyNFTsViewModel: ObservableObject {
     
     // MARK: - Published Properties
+    
     @Published var nfts: [Nft] = []
     @Published var isLoading: Bool = false
     @Published var errorModel: ErrorModel?
     
     // MARK: - Private Properties
+    
     private let cartService: CartStorage
     private let nftService: NftService
     private let sortSettingsService: MyNFTSortSettingsService
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Computed Properties
+    
     var currentSortOption: MyNFTSortOption {
         sortSettingsService.currentSortOption
     }
     
     // MARK: - Init
+    
     init(cartService: CartStorage, nftService: NftService, sortSettingsService: MyNFTSortSettingsService) {
         self.cartService = cartService
         self.nftService = nftService
@@ -29,6 +33,7 @@ final class MyNFTsViewModel: ObservableObject {
     }
     
     // MARK: - Public Methods
+    
     func loadMyNFTs() {
         isLoading = true
         errorModel = nil
@@ -67,6 +72,7 @@ final class MyNFTsViewModel: ObservableObject {
     }
     
     // MARK: - Private Methods
+    
     private func setupNotifications() {
         NotificationCenter.default.publisher(for: NSNotification.Name("CartDidChange"))
             .sink { [weak self] _ in
