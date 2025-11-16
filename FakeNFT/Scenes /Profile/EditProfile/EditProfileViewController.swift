@@ -27,8 +27,8 @@ final class EditProfileViewController: UIViewController {
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - UI Components
-    private lazy var avatarImageView: AvatarImageView = {
-        let imageView = AvatarImageView()
+    private lazy var avatarImageView: AvatarWithCameraView = {
+        let imageView = AvatarWithCameraView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(avatarTapped))
         imageView.addGestureRecognizer(tapGesture)

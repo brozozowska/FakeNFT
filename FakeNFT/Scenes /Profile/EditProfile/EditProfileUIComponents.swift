@@ -3,14 +3,17 @@ import Kingfisher
 
 // MARK: - Avatar Image View
 
-final class AvatarImageView: UIImageView {
+final class AvatarWithCameraView: UIView {
+    let avatarImageView = UIImageView()
+    private let cameraIconView = UIImageView()
+    
     var hasCustomImage: Bool {
-        return image != UIImage(named: "changeAvatar")
+        return avatarImageView.image != UIImage(named: "Avatar")
     }
     
     init() {
         super.init(frame: .zero)
-        configure()
+        setupView()
     }
     
     required init?(coder: NSCoder) {
@@ -18,40 +21,62 @@ final class AvatarImageView: UIImageView {
         return nil
     }
     
-    private func configure() {
-        contentMode = .scaleAspectFill
-        layer.cornerRadius = 35
-        layer.masksToBounds = true
-        backgroundColor = .lightGray
-        image = UIImage(named: "changeAvatar")
-        isUserInteractionEnabled = true
+    private func setupView() {
+        avatarImageView.contentMode = .scaleAspectFill
+        avatarImageView.layer.cornerRadius = 35
+        avatarImageView.layer.cornerCurve = .continuous
+        avatarImageView.layer.masksToBounds = true
+        avatarImageView.backgroundColor = .systemGray5
+        avatarImageView.image = UIImage(named: "Avatar")
+        avatarImageView.isUserInteractionEnabled = true
+        
+        let cameraConfig = UIImage.SymbolConfiguration(pointSize: 12, weight: .medium)
+        cameraIconView.image = UIImage(systemName: "camera.fill", withConfiguration: cameraConfig)
+        cameraIconView.tintColor = .white
+        cameraIconView.backgroundColor = .black
+        cameraIconView.contentMode = .center
+        cameraIconView.layer.cornerRadius = 14
+        cameraIconView.layer.cornerCurve = .continuous
+        cameraIconView.layer.masksToBounds = true
+        cameraIconView.layer.borderWidth = 4
+        cameraIconView.layer.borderColor = UIColor.systemBackground.cgColor
+        
+        addSubview(avatarImageView)
+        addSubview(cameraIconView)
+        
+        avatarImageView.translatesAutoresizingMaskIntoConstraints = false
+        cameraIconView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            avatarImageView.topAnchor.constraint(equalTo: topAnchor),
+            avatarImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            avatarImageView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            avatarImageView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            
+            cameraIconView.widthAnchor.constraint(equalToConstant: 28),
+            cameraIconView.heightAnchor.constraint(equalToConstant: 28),
+            cameraIconView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 6),
+            cameraIconView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 6)
+        ])
     }
-    
     func loadImage(from url: URL) {
-        let modifier = AnyModifier { request in
-            var r = request
-            r.setValue(RequestConstants.token, forHTTPHeaderField: "X-Practicum-Mobile-Token")
-            return r
+            let modifier = AnyModifier { request in
+                var r = request
+                r.setValue(RequestConstants.token, forHTTPHeaderField: "X-Practicum-Mobile-Token")
+                return r
+            }
+            
+            avatarImageView.kf.setImage(
+                with: url,
+                placeholder: UIImage(named: "Avatar"),
+                options: [.requestModifier(modifier)]
+            )
         }
         
-        kf.setImage(
-            with: url,
-            placeholder: UIImage(named: "changeAvatar"),
-            options: [.requestModifier(modifier)]
-        ) { result in
-            switch result {
-            case .success(_):
-                print("Successfully loaded avatar image from: \(url)")
-            case .failure(let error):
-                print("Failed to load avatar image: \(error.localizedDescription)")
-            }
+        func setPlaceholder() {
+            avatarImageView.image = UIImage(named: "Avatar")
         }
     }
-    
-    func setPlaceholder() {
-        image = UIImage(named: "changeAvatar")
-    }
-}
 
 // MARK: - Title Label
 
