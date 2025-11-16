@@ -259,19 +259,19 @@ final class EditProfileViewController: UIViewController {
     
     private func showPhotoURLAlert() {
         let alert = UIAlertController(
-            title: NSLocalizedString("Ссылка на фото", comment: "Photo URL"),
+            title: NSLocalizedString("EditProfile.photoURL.title", comment: "Photo URL"),
             message: nil,
             preferredStyle: .alert
         )
         
         alert.addTextField { textField in
-            textField.placeholder = NSLocalizedString("Введите ссылку на фото", comment: "Enter photo URL")
+            textField.placeholder = NSLocalizedString("EditProfile.photoURL.placeholder", comment: "Enter photo URL")
             textField.keyboardType = .URL
             textField.autocapitalizationType = .none
         }
         
         let saveAction = UIAlertAction(
-            title: NSLocalizedString("Сохранить", comment: "Save"),
+            title: NSLocalizedString("EditProfile.photoURL.save", comment: "Save"),
             style: .default
         ) { [weak self] _ in
             guard let urlString = alert.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines),
@@ -281,7 +281,7 @@ final class EditProfileViewController: UIViewController {
         }
         
         let cancelAction = UIAlertAction(
-            title: NSLocalizedString("Отмена", comment: "Cancel"),
+            title: NSLocalizedString("EditProfile.photoURL.cancel", comment: "Cancel"),
             style: .cancel
         )
         
@@ -291,20 +291,34 @@ final class EditProfileViewController: UIViewController {
     }
     
     private func showAlert(message: String) {
-        let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        let alert = UIAlertController(
+            title: nil,
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(
+            title: NSLocalizedString("General.ok", comment: "OK"),
+            style: .default
+        ))
         present(alert, animated: true)
     }
     
     private func showUnsavedChangesAlert() {
         let alert = UIAlertController(
-            title: "Уверены, что хотите выйти?",
+            title: NSLocalizedString("EditProfile.unsavedChanges.title", comment: "Unsaved changes title"),
             message: nil,
             preferredStyle: .alert
         )
         
-        alert.addAction(UIAlertAction(title: "Остаться", style: .default))
-        alert.addAction(UIAlertAction(title: "Выйти", style: .default) { [weak self] _ in
+        alert.addAction(UIAlertAction(
+            title: NSLocalizedString("EditProfile.unsavedChanges.stay", comment: "Stay"),
+            style: .default
+        ))
+        
+        alert.addAction(UIAlertAction(
+            title: NSLocalizedString("EditProfile.unsavedChanges.exit", comment: "Exit"),
+            style: .default
+        ) { [weak self] _ in
             self?.navigationController?.popViewController(animated: true)
         })
         
