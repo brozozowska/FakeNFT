@@ -1,11 +1,10 @@
 import Foundation
 
-typealias ProfileCompletion = (Result<Profile, Error>) -> Void
-typealias ProfileUpdateCompletion = (Result<Profile, Error>) -> Void
+
 
 protocol ProfileService {
-    func loadProfile(id: String, completion: @escaping ProfileCompletion)
-    func updateProfile(_ profile: ProfileUpdate, completion: @escaping ProfileUpdateCompletion)
+    func loadProfile(id: String, completion: @escaping (Result<Profile, Error>) -> Void)
+    func updateProfile(_ profile: ProfileUpdate, completion: @escaping (Result<Profile, Error>) -> Void)
 }
 
 final class ProfileServiceImpl: ProfileService {
@@ -17,7 +16,7 @@ final class ProfileServiceImpl: ProfileService {
         self.likeStorage = likeStorage
     }
     
-    func loadProfile(id: String, completion: @escaping ProfileCompletion) {
+    func loadProfile(id: String, completion: @escaping (Result<Profile, Error>) -> Void) {
         let request = GetProfileRequest(id: id)
         networkClient.send(request: request, type: Profile.self) { result in
             switch result {
@@ -29,7 +28,7 @@ final class ProfileServiceImpl: ProfileService {
         }
     }
     
-    func updateProfile(_ profile: ProfileUpdate, completion: @escaping ProfileUpdateCompletion) {
+    func updateProfile(_ profile: ProfileUpdate, completion: @escaping (Result<Profile, Error>) -> Void) {
         let likedNFTs = likeStorage.getLikedNFTs()
         let likesString = Array(likedNFTs).joined(separator: ",")
         
