@@ -17,7 +17,7 @@ final class FavoritesViewController: UIViewController {
         layout.sectionInset = UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.register(FavoriteNFTCell.self, forCellWithReuseIdentifier: "FavoriteNFTCell")
+        collectionView.register(FavoriteNFTCell.self)
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.backgroundColor = .white
@@ -129,9 +129,7 @@ extension FavoritesViewController: UICollectionViewDataSource, UICollectionViewD
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FavoriteNFTCell", for: indexPath) as? FavoriteNFTCell else {
-            return UICollectionViewCell()
-        }
+        let cell: FavoriteNFTCell = collectionView.dequeueReusableCell(indexPath: indexPath)
         
         let nft = viewModel.nfts[indexPath.row]
         let isLiked = viewModel.isLiked(nftId: nft.id)
