@@ -23,7 +23,12 @@ final class FavoritesViewModel: ObservableObject {
         
         NotificationCenter.default.publisher(for: NSNotification.Name("LikesDidChange"))
             .sink { [weak self] _ in
-                print("LikesDidChange notification received in FavoritesViewModel")
+                self?.loadFavorites()
+            }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: NSNotification.Name("LikesDidLoadFromServer"))
+            .sink { [weak self] _ in
                 self?.loadFavorites()
             }
             .store(in: &cancellables)
@@ -36,12 +41,10 @@ final class FavoritesViewModel: ObservableObject {
         errorModel = nil
         
         let likedNFTs = Array(likeService.getLikedNFTs())
-        print("Loading Favorites from likes: \(likedNFTs.count) items - \(likedNFTs)")
         
         if likedNFTs.isEmpty {
-            self.isLoading = false
-            self.nfts = []
-            print("No favorite NFTs")
+            isLoading = false
+            nfts = []
             return
         }
         
@@ -50,15 +53,14 @@ final class FavoritesViewModel: ObservableObject {
     
     func toggleFavorite(nftId: String) {
         likeService.toggleLike(for: nftId) { [weak self] success in
-            if success {
-                print("Successfully toggled like for NFT \(nftId)")
-            } else {
-                print("Failed to toggle like")
-                self?.errorModel = ErrorModel(
-                    message: NSLocalizedString("Error.toggleLike", comment: "Failed to update like"),
-                    actionText: NSLocalizedString("Error.repeat", comment: "Try again"),
-                    action: { self?.toggleFavorite(nftId: nftId) }
-                )
+            DispatchQueue.main.async {
+                if !success {
+                    self?.errorModel = ErrorModel(
+                        message: NSLocalizedString("Error.toggleLike", comment: ""),
+                        actionText: NSLocalizedString("Error.repeat", comment: ""),
+                        action: { self?.toggleFavorite(nftId: nftId) }
+                    )
+                }
             }
         }
     }
@@ -70,29 +72,14 @@ final class FavoritesViewModel: ObservableObject {
     // MARK: - Private Methods
     
     private func loadNFTs(by ids: [String]) {
-        guard !ids.isEmpty else {
-            self.isLoading = false
-            self.nfts = []
-            print("No NFT IDs to load")
-            return
-        }
-        
-        print("Loading \(ids.count) NFTs: \(ids)")
-        
         let group = DispatchGroup()
         var loadedNFTs: [Nft] = []
-        var loadError: Error?
         
         for nftId in ids {
             group.enter()
             nftService.loadNft(id: nftId) { result in
-                switch result {
-                case .success(let nft):
-                    print("Successfully loaded NFT: \(nft.name), id: \(nft.id)")
+                if case .success(let nft) = result {
                     loadedNFTs.append(nft)
-                case .failure(let error):
-                    print("Failed to load NFT \(nftId): \(error)")
-                    loadError = error
                 }
                 group.leave()
             }
@@ -100,21 +87,15 @@ final class FavoritesViewModel: ObservableObject {
         
         group.notify(queue: .main) { [weak self] in
             self?.isLoading = false
-            if let error = loadError {
-                print("Error loading NFTs: \(error)")
-                self?.errorModel = self?.makeErrorModel(error)
-            } else {
-                print("Successfully loaded \(loadedNFTs.count) NFTs for Favorites")
-                self?.nfts = loadedNFTs
-            }
+            self?.nfts = loadedNFTs
         }
     }
     
     private func makeErrorModel(_ error: Error) -> ErrorModel {
-        let message = NSLocalizedString("Error.network", comment: "Network error")
-        let actionText = NSLocalizedString("Error.repeat", comment: "Try again")
-        return ErrorModel(message: message, actionText: actionText) { [weak self] in
-            self?.loadFavorites()
-        }
+        ErrorModel(
+            message: NSLocalizedString("Error.network", comment: ""),
+            actionText: NSLocalizedString("Error.repeat", comment: ""),
+            action: { [weak self] in self?.loadFavorites() }
+        )
     }
 }
