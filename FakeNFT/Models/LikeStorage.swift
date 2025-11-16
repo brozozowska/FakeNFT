@@ -75,7 +75,7 @@ final class LikeStorageImpl: LikeStorage {
     }
     
     private func updateLikesOnServer(completion: ((Bool) -> Void)? = nil) {
-        guard let currentProfile else {
+        guard currentProfile != nil else {
             print("Error: Cannot update likes - current profile is not loaded")
             completion?(false)
             return
@@ -101,6 +101,7 @@ final class LikeStorageImpl: LikeStorage {
             switch result {
             case .success(let profile):
                 print("Likes updated successfully. Profile name: \(profile.name), liked NFTs: \(profile.likes.count)")
+                self?.likedNFTs = Set(profile.likes)
                 self?.currentProfile = profile
                 completion?(true)
             case .failure(let error):
