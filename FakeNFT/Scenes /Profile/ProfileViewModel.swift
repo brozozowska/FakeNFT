@@ -11,15 +11,12 @@ final class ProfileViewModel: ObservableObject {
     
     // MARK: - Private Properties
     private let profileService: ProfileService
-    private let nftService: NftService
-    private var cancellables = Set<AnyCancellable>()
     private let profileId = "1"
     
     // MARK: - Init
     
-    init(profileService: ProfileService, nftService: NftService) {
+    init(profileService: ProfileService) {
         self.profileService = profileService
-        self.nftService = nftService
         loadProfile()
     }
     

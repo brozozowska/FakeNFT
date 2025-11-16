@@ -25,8 +25,7 @@ final class ViewModelAssembly: ViewModelFactory {
     
     func makeProfileViewModel() -> ProfileViewModel {
         ProfileViewModel(
-            profileService: servicesAssembly.profileService,
-            nftService: servicesAssembly.nftService
+            profileService: servicesAssembly.profileService
         )
     }
     
