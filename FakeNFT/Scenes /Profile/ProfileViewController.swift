@@ -85,7 +85,7 @@ final class ProfileViewController: UIViewController {
     
     private lazy var editButton: UIBarButtonItem = {
         let button = UIBarButtonItem(
-            image: UIImage(named: "Edit"),
+            image: UIImage(resource: .edit),
             style: .plain,
             target: self,
             action: #selector(editButtonTapped)

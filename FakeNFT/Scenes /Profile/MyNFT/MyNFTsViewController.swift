@@ -32,7 +32,7 @@ final class MyNFTsViewController: UIViewController {
     
     private lazy var sortButton: UIBarButtonItem = {
         let button = UIBarButtonItem(
-            image: UIImage(named: "sort-lines"),
+            image: UIImage(resource: .sortLines),
             style: .plain,
             target: self,
             action: #selector(sortButtonTapped)

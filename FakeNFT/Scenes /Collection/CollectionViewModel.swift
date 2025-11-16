@@ -28,7 +28,6 @@ final class CollectionViewModel: ObservableObject {
     private let cartService: CartStorage
     private var cancellables = Set<AnyCancellable>()
     
-    // ДОБАВЛЯЕМ: Трекер для отслеживания обновляющихся NFT
     private var updatingNFTs: Set<String> = []
     
     // MARK: - Init

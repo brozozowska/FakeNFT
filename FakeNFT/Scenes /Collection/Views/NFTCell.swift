@@ -23,8 +23,8 @@ final class NFTCell: UICollectionViewCell {
     
     private lazy var likeButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "like_inactive"), for: .normal)
-        button.setImage(UIImage(named: "like_active"), for: .selected)
+        button.setImage(UIImage(resource: .likeInactive), for: .normal)
+        button.setImage(UIImage(resource: .likeActive), for: .selected)
         button.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -51,8 +51,8 @@ final class NFTCell: UICollectionViewCell {
     
     private lazy var cartButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "cart_add"), for: .normal)
-        button.setImage(UIImage(named: "cart_remove"), for: .selected)
+        button.setImage(UIImage(resource: .cartAdd), for: .normal)
+        button.setImage(UIImage(resource: .cartRemove), for: .selected)
         button.addTarget(self, action: #selector(cartButtonTapped), for: .touchUpInside)
         return button
     }()
