@@ -40,7 +40,7 @@ final class AvatarImageView: UIImageView {
             options: [.requestModifier(modifier)]
         ) { result in
             switch result {
-            case .success(let value):
+            case .success(_):
                 print("Successfully loaded avatar image from: \(url)")
             case .failure(let error):
                 print("Failed to load avatar image: \(error.localizedDescription)")

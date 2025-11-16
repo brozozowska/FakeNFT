@@ -7,14 +7,14 @@ final class TabBarController: UITabBarController {
     
     private let catalogTabBarItem = UITabBarItem(
         title: NSLocalizedString("Tab.catalog", comment: ""),
-        image: UIImage(named: "catalog_Noactive"),
-        selectedImage: UIImage(named: "catalog_active")
+        image: UIImage(resource: .catalogNoactive),
+        selectedImage: UIImage(resource: .catalogActive)
     )
     
     private let profileTabBarItem = UITabBarItem(
         title: NSLocalizedString("Tab.profile", comment: ""),
-        image: UIImage(named: "profile_Noactive"),
-        selectedImage: UIImage(named: "profile_active")
+        image: UIImage(resource: .profileNoactive),
+        selectedImage: UIImage(resource: .profileActive)
     )
     
     override func viewDidLoad() {
