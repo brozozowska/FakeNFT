@@ -26,7 +26,10 @@ final class TabBarController: UITabBarController {
         catalogNavigationController.tabBarItem = catalogTabBarItem
         
         let profileViewModel = viewModelAssembly.makeProfileViewModel()
-        let profileController = ProfileViewController(viewModel: profileViewModel, servicesAssembly: servicesAssembly)
+        let profileController = ProfileViewController(
+            viewModel: profileViewModel,
+            viewModelFactory: viewModelAssembly
+        )
         let profileNavigationController = UINavigationController(rootViewController: profileController)
         profileNavigationController.tabBarItem = profileTabBarItem
         

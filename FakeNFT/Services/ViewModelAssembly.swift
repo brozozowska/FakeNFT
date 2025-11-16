@@ -1,6 +1,14 @@
 import Foundation
 
-final class ViewModelAssembly {
+// MARK: - ViewModelFactory Protocol
+
+protocol ViewModelFactory {
+    func makeEditProfileViewModel(profile: Profile) -> EditProfileViewModel
+    func makeMyNFTsViewModel() -> MyNFTsViewModel
+    func makeFavoritesViewModel() -> FavoritesViewModel
+}
+
+final class ViewModelAssembly: ViewModelFactory {
     
     private let servicesAssembly: ServicesAssembly
     
@@ -15,25 +23,14 @@ final class ViewModelAssembly {
                          sortSettingsService: servicesAssembly.sortSettingsService)
     }
     
-    // MARK: - CollectionView Models
-    
-    func makeCollectionViewModel(collection: NFTCollection) -> CollectionViewModel {
-        return CollectionViewModel(
-            collection: collection,
-            nftService: servicesAssembly.nftService,
-            likeService: servicesAssembly.likeService,
-            cartService: servicesAssembly.cartService
-        )
-    }
-    
-    // MARK: - ProfileView Models
-    
     func makeProfileViewModel() -> ProfileViewModel {
         ProfileViewModel(
             profileService: servicesAssembly.profileService,
             nftService: servicesAssembly.nftService
         )
     }
+    
+    // MARK: - ViewModelFactory Methods
     
     func makeEditProfileViewModel(profile: Profile) -> EditProfileViewModel {
         EditProfileViewModel(
@@ -55,6 +52,17 @@ final class ViewModelAssembly {
         FavoritesViewModel(
             likeService: servicesAssembly.likeService,
             nftService: servicesAssembly.nftService
+        )
+    }
+    
+    // MARK: - CollectionView Models
+    
+    func makeCollectionViewModel(collection: NFTCollection) -> CollectionViewModel {
+        return CollectionViewModel(
+            collection: collection,
+            nftService: servicesAssembly.nftService,
+            likeService: servicesAssembly.likeService,
+            cartService: servicesAssembly.cartService
         )
     }
 }

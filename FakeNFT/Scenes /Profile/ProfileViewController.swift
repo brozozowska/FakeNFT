@@ -29,7 +29,7 @@ final class ProfileViewController: UIViewController {
     // MARK: - Properties
     
     private let viewModel: ProfileViewModel
-    private let servicesAssembly: ServicesAssembly
+    private let viewModelFactory: ViewModelFactory
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - UI Components
@@ -102,15 +102,15 @@ final class ProfileViewController: UIViewController {
     
     // MARK: - Init
     
-    init(viewModel: ProfileViewModel, servicesAssembly: ServicesAssembly) {
+    init(viewModel: ProfileViewModel, viewModelFactory: ViewModelFactory) {
         self.viewModel = viewModel
-        self.servicesAssembly = servicesAssembly
+        self.viewModelFactory = viewModelFactory
         super.init(nibName: nil, bundle: nil)
     }
     
     @available(*, unavailable)
     required init?(coder: NSCoder) {
-        assertionFailure("init(coder:) is not supported for ProfileViewController. Use init(viewModel:) instead.")
+        assertionFailure("init(coder:) is not supported for ProfileViewController. Use init(viewModel:viewModelFactory:) instead.")
         return nil
     }
     
@@ -132,14 +132,16 @@ final class ProfileViewController: UIViewController {
     // MARK: - Private Methods
     
     private func setupNavigationBar() {
-        navigationItem.rightBarButtonItem = editButton
+        setupNavigationItems()
         configureNavigationBarAppearance()
     }
     
+    private func setupNavigationItems() {
+        navigationItem.rightBarButtonItem = editButton
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+    }
+    
     private func configureNavigationBarAppearance() {
-        let backButton = UIBarButtonItem()
-        backButton.title = ""
-        navigationItem.backBarButtonItem = backButton
         navigationController?.navigationBar.tintColor = .black
     }
     
@@ -260,9 +262,7 @@ final class ProfileViewController: UIViewController {
     @objc private func editButtonTapped() {
         guard let profile = viewModel.profile else { return }
         
-        let editViewModel = ViewModelAssembly(servicesAssembly: servicesAssembly)
-            .makeEditProfileViewModel(profile: profile)
-        
+        let editViewModel = viewModelFactory.makeEditProfileViewModel(profile: profile)
         let editViewController = EditProfileViewController(viewModel: editViewModel)
         navigationController?.pushViewController(editViewController, animated: true)
     }
@@ -296,11 +296,11 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.row {
         case 0:
-            let myNFTsViewModel = ViewModelAssembly(servicesAssembly: servicesAssembly).makeMyNFTsViewModel()
+            let myNFTsViewModel = viewModelFactory.makeMyNFTsViewModel()
             let myNFTsViewController = MyNFTsViewController(viewModel: myNFTsViewModel)
             navigationController?.pushViewController(myNFTsViewController, animated: true)
         case 1:
-            let favoritesViewModel = ViewModelAssembly(servicesAssembly: servicesAssembly).makeFavoritesViewModel()
+            let favoritesViewModel = viewModelFactory.makeFavoritesViewModel()
             let favoritesViewController = FavoritesViewController(viewModel: favoritesViewModel)
             navigationController?.pushViewController(favoritesViewController, animated: true)
         default:
