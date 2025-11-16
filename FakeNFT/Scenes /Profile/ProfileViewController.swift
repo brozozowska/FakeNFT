@@ -102,6 +102,11 @@ final class ProfileViewController: UIViewController {
         setupBindings()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.loadProfile()
+    }
+    
     // MARK: - Private Methods
     
     private func setupNavigationBar() {

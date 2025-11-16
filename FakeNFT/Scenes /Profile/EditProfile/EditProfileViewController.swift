@@ -16,6 +16,12 @@ final class EditProfileViewController: UIViewController {
         return imageView
     }()
     
+    private lazy var nameTitleLabel: TitleLabel = {
+        let label = TitleLabel()
+        label.text = NSLocalizedString("EditProfile.name", comment: "Name")
+        return label
+    }()
+    
     private lazy var nameTextField: EditProfileTextField = {
         let textField = EditProfileTextField()
         textField.placeholder = NSLocalizedString("EditProfile.namePlaceholder", comment: "Name")
@@ -24,10 +30,22 @@ final class EditProfileViewController: UIViewController {
         return textField
     }()
     
+    private lazy var descriptionTitleLabel: TitleLabel = {
+        let label = TitleLabel()
+        label.text = NSLocalizedString("EditProfile.description", comment: "Description")
+        return label
+    }()
+    
     private lazy var descriptionTextView: EditProfileTextView = {
         let textView = EditProfileTextView()
         textView.delegate = self
         return textView
+    }()
+    
+    private lazy var websiteTitleLabel: TitleLabel = {
+        let label = TitleLabel()
+        label.text = NSLocalizedString("EditProfile.website", comment: "Website")
+        return label
     }()
     
     private lazy var websiteTextField: EditProfileTextField = {
@@ -50,8 +68,10 @@ final class EditProfileViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        assertionFailure("init(coder:) has not been implemented")
+        return nil
     }
     
     // MARK: - Lifecycle
@@ -86,7 +106,15 @@ final class EditProfileViewController: UIViewController {
         )
         navigationItem.leftBarButtonItem?.tintColor = .black
         
-        [avatarImageView, nameTextField, descriptionTextView, websiteTextField, saveButton].forEach {
+        let uiComponents: [UIView] = [
+            avatarImageView,
+            nameTitleLabel, nameTextField,
+            descriptionTitleLabel, descriptionTextView,
+            websiteTitleLabel, websiteTextField,
+            saveButton
+        ]
+        
+        uiComponents.forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
         }
@@ -99,22 +127,34 @@ final class EditProfileViewController: UIViewController {
             saveButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
             saveButton.heightAnchor.constraint(equalToConstant: 60),
             
-            avatarImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            avatarImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            avatarImageView.widthAnchor.constraint(equalToConstant: 70),
+            avatarImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 80),
+            avatarImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 151.22),
+            avatarImageView.widthAnchor.constraint(equalToConstant: 72.57),
             avatarImageView.heightAnchor.constraint(equalToConstant: 70),
             
-            nameTextField.topAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: 24),
+            nameTitleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 174),
+            nameTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            nameTitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
+            nameTextField.topAnchor.constraint(equalTo: nameTitleLabel.bottomAnchor, constant: 8),
             nameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             nameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             nameTextField.heightAnchor.constraint(equalToConstant: 44),
             
-            descriptionTextView.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 24),
+            descriptionTitleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 278),
+            descriptionTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            descriptionTitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
+            descriptionTextView.topAnchor.constraint(equalTo: descriptionTitleLabel.bottomAnchor, constant: 8),
             descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             descriptionTextView.heightAnchor.constraint(equalToConstant: 132),
             
-            websiteTextField.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 24),
+            websiteTitleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 470),
+            websiteTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            websiteTitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
+            websiteTextField.topAnchor.constraint(equalTo: websiteTitleLabel.bottomAnchor, constant: 8),
             websiteTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             websiteTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             websiteTextField.heightAnchor.constraint(equalToConstant: 44),
