@@ -102,11 +102,8 @@ final class CollectionViewModel: ObservableObject {
         objectWillChange.send()
         
         likeService.toggleLike(for: nftId) { [weak self] success in
-            DispatchQueue.main.async {
-                self?.updatingNFTs.remove(nftId)
-                self?.objectWillChange.send()
-                print("Like operation completed for NFT: \(nftId). Success: \(success)")
-            }
+            self?.updatingNFTs.remove(nftId)
+            self?.objectWillChange.send()
         }
     }
     
@@ -120,11 +117,8 @@ final class CollectionViewModel: ObservableObject {
         objectWillChange.send()
         
         cartService.toggleCart(for: nftId) { [weak self] success in
-            DispatchQueue.main.async {
-                self?.updatingNFTs.remove(nftId)
-                self?.objectWillChange.send()
-                print("Cart operation completed for NFT: \(nftId). Success: \(success)")
-            }
+            self?.updatingNFTs.remove(nftId)
+            self?.objectWillChange.send()
         }
     }
     

@@ -50,13 +50,11 @@ final class FavoritesViewModel: ObservableObject {
                 print("Successfully toggled like for NFT \(nftId)")
             } else {
                 print("Failed to toggle like")
-                DispatchQueue.main.async {
-                    self?.errorModel = ErrorModel(
-                        message: NSLocalizedString("Error.toggleLike", comment: "Failed to update like"),
-                        actionText: NSLocalizedString("Error.repeat", comment: "Try again"),
-                        action: { self?.toggleFavorite(nftId: nftId) }
-                    )
-                }
+                self?.errorModel = ErrorModel(
+                    message: NSLocalizedString("Error.toggleLike", comment: "Failed to update like"),
+                    actionText: NSLocalizedString("Error.repeat", comment: "Try again"),
+                    action: { self?.toggleFavorite(nftId: nftId) }
+                )
             }
         }
     }

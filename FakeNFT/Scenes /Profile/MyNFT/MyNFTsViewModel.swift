@@ -57,13 +57,11 @@ final class MyNFTsViewModel: ObservableObject {
                 print("Successfully removed NFT \(nftId) from cart")
             } else {
                 print("Failed to remove NFT from cart")
-                DispatchQueue.main.async {
-                    self?.errorModel = ErrorModel(
-                        message: NSLocalizedString("Error.removeFromCart", comment: "Failed to remove from cart"),
-                        actionText: NSLocalizedString("Error.repeat", comment: "Try again"),
-                        action: { self?.removeFromCart(nftId: nftId) }
-                    )
-                }
+                self?.errorModel = ErrorModel(
+                    message: NSLocalizedString("Error.removeFromCart", comment: "Failed to remove from cart"),
+                    actionText: NSLocalizedString("Error.repeat", comment: "Try again"),
+                    action: { self?.removeFromCart(nftId: nftId) }
+                )
             }
         }
     }

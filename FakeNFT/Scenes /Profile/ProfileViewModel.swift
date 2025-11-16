@@ -30,14 +30,12 @@ final class ProfileViewModel: ObservableObject {
         errorModel = nil
         
         profileService.loadProfile(id: profileId) { [weak self] result in
-            DispatchQueue.main.async {
-                self?.isLoading = false
-                switch result {
-                case .success(let profile):
-                    self?.profile = profile
-                case .failure(let error):
-                    self?.errorModel = self?.makeErrorModel(error)
-                }
+            self?.isLoading = false
+            switch result {
+            case .success(let profile):
+                self?.profile = profile
+            case .failure(let error):
+                self?.errorModel = self?.makeErrorModel(error)
             }
         }
     }
@@ -56,14 +54,12 @@ final class ProfileViewModel: ObservableObject {
         )
         
         profileService.updateProfile(profileUpdate) { [weak self] result in
-            DispatchQueue.main.async {
-                self?.isLoading = false
-                switch result {
-                case .success(let profile):
-                    self?.profile = profile
-                case .failure(let error):
-                    self?.errorModel = self?.makeErrorModel(error)
-                }
+            self?.isLoading = false
+            switch result {
+            case .success(let profile):
+                self?.profile = profile
+            case .failure(let error):
+                self?.errorModel = self?.makeErrorModel(error)
             }
         }
     }

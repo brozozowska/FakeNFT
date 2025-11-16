@@ -50,13 +50,11 @@ final class EditProfileViewModel: ObservableObject {
         )
         
         profileService.updateProfile(profileUpdate) { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success:
-                    completion(true)
-                case .failure:
-                    completion(false)
-                }
+            switch result {
+            case .success:
+                completion(true)
+            case .failure:
+                completion(false)
             }
         }
     }
