@@ -4,6 +4,28 @@ import Combine
 
 final class ProfileViewController: UIViewController {
     
+    // MARK: - Constants
+    
+    private enum Constants {
+        static let profileContainerHeight: CGFloat = 162
+        static let profileContainerTopInset: CGFloat = 20
+        static let avatarSize: CGFloat = 70
+        static let avatarTopInset: CGFloat = 20
+        static let avatarLeadingInset: CGFloat = 16
+        static let nameLeadingInset: CGFloat = 16
+        static let nameTrailingInset: CGFloat = 16
+        static let descriptionTopInset: CGFloat = 20
+        static let descriptionHorizontalInset: CGFloat = 16
+        static let websiteButtonTopInset: CGFloat = 200
+        static let websiteButtonLeadingInset: CGFloat = 16
+        static let websiteButtonWidth: CGFloat = 147
+        static let websiteButtonHeight: CGFloat = 28
+        static let tableViewTopInset: CGFloat = 278
+        static let tableViewRowHeight: CGFloat = 54
+        static let tableViewSectionSpacing: CGFloat = 8
+        static let avatarCornerRadius: CGFloat = 35
+    }
+    
     // MARK: - Properties
     
     private let viewModel: ProfileViewModel
@@ -21,7 +43,7 @@ final class ProfileViewController: UIViewController {
     private lazy var avatarImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
-        imageView.layer.cornerRadius = 35
+        imageView.layer.cornerRadius = Constants.avatarCornerRadius
         imageView.layer.masksToBounds = true
         imageView.backgroundColor = .lightGray
         return imageView
@@ -140,33 +162,33 @@ final class ProfileViewController: UIViewController {
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            profileContainerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            profileContainerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Constants.profileContainerTopInset),
             profileContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             profileContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            profileContainerView.heightAnchor.constraint(equalToConstant: 162),
+            profileContainerView.heightAnchor.constraint(equalToConstant: Constants.profileContainerHeight),
             
-            avatarImageView.topAnchor.constraint(equalTo: profileContainerView.topAnchor, constant: 20),
-            avatarImageView.leadingAnchor.constraint(equalTo: profileContainerView.leadingAnchor, constant: 16),
-            avatarImageView.widthAnchor.constraint(equalToConstant: 70),
-            avatarImageView.heightAnchor.constraint(equalToConstant: 70),
+            avatarImageView.topAnchor.constraint(equalTo: profileContainerView.topAnchor, constant: Constants.avatarTopInset),
+            avatarImageView.leadingAnchor.constraint(equalTo: profileContainerView.leadingAnchor, constant: Constants.avatarLeadingInset),
+            avatarImageView.widthAnchor.constraint(equalToConstant: Constants.avatarSize),
+            avatarImageView.heightAnchor.constraint(equalToConstant: Constants.avatarSize),
             
             nameLabel.centerYAnchor.constraint(equalTo: avatarImageView.centerYAnchor),
-            nameLabel.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 16),
-            nameLabel.trailingAnchor.constraint(equalTo: profileContainerView.trailingAnchor, constant: -16),
+            nameLabel.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: Constants.nameLeadingInset),
+            nameLabel.trailingAnchor.constraint(equalTo: profileContainerView.trailingAnchor, constant: -Constants.nameTrailingInset),
             
-            descriptionLabel.topAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: 20),
-            descriptionLabel.leadingAnchor.constraint(equalTo: profileContainerView.leadingAnchor, constant: 16),
-            descriptionLabel.trailingAnchor.constraint(equalTo: profileContainerView.trailingAnchor, constant: -16),
+            descriptionLabel.topAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: Constants.descriptionTopInset),
+            descriptionLabel.leadingAnchor.constraint(equalTo: profileContainerView.leadingAnchor, constant: Constants.descriptionHorizontalInset),
+            descriptionLabel.trailingAnchor.constraint(equalTo: profileContainerView.trailingAnchor, constant: -Constants.descriptionHorizontalInset),
             
-            websiteButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 200),
-            websiteButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            websiteButton.widthAnchor.constraint(equalToConstant: 147),
-            websiteButton.heightAnchor.constraint(equalToConstant: 28),
+            websiteButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Constants.websiteButtonTopInset),
+            websiteButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.websiteButtonLeadingInset),
+            websiteButton.widthAnchor.constraint(equalToConstant: Constants.websiteButtonWidth),
+            websiteButton.heightAnchor.constraint(equalToConstant: Constants.websiteButtonHeight),
             
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 278),
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Constants.tableViewTopInset),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.heightAnchor.constraint(equalToConstant: 54 * 2 + 8),
+            tableView.heightAnchor.constraint(equalToConstant: Constants.tableViewRowHeight * 2 + Constants.tableViewSectionSpacing),
             
             activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
@@ -287,6 +309,6 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        54
+        Constants.tableViewRowHeight
     }
 }

@@ -3,12 +3,24 @@ import Kingfisher
 
 final class CollectionTableViewCell: UITableViewCell, ReuseIdentifying {
     
+    // MARK: - Constants
+    
+    private enum Constants {
+        static let coverImageHeight: CGFloat = 140
+        static let coverImageCornerRadius: CGFloat = 12
+        static let horizontalInset: CGFloat = 16
+        static let titleTopInset: CGFloat = 4
+        static let titleHeight: CGFloat = 22
+        static let contentBottomInset: CGFloat = 13
+        static let imageFadeDuration: TimeInterval = 0.3
+    }
+    
     // MARK: - UI Components
     
     private lazy var coverImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
-        imageView.layer.cornerRadius = 12
+        imageView.layer.cornerRadius = Constants.coverImageCornerRadius
         imageView.layer.masksToBounds = true
         imageView.backgroundColor = .lightGray
         return imageView
@@ -47,7 +59,6 @@ final class CollectionTableViewCell: UITableViewCell, ReuseIdentifying {
         
         if let nftRange = titleText.range(of: "(\(nftCount) \(nftText))") {
             let nsRange = NSRange(nftRange, in: titleText)
-            
             attributedString.addAttribute(.font, value: UIFont.bodyBold, range: nsRange)
         }
         
@@ -60,30 +71,31 @@ final class CollectionTableViewCell: UITableViewCell, ReuseIdentifying {
         coverImageView.image = nil
         coverImageView.backgroundColor = .lightGray
         
-        if let coverURL = collection.coverURL {
-            coverImageView.backgroundColor = .lightGray
-            
-            coverImageView.kf.setImage(
-                with: coverURL,
-                options: [
-                    .transition(.fade(0.3)),
-                    .cacheOriginalImage
-                ]
-            ) { [weak self] result in
-                DispatchQueue.main.async {
-                    switch result {
-                    case .success(_):
-                        self?.coverImageView.backgroundColor = .clear
-                        print("Successfully loaded image from: \(coverURL)")
-                    case .failure(let error):
-                        self?.coverImageView.backgroundColor = .lightGray
-                        print("Failed to load image from: \(coverURL), error: \(error)")
-                    }
-                }
-            }
-        } else {
+        guard let coverURL = collection.coverURL else {
             coverImageView.backgroundColor = .lightGray
             print("Invalid cover URL for collection: \(collection.name)")
+            return
+        }
+        
+        coverImageView.backgroundColor = .lightGray
+        
+        coverImageView.kf.setImage(
+            with: coverURL,
+            options: [
+                .transition(.fade(Constants.imageFadeDuration)),
+                .cacheOriginalImage
+            ]
+        ) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(_):
+                    self?.coverImageView.backgroundColor = .clear
+                    print("Successfully loaded image from: \(coverURL)")
+                case .failure(let error):
+                    self?.coverImageView.backgroundColor = .lightGray
+                    print("Failed to load image from: \(coverURL), error: \(error)")
+                }
+            }
         }
     }
     
@@ -102,16 +114,16 @@ final class CollectionTableViewCell: UITableViewCell, ReuseIdentifying {
     private func setupConstraints() {
         NSLayoutConstraint.activate([
             coverImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            coverImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            coverImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            coverImageView.heightAnchor.constraint(equalToConstant: 140),
+            coverImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.horizontalInset),
+            coverImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.horizontalInset),
+            coverImageView.heightAnchor.constraint(equalToConstant: Constants.coverImageHeight),
             
-            titleLabel.topAnchor.constraint(equalTo: coverImageView.bottomAnchor, constant: 4),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            titleLabel.heightAnchor.constraint(equalToConstant: 22),
+            titleLabel.topAnchor.constraint(equalTo: coverImageView.bottomAnchor, constant: Constants.titleTopInset),
+            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.horizontalInset),
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.horizontalInset),
+            titleLabel.heightAnchor.constraint(equalToConstant: Constants.titleHeight),
             
-            contentView.bottomAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 13)
+            contentView.bottomAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: Constants.contentBottomInset)
         ])
     }
     

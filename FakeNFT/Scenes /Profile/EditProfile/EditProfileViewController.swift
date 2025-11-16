@@ -3,6 +3,25 @@ import Combine
 
 final class EditProfileViewController: UIViewController {
     
+    // MARK: - Constants
+    
+    private enum Constants {
+        static let saveButtonHeight: CGFloat = 60
+        static let saveButtonHorizontalInset: CGFloat = 16
+        static let saveButtonBottomInset: CGFloat = 16
+        static let avatarTopInset: CGFloat = 80
+        static let avatarLeadingInset: CGFloat = 151.22
+        static let avatarWidth: CGFloat = 72.57
+        static let avatarHeight: CGFloat = 70
+        static let nameTitleTopInset: CGFloat = 174
+        static let titleHorizontalInset: CGFloat = 16
+        static let textFieldTopSpacing: CGFloat = 8
+        static let textFieldHeight: CGFloat = 44
+        static let descriptionTitleTopInset: CGFloat = 278
+        static let descriptionTextViewHeight: CGFloat = 132
+        static let websiteTitleTopInset: CGFloat = 470
+    }
+    
     // MARK: - Properties
     private let viewModel: EditProfileViewModel
     private var cancellables = Set<AnyCancellable>()
@@ -122,42 +141,42 @@ final class EditProfileViewController: UIViewController {
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            saveButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            saveButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            saveButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            saveButton.heightAnchor.constraint(equalToConstant: 60),
+            saveButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.saveButtonHorizontalInset),
+            saveButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.saveButtonHorizontalInset),
+            saveButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Constants.saveButtonBottomInset),
+            saveButton.heightAnchor.constraint(equalToConstant: Constants.saveButtonHeight),
             
-            avatarImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 80),
-            avatarImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 151.22),
-            avatarImageView.widthAnchor.constraint(equalToConstant: 72.57),
-            avatarImageView.heightAnchor.constraint(equalToConstant: 70),
+            avatarImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: Constants.avatarTopInset),
+            avatarImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.avatarLeadingInset),
+            avatarImageView.widthAnchor.constraint(equalToConstant: Constants.avatarWidth),
+            avatarImageView.heightAnchor.constraint(equalToConstant: Constants.avatarHeight),
             
-            nameTitleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 174),
-            nameTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            nameTitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            nameTitleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: Constants.nameTitleTopInset),
+            nameTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.titleHorizontalInset),
+            nameTitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.titleHorizontalInset),
             
-            nameTextField.topAnchor.constraint(equalTo: nameTitleLabel.bottomAnchor, constant: 8),
-            nameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            nameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            nameTextField.heightAnchor.constraint(equalToConstant: 44),
+            nameTextField.topAnchor.constraint(equalTo: nameTitleLabel.bottomAnchor, constant: Constants.textFieldTopSpacing),
+            nameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.titleHorizontalInset),
+            nameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.titleHorizontalInset),
+            nameTextField.heightAnchor.constraint(equalToConstant: Constants.textFieldHeight),
             
-            descriptionTitleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 278),
-            descriptionTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            descriptionTitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            descriptionTitleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: Constants.descriptionTitleTopInset),
+            descriptionTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.titleHorizontalInset),
+            descriptionTitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.titleHorizontalInset),
             
-            descriptionTextView.topAnchor.constraint(equalTo: descriptionTitleLabel.bottomAnchor, constant: 8),
-            descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            descriptionTextView.heightAnchor.constraint(equalToConstant: 132),
+            descriptionTextView.topAnchor.constraint(equalTo: descriptionTitleLabel.bottomAnchor, constant: Constants.textFieldTopSpacing),
+            descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.titleHorizontalInset),
+            descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.titleHorizontalInset),
+            descriptionTextView.heightAnchor.constraint(equalToConstant: Constants.descriptionTextViewHeight),
             
-            websiteTitleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 470),
-            websiteTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            websiteTitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            websiteTitleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: Constants.websiteTitleTopInset),
+            websiteTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.titleHorizontalInset),
+            websiteTitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.titleHorizontalInset),
             
-            websiteTextField.topAnchor.constraint(equalTo: websiteTitleLabel.bottomAnchor, constant: 8),
-            websiteTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            websiteTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            websiteTextField.heightAnchor.constraint(equalToConstant: 44),
+            websiteTextField.topAnchor.constraint(equalTo: websiteTitleLabel.bottomAnchor, constant: Constants.textFieldTopSpacing),
+            websiteTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.titleHorizontalInset),
+            websiteTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.titleHorizontalInset),
+            websiteTextField.heightAnchor.constraint(equalToConstant: Constants.textFieldHeight),
         ])
     }
     
