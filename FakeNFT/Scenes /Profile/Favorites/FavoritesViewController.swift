@@ -64,7 +64,6 @@ final class FavoritesViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         print("FavoritesViewController will appear - loading favorites")
-        loadFavoritesWithDelay()
     }
     
     deinit {
@@ -131,12 +130,6 @@ final class FavoritesViewController: UIViewController {
             name: NSNotification.Name("LikesDidChange"),
             object: nil
         )
-    }
-    
-    private func loadFavoritesWithDelay() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            self.viewModel.loadFavorites()
-        }
     }
     
     @objc private func likesDidLoadFromServer() {

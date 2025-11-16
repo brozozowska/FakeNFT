@@ -71,7 +71,6 @@ final class MyNFTsViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         print("MyNFTsViewController will appear - loading NFTs")
-        loadMyNFTsWithDelay()
     }
     
     deinit {
@@ -149,12 +148,6 @@ final class MyNFTsViewController: UIViewController {
             name: NSNotification.Name("CartDidChange"),
             object: nil
         )
-    }
-    
-    private func loadMyNFTsWithDelay() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            self.viewModel.loadMyNFTs()
-        }
     }
     
     @objc private func cartDidLoadFromServer() {
