@@ -4,6 +4,7 @@ import Combine
 final class EditProfileViewModel: ObservableObject {
     
     // MARK: - Published Properties
+    
     @Published var name: String
     @Published var description: String
     @Published var website: String
@@ -11,11 +12,13 @@ final class EditProfileViewModel: ObservableObject {
     @Published var saveButtonHidden = true
     
     // MARK: - Private Properties
+    
     private let originalProfile: Profile
     private let profileService: ProfileService
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Init
+    
     init(profile: Profile, profileService: ProfileService) {
         self.originalProfile = profile
         self.profileService = profileService
@@ -28,6 +31,7 @@ final class EditProfileViewModel: ObservableObject {
     }
     
     // MARK: - Public Methods
+    
     func updateAvatar(_ urlString: String) {
         // Сохраняем URL аватара, но не загружаем изображение
         checkForChanges()
@@ -70,6 +74,7 @@ final class EditProfileViewModel: ObservableObject {
     }
     
     // MARK: - Private Methods
+    
     private func setupBindings() {
         $name
             .dropFirst()

@@ -22,11 +22,13 @@ final class EditProfileViewController: UIViewController {
     }
     
     // MARK: - Properties
+    
     private let viewModel: EditProfileViewModel
     private var cancellables = Set<AnyCancellable>()
     private var activeField: UIView?
     
     // MARK: - UI Components
+    
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -96,6 +98,7 @@ final class EditProfileViewController: UIViewController {
     }()
     
     // MARK: - Init
+    
     init(viewModel: EditProfileViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -108,6 +111,7 @@ final class EditProfileViewController: UIViewController {
     }
     
     // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -132,6 +136,7 @@ final class EditProfileViewController: UIViewController {
     }
     
     // MARK: - Private Methods
+    
     private func setupUI() {
         view.backgroundColor = .white
         
@@ -342,6 +347,7 @@ final class EditProfileViewController: UIViewController {
     }
     
     // MARK: - Keyboard Handling
+    
     @objc private func keyboardWillShow(_ notification: Notification) {
         guard let userInfo = notification.userInfo,
               let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
