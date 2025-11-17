@@ -40,6 +40,44 @@ final class CollectionViewModel: ObservableObject {
         self.nftService = nftService
         self.likeService = likeService
         self.cartService = cartService
+        
+        setupNotifications()
+    }
+    
+    // MARK: - Private Methods
+    
+    private func setupNotifications() {
+        NotificationCenter.default.publisher(for: NSNotification.Name("LikesDidLoadFromServer"))
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                print("Likes did load from server - updating UI")
+                self?.objectWillChange.send()
+            }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: NSNotification.Name("CartDidLoadFromServer"))
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                print("Cart did load from server - updating UI")
+                self?.objectWillChange.send()
+            }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: NSNotification.Name("LikesDidChange"))
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                print("Likes did change - updating UI")
+                self?.objectWillChange.send()
+            }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: NSNotification.Name("CartDidChange"))
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                print("Cart did change - updating UI")
+                self?.objectWillChange.send()
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Public Methods
@@ -82,6 +120,7 @@ final class CollectionViewModel: ObservableObject {
                     self.errorModel = self.makeErrorModel(error)
                 } else {
                     self.nfts = loadedNFTs
+                    self.objectWillChange.send()
                 }
             }
         }
@@ -101,8 +140,10 @@ final class CollectionViewModel: ObservableObject {
         objectWillChange.send()
         
         likeService.toggleLike(for: nftId) { [weak self] success in
-            self?.updatingNFTs.remove(nftId)
-            self?.objectWillChange.send()
+            DispatchQueue.main.async {
+                self?.updatingNFTs.remove(nftId)
+                self?.objectWillChange.send()
+            }
         }
     }
     
@@ -116,8 +157,10 @@ final class CollectionViewModel: ObservableObject {
         objectWillChange.send()
         
         cartService.toggleCart(for: nftId) { [weak self] success in
-            self?.updatingNFTs.remove(nftId)
-            self?.objectWillChange.send()
+            DispatchQueue.main.async {
+                self?.updatingNFTs.remove(nftId)
+                self?.objectWillChange.send()
+            }
         }
     }
     

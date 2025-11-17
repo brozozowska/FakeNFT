@@ -114,16 +114,17 @@ final class CollectionViewController: UIViewController {
     }
     
     private func updateVisibleCells() {
-        collectionView.visibleCells.forEach { cell in
-            guard let indexPath = collectionView.indexPath(for: cell),
-                  let nftCell = cell as? NFTCell else { return }
+        let visibleIndexPaths = collectionView.indexPathsForVisibleItems
+        
+        for indexPath in visibleIndexPaths {
+            guard let cell = collectionView.cellForItem(at: indexPath) as? NFTCell else { continue }
             
             let nft = viewModel.nft(at: indexPath.row)
             let isLiked = viewModel.isLiked(nftId: nft.id)
             let isInCart = viewModel.isInCart(nftId: nft.id)
             let isUpdating = viewModel.isUpdating(nftId: nft.id)
             
-            nftCell.configure(with: nft, isLiked: isLiked, isInCart: isInCart, isUpdating: isUpdating)
+            cell.configure(with: nft, isLiked: isLiked, isInCart: isInCart, isUpdating: isUpdating)
         }
     }
     
@@ -212,16 +213,19 @@ extension CollectionViewController: UICollectionViewDataSource {
         let isInCart = viewModel.isInCart(nftId: nft.id)
         let isUpdating = viewModel.isUpdating(nftId: nft.id)
         
+        cell.onLikeTapped = nil
+        cell.onCartTapped = nil
+        
         cell.configure(with: nft, isLiked: isLiked, isInCart: isInCart, isUpdating: isUpdating)
         
         cell.onLikeTapped = { [weak self] in
-            guard let self = self, !viewModel.isUpdating(nftId: nft.id) else { return }
-            viewModel.toggleLike(for: nft.id)
+            guard let self, !self.viewModel.isUpdating(nftId: nft.id) else { return }
+            self.viewModel.toggleLike(for: nft.id)
         }
         
         cell.onCartTapped = { [weak self] in
-            guard let self = self, !viewModel.isUpdating(nftId: nft.id) else { return }
-            viewModel.toggleCart(for: nft.id)
+            guard let self, !self.viewModel.isUpdating(nftId: nft.id) else { return }
+            self.viewModel.toggleCart(for: nft.id)
         }
         
         return cell

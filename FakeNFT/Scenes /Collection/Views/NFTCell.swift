@@ -188,5 +188,11 @@ final class NFTCell: UICollectionViewCell {
         likeButton.isSelected = false
         cartButton.isSelected = false
         ratingView.rating = .zero
+        
+        onLikeTapped = nil
+        onCartTapped = nil
+        
+        setLikeButtonEnabled(true)
+        setCartButtonEnabled(true)
     }
 }
