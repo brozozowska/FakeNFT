@@ -65,7 +65,7 @@ final class FavoritesViewModel: ObservableObject {
     }
     
     func isLiked(nftId: String) -> Bool {
-        return likeService.isLiked(nftId: nftId)
+        likeService.isLiked(nftId: nftId)
     }
     
     // MARK: - Private Methods
@@ -100,7 +100,7 @@ final class FavoritesViewModel: ObservableObject {
         }
         
         group.notify(queue: .main) { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             
             self.nfts = loadedNFTs.sorted { first, second in
                 guard let firstIndex = ids.firstIndex(of: first.id),

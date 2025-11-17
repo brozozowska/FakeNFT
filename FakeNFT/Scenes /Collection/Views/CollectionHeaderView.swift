@@ -5,6 +5,34 @@ final class CollectionHeaderView: UICollectionReusableView {
     
     static let reuseIdentifier = "CollectionHeaderView"
     
+    // MARK: - Constants
+    
+    private enum Constants {
+        static let coverImageHeight: CGFloat = 310
+        static let horizontalSpacing: CGFloat = 16
+        static let verticalSpacingSmall: CGFloat = 8
+        static let verticalSpacingMedium: CGFloat = 16
+        static let imageFadeDuration: TimeInterval = 0.3
+        
+        enum Colors {
+            static let backgroundColor = UIColor.white
+            static let textColor = UIColor.black
+            static let authorHighlightColor = UIColor.blueUniversal
+            static let placeholderColor = UIColor.lightGray
+        }
+        
+        enum Fonts {
+            static let title = UIFont.headline3
+            static let author = UIFont.caption1
+            static let description = UIFont.caption2
+            static let authorPrefix = UIFont.caption2
+        }
+        
+        enum Text {
+            static let authorPrefix = "Автор коллекции: "
+        }
+    }
+    
     // MARK: - Callbacks
     
     var onAuthorTapped: (() -> Void)?
@@ -15,30 +43,30 @@ final class CollectionHeaderView: UICollectionReusableView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.layer.masksToBounds = true
-        imageView.backgroundColor = .lightGray
+        imageView.backgroundColor = Constants.Colors.placeholderColor
         return imageView
     }()
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .headline3
-        label.textColor = .black
+        label.font = Constants.Fonts.title
+        label.textColor = Constants.Colors.textColor
         label.numberOfLines = .zero
         return label
     }()
     
     private lazy var authorLabel: UILabel = {
         let label = UILabel()
-        label.font = .caption1
-        label.textColor = .black
+        label.font = Constants.Fonts.author
+        label.textColor = Constants.Colors.textColor
         label.isUserInteractionEnabled = true
         return label
     }()
     
     private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
-        label.font = .caption2
-        label.textColor = .black
+        label.font = Constants.Fonts.description
+        label.textColor = Constants.Colors.textColor
         label.numberOfLines = .zero
         return label
     }()
@@ -62,35 +90,35 @@ final class CollectionHeaderView: UICollectionReusableView {
     
     func configure(with collection: NFTCollection, author: String) {
         titleLabel.text = collection.name
-        
-        let baseText = "Автор коллекции: "
-        let authorText = "\(baseText)\(author)"
+        setupAuthorText(author: author)
+        descriptionLabel.text = collection.description
+        loadCoverImage(for: collection)
+    }
+    
+    private func setupAuthorText(author: String) {
+        let authorText = "\(Constants.Text.authorPrefix)\(author)"
         let attributedString = NSMutableAttributedString(string: authorText)
         
-        let baseRange = NSRange(location: 0, length: baseText.count)
-        attributedString.addAttribute(.font, value: UIFont.caption2, range: baseRange)
-        attributedString.addAttribute(.foregroundColor, value: UIColor.black, range: baseRange)
+        let baseRange = NSRange(location: .zero, length: Constants.Text.authorPrefix.count)
+        attributedString.addAttribute(.font, value: Constants.Fonts.authorPrefix, range: baseRange)
+        attributedString.addAttribute(.foregroundColor, value: Constants.Colors.textColor, range: baseRange)
         
-        let authorRange = NSRange(location: baseText.count, length: author.count)
-        attributedString.addAttribute(.font, value: UIFont.caption1, range: authorRange)
-        attributedString.addAttribute(.foregroundColor, value: UIColor.blueUniversal, range: authorRange)
+        let authorRange = NSRange(location: Constants.Text.authorPrefix.count, length: author.count)
+        attributedString.addAttribute(.font, value: Constants.Fonts.author, range: authorRange)
+        attributedString.addAttribute(.foregroundColor, value: Constants.Colors.authorHighlightColor, range: authorRange)
         
         authorLabel.attributedText = attributedString
-        
-        descriptionLabel.text = collection.description
-        
-        loadCoverImage(for: collection)
     }
     
     private func loadCoverImage(for collection: NFTCollection) {
         coverImageView.image = nil
-        coverImageView.backgroundColor = .lightGray
+        coverImageView.backgroundColor = Constants.Colors.placeholderColor
         
         if let coverURL = collection.coverURL {
             coverImageView.kf.setImage(
                 with: coverURL,
                 options: [
-                    .transition(.fade(0.3)),
+                    .transition(.fade(Constants.imageFadeDuration)),
                     .cacheOriginalImage
                 ]
             ) { [weak self] result in
@@ -99,7 +127,7 @@ final class CollectionHeaderView: UICollectionReusableView {
                     case .success(_):
                         self?.coverImageView.backgroundColor = .clear
                     case .failure(_):
-                        self?.coverImageView.backgroundColor = .lightGray
+                        self?.coverImageView.backgroundColor = Constants.Colors.placeholderColor
                     }
                 }
             }
@@ -109,7 +137,7 @@ final class CollectionHeaderView: UICollectionReusableView {
     // MARK: - Private Methods
     
     private func setupViews() {
-        backgroundColor = .white
+        backgroundColor = Constants.Colors.backgroundColor
         
         [
             coverImageView,
@@ -127,20 +155,20 @@ final class CollectionHeaderView: UICollectionReusableView {
             coverImageView.topAnchor.constraint(equalTo: topAnchor),
             coverImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
             coverImageView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            coverImageView.heightAnchor.constraint(equalToConstant: 310),
+            coverImageView.heightAnchor.constraint(equalToConstant: Constants.coverImageHeight),
             
-            titleLabel.topAnchor.constraint(equalTo: coverImageView.bottomAnchor, constant: 16),
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            titleLabel.topAnchor.constraint(equalTo: coverImageView.bottomAnchor, constant: Constants.verticalSpacingMedium),
+            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.horizontalSpacing),
+            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Constants.horizontalSpacing),
             
-            authorLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
-            authorLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            authorLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            authorLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: Constants.verticalSpacingSmall),
+            authorLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.horizontalSpacing),
+            authorLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Constants.horizontalSpacing),
             
-            descriptionLabel.topAnchor.constraint(equalTo: authorLabel.bottomAnchor, constant: 8),
-            descriptionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            descriptionLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
+            descriptionLabel.topAnchor.constraint(equalTo: authorLabel.bottomAnchor, constant: Constants.verticalSpacingSmall),
+            descriptionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.horizontalSpacing),
+            descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Constants.horizontalSpacing),
+            descriptionLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -Constants.verticalSpacingMedium)
         ])
     }
     
@@ -157,6 +185,6 @@ final class CollectionHeaderView: UICollectionReusableView {
         super.prepareForReuse()
         coverImageView.kf.cancelDownloadTask()
         coverImageView.image = nil
-        coverImageView.backgroundColor = .lightGray
+        coverImageView.backgroundColor = Constants.Colors.placeholderColor
     }
 }

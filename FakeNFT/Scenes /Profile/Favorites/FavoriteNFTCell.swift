@@ -3,6 +3,20 @@ import Kingfisher
 
 final class FavoriteNFTCell: UICollectionViewCell, ReuseIdentifying {
     
+    // MARK: - Constants
+    
+    private enum Constants {
+        static let nftImageSize: CGFloat = 80
+        static let nftImageCornerRadius: CGFloat = 12
+        static let likeButtonSize: CGFloat = 30
+        static let likeButtonTopInset: CGFloat = -6
+        static let likeButtonTrailingInset: CGFloat = 6
+        static let textLeadingInset: CGFloat = 12
+        static let ratingTopInset: CGFloat = 4
+        static let priceTopInset: CGFloat = 4
+        static let ratingHeight: CGFloat = 12
+    }
+    
     // MARK: - Callbacks
     
     var onLikeTapped: (() -> Void)?
@@ -64,8 +78,8 @@ final class FavoriteNFTCell: UICollectionViewCell, ReuseIdentifying {
         ratingView.rating = nft.rating
         priceLabel.text = "\(nft.price) ETH"
         
-        let likeImage = isLiked ? UIImage(named: "like_active") : UIImage(named: "like_inactive")
-        likeButton.setImage(likeImage, for: .normal)
+        let likeImage = isLiked ? UIImage(resource: .likeActive) : UIImage(resource: .likeInactive)
+            likeButton.setImage(likeImage, for: .normal)
         
         if let imageURL = nft.images.first {
             nftImageView.kf.setImage(with: imageURL)
@@ -87,24 +101,24 @@ final class FavoriteNFTCell: UICollectionViewCell, ReuseIdentifying {
         NSLayoutConstraint.activate([
             nftImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             nftImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            nftImageView.widthAnchor.constraint(equalToConstant: 80),
-            nftImageView.heightAnchor.constraint(equalToConstant: 80),
+            nftImageView.widthAnchor.constraint(equalToConstant: Constants.nftImageSize),
+            nftImageView.heightAnchor.constraint(equalToConstant: Constants.nftImageSize),
             
-            likeButton.topAnchor.constraint(equalTo: nftImageView.topAnchor, constant: -6),
-            likeButton.trailingAnchor.constraint(equalTo: nftImageView.trailingAnchor, constant: 6),
-            likeButton.widthAnchor.constraint(equalToConstant: 30),
-            likeButton.heightAnchor.constraint(equalToConstant: 30),
+            likeButton.topAnchor.constraint(equalTo: nftImageView.topAnchor, constant: Constants.likeButtonTopInset),
+            likeButton.trailingAnchor.constraint(equalTo: nftImageView.trailingAnchor, constant: Constants.likeButtonTrailingInset),
+            likeButton.widthAnchor.constraint(equalToConstant: Constants.likeButtonSize),
+            likeButton.heightAnchor.constraint(equalToConstant: Constants.likeButtonSize),
             
             nameLabel.topAnchor.constraint(equalTo: nftImageView.topAnchor),
-            nameLabel.leadingAnchor.constraint(equalTo: nftImageView.trailingAnchor, constant: 12),
+            nameLabel.leadingAnchor.constraint(equalTo: nftImageView.trailingAnchor, constant: Constants.textLeadingInset),
             nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             
-            ratingView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 4),
+            ratingView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: Constants.ratingTopInset),
             ratingView.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
             ratingView.trailingAnchor.constraint(equalTo: nameLabel.trailingAnchor),
-            ratingView.heightAnchor.constraint(equalToConstant: 12),
+            ratingView.heightAnchor.constraint(equalToConstant: Constants.ratingHeight),
             
-            priceLabel.topAnchor.constraint(equalTo: ratingView.bottomAnchor, constant: 4),
+            priceLabel.topAnchor.constraint(equalTo: ratingView.bottomAnchor, constant: Constants.priceTopInset),
             priceLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
             priceLabel.trailingAnchor.constraint(equalTo: nameLabel.trailingAnchor)
         ])
