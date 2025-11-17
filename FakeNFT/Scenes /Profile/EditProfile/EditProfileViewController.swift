@@ -10,23 +10,37 @@ final class EditProfileViewController: UIViewController {
         static let saveButtonHorizontalInset: CGFloat = 16
         static let saveButtonBottomInset: CGFloat = 16
         static let avatarTopInset: CGFloat = 80
-        static let avatarLeadingInset: CGFloat = 151.22
-        static let avatarWidth: CGFloat = 72.57
-        static let avatarHeight: CGFloat = 70
+        static let avatarSize: CGSize = CGSize(width: 72.566, height: 70)
         static let nameTitleTopInset: CGFloat = 174
         static let titleHorizontalInset: CGFloat = 16
         static let textFieldTopSpacing: CGFloat = 8
         static let textFieldHeight: CGFloat = 44
-        static let descriptionTitleTopInset: CGFloat = 278
+        static let descriptionTitleTopInset: CGFloat = 24
         static let descriptionTextViewHeight: CGFloat = 132
-        static let websiteTitleTopInset: CGFloat = 470
+        static let websiteTitleTopInset: CGFloat = 24
+        static let contentBottomInset: CGFloat = 100
     }
     
     // MARK: - Properties
     private let viewModel: EditProfileViewModel
     private var cancellables = Set<AnyCancellable>()
+    private var activeField: UIView?
     
     // MARK: - UI Components
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.keyboardDismissMode = .interactive
+        return scrollView
+    }()
+    
+    private lazy var contentView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     private lazy var avatarImageView: AvatarWithCameraView = {
         let imageView = AvatarWithCameraView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -100,7 +114,7 @@ final class EditProfileViewController: UIViewController {
         setupConstraints()
         setupBindings()
         setupInitialData()
-        setupKeyboardDismiss()
+        setupKeyboardObservers()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -111,6 +125,10 @@ final class EditProfileViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         tabBarController?.tabBar.isHidden = false
+    }
+    
+    deinit {
+        removeKeyboardObservers()
     }
     
     // MARK: - Private Methods
@@ -125,6 +143,9 @@ final class EditProfileViewController: UIViewController {
         )
         navigationItem.leftBarButtonItem?.tintColor = .black
         
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        
         let uiComponents: [UIView] = [
             avatarImageView,
             nameTitleLabel, nameTextField,
@@ -135,49 +156,81 @@ final class EditProfileViewController: UIViewController {
         
         uiComponents.forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
-            view.addSubview($0)
+            contentView.addSubview($0)
         }
     }
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            saveButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.saveButtonHorizontalInset),
-            saveButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.saveButtonHorizontalInset),
-            saveButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Constants.saveButtonBottomInset),
-            saveButton.heightAnchor.constraint(equalToConstant: Constants.saveButtonHeight),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
             avatarImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: Constants.avatarTopInset),
-            avatarImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.avatarLeadingInset),
-            avatarImageView.widthAnchor.constraint(equalToConstant: Constants.avatarWidth),
-            avatarImageView.heightAnchor.constraint(equalToConstant: Constants.avatarHeight),
+            avatarImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            avatarImageView.widthAnchor.constraint(equalToConstant: Constants.avatarSize.width),
+            avatarImageView.heightAnchor.constraint(equalToConstant: Constants.avatarSize.height),
             
-            nameTitleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: Constants.nameTitleTopInset),
-            nameTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.titleHorizontalInset),
-            nameTitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.titleHorizontalInset),
+            nameTitleLabel.topAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: Constants.nameTitleTopInset - Constants.avatarTopInset - Constants.avatarSize.height),
+            nameTitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.titleHorizontalInset),
+            nameTitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.titleHorizontalInset),
             
             nameTextField.topAnchor.constraint(equalTo: nameTitleLabel.bottomAnchor, constant: Constants.textFieldTopSpacing),
-            nameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.titleHorizontalInset),
-            nameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.titleHorizontalInset),
+            nameTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.titleHorizontalInset),
+            nameTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.titleHorizontalInset),
             nameTextField.heightAnchor.constraint(equalToConstant: Constants.textFieldHeight),
             
-            descriptionTitleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: Constants.descriptionTitleTopInset),
-            descriptionTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.titleHorizontalInset),
-            descriptionTitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.titleHorizontalInset),
+            descriptionTitleLabel.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: Constants.descriptionTitleTopInset),
+            descriptionTitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.titleHorizontalInset),
+            descriptionTitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.titleHorizontalInset),
             
             descriptionTextView.topAnchor.constraint(equalTo: descriptionTitleLabel.bottomAnchor, constant: Constants.textFieldTopSpacing),
-            descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.titleHorizontalInset),
-            descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.titleHorizontalInset),
+            descriptionTextView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.titleHorizontalInset),
+            descriptionTextView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.titleHorizontalInset),
             descriptionTextView.heightAnchor.constraint(equalToConstant: Constants.descriptionTextViewHeight),
             
-            websiteTitleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: Constants.websiteTitleTopInset),
-            websiteTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.titleHorizontalInset),
-            websiteTitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.titleHorizontalInset),
+            websiteTitleLabel.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: Constants.websiteTitleTopInset),
+            websiteTitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.titleHorizontalInset),
+            websiteTitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.titleHorizontalInset),
             
             websiteTextField.topAnchor.constraint(equalTo: websiteTitleLabel.bottomAnchor, constant: Constants.textFieldTopSpacing),
-            websiteTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.titleHorizontalInset),
-            websiteTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.titleHorizontalInset),
+            websiteTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.titleHorizontalInset),
+            websiteTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.titleHorizontalInset),
             websiteTextField.heightAnchor.constraint(equalToConstant: Constants.textFieldHeight),
+            
+            saveButton.topAnchor.constraint(equalTo: websiteTextField.bottomAnchor, constant: 202),
+            saveButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.saveButtonHorizontalInset),
+            saveButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.saveButtonHorizontalInset),
+            saveButton.heightAnchor.constraint(equalToConstant: Constants.saveButtonHeight),
+            saveButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -Constants.contentBottomInset)
         ])
+    }
+    
+    private func setupKeyboardObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+    
+    private func removeKeyboardObservers() {
+        NotificationCenter.default.removeObserver(self)
     }
     
     private func setupBindings() {
@@ -193,12 +246,6 @@ final class EditProfileViewController: UIViewController {
         nameTextField.text = viewModel.name
         descriptionTextView.text = viewModel.description
         websiteTextField.text = viewModel.website
-    }
-    
-    private func setupKeyboardDismiss() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        tapGesture.cancelsTouchesInView = false
-        view.addGestureRecognizer(tapGesture)
     }
     
     private func showPhotoActionSheet() {
@@ -294,10 +341,30 @@ final class EditProfileViewController: UIViewController {
         present(alert, animated: true)
     }
     
-    // MARK: - Actions
-    @objc private func dismissKeyboard() {
-        view.endEditing(true)
+    // MARK: - Keyboard Handling
+    @objc private func keyboardWillShow(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+              let activeField = activeField else { return }
+        
+        let keyboardHeight = keyboardFrame.height
+        
+        let contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
+        scrollView.contentInset = contentInsets
+        scrollView.scrollIndicatorInsets = contentInsets
+        
+        var visibleRect = activeField.convert(activeField.bounds, to: scrollView)
+        visibleRect = visibleRect.insetBy(dx: 0, dy: -20)
+        
+        scrollView.scrollRectToVisible(visibleRect, animated: true)
     }
+    
+    @objc private func keyboardWillHide(_ notification: Notification) {
+        scrollView.contentInset = .zero
+        scrollView.scrollIndicatorInsets = .zero
+    }
+    
+    // MARK: - Actions
     
     @objc private func backButtonTapped() {
         if viewModel.hasChanges {
@@ -308,11 +375,14 @@ final class EditProfileViewController: UIViewController {
     }
     
     @objc private func saveTapped() {
+        view.endEditing(true)
         viewModel.saveProfile { [weak self] success in
-            if success {
-                self?.navigationController?.popViewController(animated: true)
-            } else {
-                self?.showAlert(message: NSLocalizedString("EditProfile.saveError", comment: "Save error"))
+            DispatchQueue.main.async {
+                if success {
+                    self?.navigationController?.popViewController(animated: true)
+                } else {
+                    self?.showAlert(message: NSLocalizedString("EditProfile.saveError", comment: "Save error"))
+                }
             }
         }
     }
@@ -330,6 +400,14 @@ final class EditProfileViewController: UIViewController {
 // MARK: - UITextFieldDelegate
 
 extension EditProfileViewController: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        activeField = textField
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        activeField = nil
+    }
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
@@ -339,6 +417,14 @@ extension EditProfileViewController: UITextFieldDelegate {
 // MARK: - UITextViewDelegate
 
 extension EditProfileViewController: UITextViewDelegate {
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        activeField = textView
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        activeField = nil
+    }
+    
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if text == "\n" {
             textView.resignFirstResponder()
