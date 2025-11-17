@@ -123,7 +123,7 @@ final class CatalogViewController: UIViewController {
     @objc private func sortButtonTapped() {
         let alert = UIAlertController(
             title: NSLocalizedString("Catalog.sort.title", comment: ""),
-            message: NSLocalizedString("Catalog.sort.message", comment: ""),
+            message: nil,
             preferredStyle: .actionSheet
         )
         

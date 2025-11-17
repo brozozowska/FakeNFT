@@ -4,10 +4,12 @@ import Combine
 final class MyNFTsViewController: UIViewController {
     
     // MARK: - Properties
+    
     private let viewModel: MyNFTsViewModel
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - UI Components
+    
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(MyNFTCell.self)
@@ -46,6 +48,7 @@ final class MyNFTsViewController: UIViewController {
     }()
     
     // MARK: - Init
+    
     init(viewModel: MyNFTsViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -57,6 +60,7 @@ final class MyNFTsViewController: UIViewController {
     }
     
     // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
@@ -78,6 +82,7 @@ final class MyNFTsViewController: UIViewController {
     }
     
     // MARK: - Private Methods
+    
     private func setupViews() {
         view.backgroundColor = .white
         title = NSLocalizedString("MyNFTs.title", comment: "My NFTs")
@@ -184,6 +189,7 @@ final class MyNFTsViewController: UIViewController {
 }
 
 // MARK: - UITableViewDataSource & Delegate
+
 extension MyNFTsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         viewModel.nfts.count

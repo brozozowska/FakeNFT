@@ -18,7 +18,6 @@ final class ProfileViewController: UIViewController {
         static let descriptionHorizontalInset: CGFloat = 16
         static let websiteButtonTopInset: CGFloat = 200
         static let websiteButtonLeadingInset: CGFloat = 16
-        static let websiteButtonWidth: CGFloat = 147
         static let websiteButtonHeight: CGFloat = 28
         static let tableViewTopInset: CGFloat = 278
         static let tableViewRowHeight: CGFloat = 54
@@ -184,7 +183,7 @@ final class ProfileViewController: UIViewController {
             
             websiteButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Constants.websiteButtonTopInset),
             websiteButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.websiteButtonLeadingInset),
-            websiteButton.widthAnchor.constraint(equalToConstant: Constants.websiteButtonWidth),
+            websiteButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.websiteButtonLeadingInset),
             websiteButton.heightAnchor.constraint(equalToConstant: Constants.websiteButtonHeight),
             
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Constants.tableViewTopInset),
@@ -282,7 +281,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         cell.textLabel?.font = .bodyBold
         
         switch indexPath.row {
-        case 0:
+        case .zero:
             cell.textLabel?.text = NSLocalizedString("Profile.myNFTs", comment: "My NFTs")
         case 1:
             cell.textLabel?.text = NSLocalizedString("Profile.favorites", comment: "Favorites")
@@ -295,7 +294,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.row {
-        case 0:
+        case .zero:
             let myNFTsViewModel = viewModelFactory.makeMyNFTsViewModel()
             let myNFTsViewController = MyNFTsViewController(viewModel: myNFTsViewModel)
             navigationController?.pushViewController(myNFTsViewController, animated: true)

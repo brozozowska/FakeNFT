@@ -334,10 +334,10 @@ final class EditProfileViewController: UIViewController {
     
     private func showUnsavedChangesAlert() {
         let alert = UIAlertController(
-            title: NSLocalizedString("EditProfile.unsavedChanges.title", comment: "Unsaved changes title"),
-            message: NSLocalizedString("EditProfile.unsavedChanges.message", comment: "You have unsaved changes"),
-            preferredStyle: .alert
-        )
+                title: NSLocalizedString("EditProfile.unsavedChanges.title", comment: "Уверены,\nчто хотите выйти"),
+                message: nil,
+                preferredStyle: .alert
+            )
         
         alert.addAction(UIAlertAction(
             title: NSLocalizedString("EditProfile.unsavedChanges.stay", comment: "Stay"),

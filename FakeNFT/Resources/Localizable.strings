@@ -50,6 +50,6 @@
 "EditProfile.photoURL.save" = "Сохранить";
 "EditProfile.photoURL.cancel" = "Отмена";
 "General.ok" = "OK";
-"EditProfile.unsavedChanges.title" = "Уверены, что хотите выйти?";
+"EditProfile.unsavedChanges.title" = "Уверены,\nчто хотите выйти";
 "EditProfile.unsavedChanges.stay" = "Остаться";
 "EditProfile.unsavedChanges.exit" = "Выйти";
