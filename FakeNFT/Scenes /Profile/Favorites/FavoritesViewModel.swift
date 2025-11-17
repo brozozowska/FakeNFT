@@ -22,14 +22,16 @@ final class FavoritesViewModel: ObservableObject {
         self.nftService = nftService
         
         NotificationCenter.default.publisher(for: NSNotification.Name("LikesDidChange"))
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.loadFavorites()
+                self?.reloadFavoritesFromStorage()
             }
             .store(in: &cancellables)
         
         NotificationCenter.default.publisher(for: NSNotification.Name("LikesDidLoadFromServer"))
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.loadFavorites()
+                self?.reloadFavoritesFromStorage()
             }
             .store(in: &cancellables)
     }
@@ -37,24 +39,21 @@ final class FavoritesViewModel: ObservableObject {
     // MARK: - Public Methods
     
     func loadFavorites() {
-        isLoading = true
-        errorModel = nil
-        
-        let likedNFTs = Array(likeService.getLikedNFTs())
-        
-        if likedNFTs.isEmpty {
-            isLoading = false
-            nfts = []
-            return
-        }
-        
-        loadNFTs(by: likedNFTs)
+        reloadFavoritesFromStorage()
     }
     
     func toggleFavorite(nftId: String) {
+        let wasLiked = likeService.isLiked(nftId: nftId)
+        if wasLiked {
+            nfts.removeAll { $0.id == nftId }
+        }
+        
         likeService.toggleLike(for: nftId) { [weak self] success in
             DispatchQueue.main.async {
                 if !success {
+                    if wasLiked {
+                        self?.reloadFavoritesFromStorage()
+                    }
                     self?.errorModel = ErrorModel(
                         message: NSLocalizedString("Error.toggleLike", comment: ""),
                         actionText: NSLocalizedString("Error.repeat", comment: ""),
@@ -71,6 +70,21 @@ final class FavoritesViewModel: ObservableObject {
     
     // MARK: - Private Methods
     
+    private func reloadFavoritesFromStorage() {
+        isLoading = true
+        errorModel = nil
+        
+        let likedNFTs = Array(likeService.getLikedNFTs())
+        
+        if likedNFTs.isEmpty {
+            isLoading = false
+            nfts = []
+            return
+        }
+        
+        loadNFTs(by: likedNFTs)
+    }
+    
     private func loadNFTs(by ids: [String]) {
         let group = DispatchGroup()
         var loadedNFTs: [Nft] = []
@@ -86,16 +100,17 @@ final class FavoritesViewModel: ObservableObject {
         }
         
         group.notify(queue: .main) { [weak self] in
-            self?.isLoading = false
-            self?.nfts = loadedNFTs
+            guard let self = self else { return }
+            
+            self.nfts = loadedNFTs.sorted { first, second in
+                guard let firstIndex = ids.firstIndex(of: first.id),
+                      let secondIndex = ids.firstIndex(of: second.id) else {
+                    return false
+                }
+                return firstIndex < secondIndex
+            }
+            
+            self.isLoading = false
         }
-    }
-    
-    private func makeErrorModel(_ error: Error) -> ErrorModel {
-        ErrorModel(
-            message: NSLocalizedString("Error.network", comment: ""),
-            actionText: NSLocalizedString("Error.repeat", comment: ""),
-            action: { [weak self] in self?.loadFavorites() }
-        )
     }
 }

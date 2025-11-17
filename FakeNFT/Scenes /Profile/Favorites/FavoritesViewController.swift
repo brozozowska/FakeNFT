@@ -61,20 +61,16 @@ final class FavoritesViewController: UIViewController {
         setupConstraints()
         setupBindings()
         
-        print("FavoritesViewController loaded")
         viewModel.loadFavorites()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print("FavoritesViewController will appear")
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
+        viewModel.loadFavorites()
     }
     
     // MARK: - Private Methods
+    
     private func setupViews() {
         view.backgroundColor = .white
         title = NSLocalizedString("Favorites.title", comment: "Favorites")
@@ -104,17 +100,14 @@ final class FavoritesViewController: UIViewController {
         viewModel.$nfts
             .receive(on: DispatchQueue.main)
             .sink { [weak self] nfts in
-                print("Favorites updated in ViewModel: \(nfts.count) items")
                 self?.collectionView.reloadData()
                 self?.emptyStateLabel.isHidden = !nfts.isEmpty
-                print("Collection view reloaded, empty state hidden: \(nfts.isEmpty)")
             }
             .store(in: &cancellables)
         
         viewModel.$isLoading
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isLoading in
-                print("Favorites loading state: \(isLoading)")
                 isLoading ? self?.activityIndicator.startAnimating() : self?.activityIndicator.stopAnimating()
             }
             .store(in: &cancellables)
@@ -133,7 +126,6 @@ extension FavoritesViewController: UICollectionViewDataSource, UICollectionViewD
         
         let nft = viewModel.nfts[indexPath.row]
         let isLiked = viewModel.isLiked(nftId: nft.id)
-        print("Configuring favorite cell for NFT: \(nft.name) at index \(indexPath.row)")
         cell.configure(with: nft, isLiked: isLiked)
         
         cell.onLikeTapped = { [weak self] in

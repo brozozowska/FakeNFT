@@ -22,9 +22,7 @@ final class LikeStorageImpl: LikeStorage {
     }
     
     func toggleLike(for nftId: String, completion: ((Bool) -> Void)? = nil) {
-        print("Toggle like for NFT: \(nftId). Currently liked: \(likedNFTs.contains(nftId))")
-        
-        let oldState = likedNFTs.contains(nftId)
+        let oldLikedNFTs = likedNFTs
         
         if likedNFTs.contains(nftId) {
             likedNFTs.remove(nftId)
@@ -33,16 +31,18 @@ final class LikeStorageImpl: LikeStorage {
         }
         
         updateLikesOnServer { [weak self] success in
-            if !success {
-                if oldState {
-                    self?.likedNFTs.insert(nftId)
+            DispatchQueue.main.async {
+                if !success {
+                    self?.likedNFTs = oldLikedNFTs
+                    completion?(false)
                 } else {
-                    self?.likedNFTs.remove(nftId)
+                    NotificationCenter.default.post(
+                        name: NSNotification.Name("LikesDidChange"),
+                        object: nil
+                    )
+                    completion?(true)
                 }
-            } else {
-                NotificationCenter.default.post(name: NSNotification.Name("LikesDidChange"), object: nil)
             }
-            completion?(success)
         }
     }
     
@@ -52,37 +52,31 @@ final class LikeStorageImpl: LikeStorage {
     
     private func loadLikesFromServer() {
         let request = GetProfileRequest(id: profileId)
-        print("Loading likes from server...")
         
         networkClient.send(request: request, type: Profile.self) { [weak self] result in
-            switch result {
-            case .success(let profile):
-                print("Successfully loaded profile: \(profile.name), likes: \(profile.likes)")
-                self?.likedNFTs = Set(profile.likes)
-                self?.currentProfile = profile
-                DispatchQueue.main.async {
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let profile):
+                    self?.likedNFTs = Set(profile.likes)
+                    self?.currentProfile = profile
                     NotificationCenter.default.post(
                         name: NSNotification.Name("LikesDidLoadFromServer"),
                         object: nil
                     )
+                case .failure:
+                    self?.likedNFTs = []
                 }
-                print("Successfully loaded \(profile.likes.count) likes")
-            case .failure(let error):
-                print("Failed to load likes: \(error)")
-                self?.likedNFTs = []
             }
         }
     }
     
     private func updateLikesOnServer(completion: ((Bool) -> Void)? = nil) {
         guard currentProfile != nil else {
-            print("Error: Cannot update likes - current profile is not loaded")
             completion?(false)
             return
         }
         
-        let likesString = Array(likedNFTs).joined(separator: ",")
-        print("Updating likes on server: \(likesString)")
+        let likesString: String? = likedNFTs.isEmpty ? nil : Array(likedNFTs).joined(separator: ",")
         
         let request = PutProfileRequest(
             id: profileId,
@@ -93,20 +87,21 @@ final class LikeStorageImpl: LikeStorage {
             website: nil
         )
         
-        if let dto = request.dto {
-            print("Sending DTO: \(dto.asDictionary())")
-        }
-        
         networkClient.send(request: request, type: Profile.self) { [weak self] result in
-            switch result {
-            case .success(let profile):
-                print("Likes updated successfully. Profile name: \(profile.name), liked NFTs: \(profile.likes.count)")
-                self?.likedNFTs = Set(profile.likes)
-                self?.currentProfile = profile
-                completion?(true)
-            case .failure(let error):
-                print("Failed to update likes: \(error)")
-                completion?(false)
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let profile):
+                    if likesString == nil && !profile.likes.isEmpty {
+                        self?.likedNFTs = []
+                        completion?(true)
+                    } else {
+                        self?.likedNFTs = Set(profile.likes)
+                        self?.currentProfile = profile
+                        completion?(true)
+                    }
+                case .failure:
+                    completion?(false)
+                }
             }
         }
     }
