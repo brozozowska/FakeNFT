@@ -3,6 +3,8 @@ final class ServicesAssembly {
     private let networkClient: NetworkClient
     private let nftStorage: NftStorage
     
+    private lazy var cartStorageInstance: CartStorage = CartStorageImpl(networkClient: networkClient)
+    
     init(
         networkClient: NetworkClient,
         nftStorage: NftStorage
@@ -48,6 +50,10 @@ final class ServicesAssembly {
             networkClient: networkClient,
             nftService: nftService
         )
+    }
+    
+    var cartStorage: CartStorage {
+        cartStorageInstance
     }
 
     var currencyService: CurrencyServiceProtocol {

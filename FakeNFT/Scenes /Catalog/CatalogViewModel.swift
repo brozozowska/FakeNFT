@@ -43,12 +43,12 @@ final class CatalogViewModel: ObservableObject {
         }
     }
     
-    func updateSortOption(_ option: SortOption) {
+    func updateSortOption(_ option: CatalogSortOption) {
             sortSettingsService.currentSortOption = option
             collections = applySorting(to: collections)
         }
     
-    var currentSortOption: SortOption {
+    var currentSortOption: CatalogSortOption {
         sortSettingsService.currentSortOption
     }
     

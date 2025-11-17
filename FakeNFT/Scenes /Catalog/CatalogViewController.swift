@@ -127,7 +127,7 @@ final class CatalogViewController: UIViewController {
             preferredStyle: .actionSheet
         )
         
-        for option in SortOption.allCases {
+        for option in CatalogSortOption.allCases {
             let action = UIAlertAction(title: option.title, style: .default) { [weak self] _ in
                 self?.viewModel.updateSortOption(option)
             }

@@ -43,7 +43,7 @@ final class ViewModelAssembly: ViewModelFactory {
     
     func makeMyNFTsViewModel() -> MyNFTsViewModel {
         MyNFTsViewModel(
-            cartService: servicesAssembly.cartService,
+            cartService: servicesAssembly.cartStorage,
             nftService: servicesAssembly.nftService,
             sortSettingsService: servicesAssembly.myNFTSortSettingsService
         )
@@ -63,7 +63,7 @@ final class ViewModelAssembly: ViewModelFactory {
             collection: collection,
             nftService: servicesAssembly.nftService,
             likeService: servicesAssembly.likeService,
-            cartService: servicesAssembly.cartService
+            cartService: servicesAssembly.cartStorage
         )
     }
 }

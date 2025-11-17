@@ -1,6 +1,6 @@
 import Foundation
 
-enum SortOption: String, CaseIterable {
+enum CatalogSortOption: String, CaseIterable {
     case byName
     case byNFTCount
     
@@ -13,7 +13,7 @@ enum SortOption: String, CaseIterable {
         }
     }
     
-    static var `default`: SortOption {
+    static var `default`: CatalogSortOption {
         return .byNFTCount
     }
 }

@@ -1,7 +1,7 @@
 import Foundation
 
 protocol SortSettingsService {
-    var currentSortOption: SortOption { get set }
+    var currentSortOption: CatalogSortOption { get set }
 }
 
 final class SortSettingsServiceImpl: SortSettingsService {
@@ -12,10 +12,10 @@ final class SortSettingsServiceImpl: SortSettingsService {
         self.userDefaults = userDefaults
     }
     
-    var currentSortOption: SortOption {
+    var currentSortOption: CatalogSortOption {
         get {
             guard let rawValue = userDefaults.string(forKey: sortOptionKey),
-                  let option = SortOption(rawValue: rawValue) else {
+                  let option = CatalogSortOption(rawValue: rawValue) else {
                 return .default
             }
             return option
