@@ -120,6 +120,7 @@ final class UserViewController: UIViewController {
             self?.nameLabel.text = name
             self?.bioLabel.text = bio
         }
+
         viewModel.onAvatar = { [weak self] url in
             if let url {
                 self?.avatar.kf.setImage(with: url, placeholder: UIImage(systemName: "person.crop.circle.fill"))
@@ -127,8 +128,14 @@ final class UserViewController: UIViewController {
                 self?.avatar.image = UIImage(systemName: "person.crop.circle.fill")
             }
         }
+
         viewModel.onWebsiteVisible = { [weak self] visible in
             self?.siteButton.isHidden = !visible
+        }
+
+        viewModel.onNftCount = { [weak self] count in
+            self?.nftCount = count
+            self?.tableView.reloadData()
         }
     }
 
@@ -192,7 +199,7 @@ extension UserViewController: UITableViewDataSource, UITableViewDelegate {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: reuseID,
                                                        for: indexPath) as? UserProfileCollectionCell
         else {
-            // fallback, чтобы не упасть
+    
             return UITableViewCell(style: .default, reuseIdentifier: nil)
         }
 
@@ -202,8 +209,30 @@ extension UserViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard nftCount > 0 else { return }
-        let vc = StatisticsCollectionViewController()
+
+        let networkClient = DefaultNetworkClient()
+
+
+        let nftStorage = NftStorageImpl()
+
+        let nftService = NftServiceImpl(
+            networkClient: networkClient,
+            storage: nftStorage
+        )
+
+        let userCollectionService = UserCollectionServiceNetwork(
+            networkClient: networkClient,
+            nftService: nftService
+        )
+
+        let vm = UserCollectionViewModel(
+            service: userCollectionService,
+            userID: viewModel.userID
+        )
+
+        let vc = UserCollectionViewController(viewModel: vm)
         navigationController?.pushViewController(vc, animated: true)
     }
+
 }
 
