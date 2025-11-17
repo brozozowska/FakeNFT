@@ -168,6 +168,7 @@ extension CatalogViewController: UITableViewDelegate {
         guard let viewModelAssembly = (tabBarController as? TabBarController)?.viewModelAssembly else { return }
         let collectionViewModel = viewModelAssembly.makeCollectionViewModel(collection: collection)
         let collectionViewController = CollectionViewController(viewModel: collectionViewModel)
+        collectionViewController.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(collectionViewController, animated: true)
     }
     

@@ -24,6 +24,8 @@ final class WebViewViewController: UIViewController {
     init(url: URL) {
         self.url = url
         super.init(nibName: nil, bundle: nil)
+        
+        self.hidesBottomBarWhenPushed = true
     }
     
     @available(*, unavailable)
@@ -39,16 +41,6 @@ final class WebViewViewController: UIViewController {
         setupViews()
         setupConstraints()
         loadWebPage()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        tabBarController?.tabBar.isHidden = true
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        tabBarController?.tabBar.isHidden = false
     }
     
     // MARK: - Private Methods
