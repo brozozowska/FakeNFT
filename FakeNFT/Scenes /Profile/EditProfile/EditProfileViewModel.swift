@@ -37,6 +37,10 @@ final class EditProfileViewModel: ObservableObject {
         checkForChanges()
     }
     
+    func deleteAvatar() {
+        // Логика удаления аватара
+    }
+    
     func saveProfile(completion: @escaping (Bool) -> Void) {
         guard validateFields() else {
             completion(false)
@@ -48,7 +52,7 @@ final class EditProfileViewModel: ObservableObject {
             avatar: originalProfile.avatar, // Сохраняем оригинальный аватар
             description: description,
             website: website,
-            likes: originalProfile.likes.joined(separator: ",")
+            likes: nil
         )
         
         profileService.updateProfile(profileUpdate) { result in

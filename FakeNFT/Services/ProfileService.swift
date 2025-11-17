@@ -1,7 +1,6 @@
 import Foundation
 
 
-
 protocol ProfileService {
     func loadProfile(id: String, completion: @escaping (Result<Profile, Error>) -> Void)
     func updateProfile(_ profile: ProfileUpdate, completion: @escaping (Result<Profile, Error>) -> Void)
@@ -29,23 +28,24 @@ final class ProfileServiceImpl: ProfileService {
     }
     
     func updateProfile(_ profile: ProfileUpdate, completion: @escaping (Result<Profile, Error>) -> Void) {
-        let likedNFTs = likeStorage.getLikedNFTs()
-        let likesString = Array(likedNFTs).joined(separator: ",")
+        let currentLikes = Array(likeStorage.getLikedNFTs())
+        let likesString = currentLikes.joined(separator: ",")
         
         let request = PutProfileRequest(
             id: "1",
-            likes: profile.likes ?? likesString,
+            likes: likesString,
             name: profile.name,
             avatar: profile.avatar,
             description: profile.description,
             website: profile.website
         )
         
-        print("Updating profile with: name=\(profile.name ?? "nil"), avatar=\(profile.avatar ?? "nil"), description=\(profile.description ?? "nil"), website=\(profile.website ?? "nil"), likes=\(likesString)")
+        print("Updating profile with current likes from storage: \(currentLikes)")
         
         networkClient.send(request: request, type: Profile.self) { result in
             switch result {
             case .success(let updatedProfile):
+                print("Profile updated. Likes in response: \(updatedProfile.likes.count)")
                 completion(.success(updatedProfile))
             case .failure(let error):
                 completion(.failure(error))

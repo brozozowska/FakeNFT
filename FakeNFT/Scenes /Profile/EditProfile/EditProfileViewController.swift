@@ -267,12 +267,20 @@ final class EditProfileViewController: UIViewController {
             self?.showPhotoURLAlert()
         }
         
+        let deleteAction = UIAlertAction(
+                title: NSLocalizedString("EditProfile.deletePhoto", comment: "Delete photo"),
+                style: .destructive
+            ) { [weak self] _ in
+                self?.viewModel.deleteAvatar()
+            }
+        
         let cancelAction = UIAlertAction(
             title: NSLocalizedString("EditProfile.cancel", comment: "Cancel"),
             style: .cancel
         )
         
         actionSheet.addAction(changeAction)
+        actionSheet.addAction(deleteAction)
         actionSheet.addAction(cancelAction)
         
         present(actionSheet, animated: true)
