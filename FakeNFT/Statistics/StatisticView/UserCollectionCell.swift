@@ -11,8 +11,13 @@ final class UserCollectionCell: UICollectionViewCell {
 
     static let identifier = "UserCollectionCell"
 
+    // MARK: - Callbacks
+
+    var onHeartTap: (() -> Void)?
+    var onCartTap: (() -> Void)?
+
     // MARK: - UI
-    
+
     private let nftImageView: UIImageView = {
         let iv = UIImageView()
         iv.layer.cornerRadius = 12
@@ -21,22 +26,23 @@ final class UserCollectionCell: UICollectionViewCell {
         iv.translatesAutoresizingMaskIntoConstraints = false
         return iv
     }()
-    
+
     private let heartButton: UIButton = {
         let b = UIButton(type: .system)
         b.translatesAutoresizingMaskIntoConstraints = false
         b.tintColor = .white
-        b.setImage(UIImage(named: "zero"), for: .normal)
+        b.imageView?.contentMode = .scaleAspectFit
         return b
     }()
-    
+
+
     private let starsImageView: UIImageView = {
         let iv = UIImageView()
         iv.translatesAutoresizingMaskIntoConstraints = false
         iv.contentMode = .scaleAspectFit
         return iv
     }()
-    
+
     private let nameLabel: UILabel = {
         let l = UILabel()
         l.font = .systemFont(ofSize: 15, weight: .bold)
@@ -44,7 +50,7 @@ final class UserCollectionCell: UICollectionViewCell {
         l.translatesAutoresizingMaskIntoConstraints = false
         return l
     }()
-    
+
     private let priceLabel: UILabel = {
         let l = UILabel()
         l.font = .systemFont(ofSize: 13, weight: .regular)
@@ -52,21 +58,21 @@ final class UserCollectionCell: UICollectionViewCell {
         l.translatesAutoresizingMaskIntoConstraints = false
         return l
     }()
-    
+
     private let cartButton: UIButton = {
         let b = UIButton(type: .system)
         b.translatesAutoresizingMaskIntoConstraints = false
         b.tintColor = .label
-        b.setImage(UIImage(named: "add"), for: .normal)
         return b
     }()
-    
 
     // MARK: - Init
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
+        heartButton.addTarget(self, action: #selector(heartTapped), for: .touchUpInside)
+        cartButton.addTarget(self, action: #selector(cartTapped), for: .touchUpInside)
     }
 
     required init?(coder: NSCoder) {
@@ -96,16 +102,34 @@ final class UserCollectionCell: UICollectionViewCell {
         // Рейтинг (звёзды)
         starsImageView.image = UIImage(named: model.ratingImageName)
 
-        
-        heartButton.setImage(UIImage(systemName: "heart"), for: .normal)
+        // Избранное
+        if model.isFavorite {
+            heartButton.tintColor = .systemRed
+            let img = UIImage(named: "Active")?.withRenderingMode(.alwaysTemplate)
+            heartButton.setImage(img, for: .normal)
+        } else {
+            heartButton.tintColor = .white
+            let img = UIImage(named: "NoActive")?.withRenderingMode(.alwaysTemplate)
+            heartButton.setImage(img, for: .normal)
+        }
 
-      
-        cartButton.setImage(UIImage(named: "add"), for: .normal)
+        // Корзина
+        let cartImageName = model.isInCart ? "Delete" : "add"
+        cartButton.setImage(UIImage(named: cartImageName), for: .normal)
     }
 
+    // MARK: - Actions
+
+    @objc private func heartTapped() {
+        onHeartTap?()
+    }
+
+    @objc private func cartTapped() {
+        onCartTap?()
+    }
 
     // MARK: - Setup UI
-    
+
     private func setupUI() {
         contentView.addSubview(nftImageView)
         contentView.addSubview(heartButton)
@@ -113,47 +137,47 @@ final class UserCollectionCell: UICollectionViewCell {
         contentView.addSubview(nameLabel)
         contentView.addSubview(priceLabel)
         contentView.addSubview(cartButton)
-        
+
         NSLayoutConstraint.activate([
             // Image
-            nftImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            nftImageView.topAnchor.constraint(equalTo: contentView.topAnchor)
+                ,
             nftImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             nftImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             nftImageView.heightAnchor.constraint(equalToConstant: 108),
-            
+
             // Heart icon
-            heartButton.topAnchor.constraint(equalTo: nftImageView.topAnchor, constant: 6),
-            heartButton.trailingAnchor.constraint(equalTo: nftImageView.trailingAnchor, constant: -6),
-            heartButton.widthAnchor.constraint(equalToConstant: 28),
-            heartButton.heightAnchor.constraint(equalToConstant: 28),
-            
+            heartButton.topAnchor.constraint(equalTo: nftImageView.topAnchor, constant: 5),
+            heartButton.trailingAnchor.constraint(equalTo: nftImageView.trailingAnchor, constant: -5),
+            heartButton.widthAnchor.constraint(equalToConstant: 40),
+            heartButton.heightAnchor.constraint(equalToConstant: 40),
+
             // Stars
             starsImageView.topAnchor.constraint(equalTo: nftImageView.bottomAnchor, constant: 6),
             starsImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             starsImageView.widthAnchor.constraint(equalToConstant: 80),
             starsImageView.heightAnchor.constraint(equalToConstant: 14),
-            
+
             // Name
             nameLabel.topAnchor.constraint(equalTo: starsImageView.bottomAnchor, constant: 6),
             nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             nameLabel.trailingAnchor.constraint(lessThanOrEqualTo: cartButton.leadingAnchor, constant: -6),
-            
+
             // Cart icon
             cartButton.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
             cartButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            cartButton.widthAnchor.constraint(equalToConstant: 24),
-            cartButton.heightAnchor.constraint(equalToConstant: 24),
-            
+            cartButton.widthAnchor.constraint(equalToConstant: 40),
+            cartButton.heightAnchor.constraint(equalToConstant: 40),
+
             // Price
             priceLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 2),
             priceLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             priceLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
         ])
     }
-    
-    
+
     // MARK: - Image loader
-    
+
     private func loadImage(from url: URL) {
         URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
             guard let data,

@@ -34,7 +34,6 @@ final class UserCollectionViewController: UIViewController {
     init(viewModel: UserCollectionViewModel) {
         self.viewModel = viewModel
 
-       
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
 
@@ -49,8 +48,10 @@ final class UserCollectionViewController: UIViewController {
         layout.minimumLineSpacing = 20
         layout.sectionInset = .zero
 
-        self.collectionView = UICollectionView(frame: .zero,
-                                               collectionViewLayout: layout)
+        self.collectionView = UICollectionView(
+            frame: .zero,
+            collectionViewLayout: layout
+        )
         self.collectionView.translatesAutoresizingMaskIntoConstraints = false
 
         super.init(nibName: nil, bundle: nil)
@@ -94,9 +95,11 @@ final class UserCollectionViewController: UIViewController {
         customNavBar.isTitleInvisible(it_s: false)
         customNavBar.titleLabel.text = "Коллекция NFT"
 
-        customNavBar.backButton.addTarget(self,
-                                          action: #selector(backButtonTapped),
-                                          for: .touchUpInside)
+        customNavBar.backButton.addTarget(
+            self,
+            action: #selector(backButtonTapped),
+            for: .touchUpInside
+        )
 
         NSLayoutConstraint.activate([
             customNavBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -109,6 +112,7 @@ final class UserCollectionViewController: UIViewController {
     private func setupCollection() {
         collectionView.backgroundColor = .background
         collectionView.dataSource = self
+        collectionView.delegate = self
         collectionView.register(
             UserCollectionCell.self,
             forCellWithReuseIdentifier: UserCollectionCell.identifier
@@ -168,9 +172,11 @@ final class UserCollectionViewController: UIViewController {
 
         viewModel.onError = { [weak self] message in
             guard let self else { return }
-            let alert = UIAlertController(title: "Ошибка",
-                                          message: message,
-                                          preferredStyle: .alert)
+            let alert = UIAlertController(
+                title: "Ошибка",
+                message: message,
+                preferredStyle: .alert
+            )
             alert.addAction(UIAlertAction(title: "OK", style: .default))
             present(alert, animated: true)
         }
@@ -201,11 +207,41 @@ extension UserCollectionViewController: UICollectionViewDataSource {
         guard indexPath.item < viewModel.items.count else { return UICollectionViewCell() }
 
         let id = UserCollectionCell.identifier
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: id,
-                                                            for: indexPath) as? UserCollectionCell
+        guard let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: id,
+            for: indexPath
+        ) as? UserCollectionCell
         else { return UICollectionViewCell() }
 
-        cell.configure(with: viewModel.items[indexPath.item])
+        let model = viewModel.items[indexPath.item]
+        cell.configure(with: model)
+
+        cell.onHeartTap = { [weak self, weak cell] in
+            guard
+                let self,
+                let cell,
+                let indexPath = collectionView.indexPath(for: cell)
+            else { return }
+
+            self.viewModel.toggleFavorite(at: indexPath.item)
+            self.collectionView.reloadItems(at: [indexPath])
+        }
+
+        cell.onCartTap = { [weak self, weak cell] in
+            guard
+                let self,
+                let cell,
+                let indexPath = collectionView.indexPath(for: cell)
+            else { return }
+
+            self.viewModel.toggleCart(at: indexPath.item)
+            self.collectionView.reloadItems(at: [indexPath])
+        }
+
         return cell
     }
 }
+
+// MARK: - UICollectionViewDelegate (если нужно будет)
+
+extension UserCollectionViewController: UICollectionViewDelegate { }
