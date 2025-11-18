@@ -14,7 +14,7 @@ final class CartStorageImpl: CartStorage {
     init(cartService: CartServiceProtocol) {
         self.cartService = cartService
         loadCartFromServer()
-        setupNotifications() // Добав
+        setupNotifications()
     }
     
     deinit {
@@ -25,12 +25,10 @@ final class CartStorageImpl: CartStorage {
         let isCurrentlyInCart = cartItems.contains(nftId)
         
         if isCurrentlyInCart {
-            // Удаляем из корзины
             cartService.removeItem(with: nftId) { [weak self] result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success:
-                        // Только отправляем нотификацию, НЕ перезагружаем корзину
                         self?.cartItems.removeAll { $0 == nftId }
                         print("CartStorage: Removed NFT \(nftId) from cart. Current items: \(self?.cartItems ?? [])")
                         NotificationCenter.default.post(name: NSNotification.Name("CartDidChange"), object: nil)
@@ -41,12 +39,10 @@ final class CartStorageImpl: CartStorage {
                 }
             }
         } else {
-            // Добавляем в корзину
             cartService.addItem(with: nftId) { [weak self] result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success:
-                        // Только отправляем нотификацию, НЕ перезагружаем корзину
                         self?.cartItems.append(nftId)
                         print("CartStorage: Added NFT \(nftId) to cart. Current items: \(self?.cartItems ?? [])")
                         NotificationCenter.default.post(name: NSNotification.Name("CartDidChange"), object: nil)
@@ -94,7 +90,6 @@ final class CartStorageImpl: CartStorage {
     
     @objc private func handleCartDidChange() {
         print("CartStorage: CartDidChange notification received - reloading cart from server")
-        // При любой нотификации об изменении корзины перезагружаем данные
         loadCartFromServer()
     }
     
@@ -106,7 +101,6 @@ final class CartStorageImpl: CartStorage {
                     self?.cartItems = items.map { $0.id }
                     print("CartStorage: Cart loaded from server: \(items.count) items - \(self?.cartItems ?? [])")
                     
-                    // Отправляем только CartDidLoadFromServer при первоначальной загрузке
                     NotificationCenter.default.post(
                         name: NSNotification.Name("CartDidLoadFromServer"),
                         object: nil

@@ -7,6 +7,5 @@ protocol CartServiceProtocol: AnyObject {
     
     func clear(completion: @escaping (Result<Void, Error>) -> Void)
     
-    // Добавляем этот метод
     func addItem(with id: String, completion: @escaping (Result<Void, Error>) -> Void)
 }

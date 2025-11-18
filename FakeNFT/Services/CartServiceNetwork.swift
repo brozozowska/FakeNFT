@@ -30,7 +30,6 @@ final class CartServiceNetwork: CartServiceProtocol {
     func addItem(with id: String, completion: @escaping (Result<Void, Error>) -> Void) {
         assert(Thread.isMainThread, "CartServiceNetwork.addItem must be called on the main thread")
         
-        // Берем текущие ID и добавляем новый
         var updatedIds = currentIds
         if !updatedIds.contains(id) {
             updatedIds.append(id)
@@ -44,8 +43,6 @@ final class CartServiceNetwork: CartServiceProtocol {
                 switch result {
                 case .success(let order):
                     self?.currentIds = order.nfts
-                    // ВАЖНО: Отправляем нотификацию при добавлении товара
-                    // Это гарантирует синхронизацию между всеми модулями
                     NotificationCenter.default.post(
                         name: NSNotification.Name("CartDidChange"),
                         object: nil
@@ -77,8 +74,6 @@ final class CartServiceNetwork: CartServiceProtocol {
                     switch result {
                     case .success(let order):
                         self?.currentIds = order.nfts
-                        // ВАЖНО: Отправляем нотификацию при удалении товара
-                        // Это гарантирует синхронизацию между всеми модулями
                         NotificationCenter.default.post(
                             name: NSNotification.Name("CartDidChange"),
                             object: nil
@@ -117,7 +112,6 @@ final class CartServiceNetwork: CartServiceProtocol {
                 switch result {
                 case .success(let order):
                     self?.currentIds = order.nfts
-                    // ВАЖНО: Отправляем нотификацию при очистке корзины
                     NotificationCenter.default.post(
                         name: NSNotification.Name("CartDidChange"),
                         object: nil
