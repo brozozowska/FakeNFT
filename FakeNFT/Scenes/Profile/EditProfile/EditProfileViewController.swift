@@ -268,11 +268,11 @@ final class EditProfileViewController: UIViewController {
         }
         
         let deleteAction = UIAlertAction(
-                title: NSLocalizedString("EditProfile.deletePhoto", comment: "Delete photo"),
-                style: .destructive
-            ) { [weak self] _ in
-                self?.viewModel.deleteAvatar()
-            }
+            title: NSLocalizedString("EditProfile.deletePhoto", comment: "Delete photo"),
+            style: .destructive
+        ) { [weak self] _ in
+            self?.viewModel.deleteAvatar()
+        }
         
         let cancelAction = UIAlertAction(
             title: NSLocalizedString("EditProfile.cancel", comment: "Cancel"),
@@ -334,10 +334,10 @@ final class EditProfileViewController: UIViewController {
     
     private func showUnsavedChangesAlert() {
         let alert = UIAlertController(
-                title: NSLocalizedString("EditProfile.unsavedChanges.title", comment: "Уверены,\nчто хотите выйти"),
-                message: nil,
-                preferredStyle: .alert
-            )
+            title: NSLocalizedString("EditProfile.unsavedChanges.title", comment: "Уверены,\nчто хотите выйти"),
+            message: nil,
+            preferredStyle: .alert
+        )
         
         alert.addAction(UIAlertAction(
             title: NSLocalizedString("EditProfile.unsavedChanges.stay", comment: "Stay"),
@@ -363,7 +363,9 @@ final class EditProfileViewController: UIViewController {
         
         let keyboardHeight = keyboardFrame.height
         
-        let contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
+        let adjustedKeyboardHeight = keyboardHeight - view.safeAreaInsets.bottom
+        
+        let contentInsets = UIEdgeInsets(top: -view.safeAreaInsets.top, left: 0, bottom: adjustedKeyboardHeight, right: 0)
         scrollView.contentInset = contentInsets
         scrollView.scrollIndicatorInsets = contentInsets
         
@@ -374,8 +376,9 @@ final class EditProfileViewController: UIViewController {
     }
     
     @objc private func keyboardWillHide(_ notification: Notification) {
-        scrollView.contentInset = .zero
-        scrollView.scrollIndicatorInsets = .zero
+        let topInset = -view.safeAreaInsets.top
+        scrollView.contentInset = UIEdgeInsets(top: topInset, left: 0, bottom: 0, right: 0)
+        scrollView.scrollIndicatorInsets = UIEdgeInsets(top: topInset, left: 0, bottom: 0, right: 0)
     }
     
     // MARK: - Actions
