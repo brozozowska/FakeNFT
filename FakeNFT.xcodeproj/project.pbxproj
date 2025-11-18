@@ -172,6 +172,7 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		4EC062AD2EACF6F000373C9E /* ViewModels */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ViewModels; sourceTree = "<group>"; };
 		4EC062B02EACF73B00373C9E /* Cart */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Cart; sourceTree = "<group>"; };
+		E4A056A02ECD122E00681D71 /* Onboarding */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Onboarding; sourceTree = "<group>"; };
 		E4F1433B2EC113D600D3AF8C /* Profile */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Profile; sourceTree = "<group>"; };
 		E4F541272EB39D440046681D /* Collection */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Collection; sourceTree = "<group>"; };
 		E4F542882EB8AA030046681D /* Sorting */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Sorting; sourceTree = "<group>"; };
@@ -351,6 +352,7 @@
 		3F6806C729CBBC5B00B4F915 /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				E4A056A02ECD122E00681D71 /* Onboarding */,
 				E4F1433B2EC113D600D3AF8C /* Profile */,
 				E4F5429A2EB8F4CB0046681D /* WebViewViewController */,
 				E4F541272EB39D440046681D /* Collection */,
@@ -491,6 +493,7 @@
 			fileSystemSynchronizedGroups = (
 				4EC062AD2EACF6F000373C9E /* ViewModels */,
 				4EC062B02EACF73B00373C9E /* Cart */,
+				E4A056A02ECD122E00681D71 /* Onboarding */,
 				E4F1433B2EC113D600D3AF8C /* Profile */,
 				E4F541272EB39D440046681D /* Collection */,
 				E4F542882EB8AA030046681D /* Sorting */,
