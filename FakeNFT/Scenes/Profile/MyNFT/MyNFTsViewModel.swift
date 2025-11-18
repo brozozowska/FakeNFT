@@ -30,6 +30,7 @@ final class MyNFTsViewModel: ObservableObject {
         self.sortSettingsService = sortSettingsService
         
         setupNotifications()
+        loadMyNFTs() // Загружаем сразу при инициализации
     }
     
     // MARK: - Public Methods
@@ -39,12 +40,12 @@ final class MyNFTsViewModel: ObservableObject {
         errorModel = nil
         
         let cartNFTs = cartService.getCartItems()
-        print("Loading MyNFTs from cart: \(cartNFTs.count) items - \(cartNFTs)")
+        print("MyNFTsViewModel: Loading MyNFTs from cart: \(cartNFTs.count) items - \(cartNFTs)")
         
         if cartNFTs.isEmpty {
             self.isLoading = false
             self.nfts = []
-            print("No NFTs in cart")
+            print("MyNFTsViewModel: No NFTs in cart")
             return
         }
         
@@ -59,9 +60,10 @@ final class MyNFTsViewModel: ObservableObject {
     func removeFromCart(nftId: String) {
         cartService.toggleCart(for: nftId) { [weak self] success in
             if success {
-                print("Successfully removed NFT \(nftId) from cart")
+                print("MyNFTsViewModel: Successfully removed NFT \(nftId) from cart")
+                // НЕ вызываем loadMyNFTs() здесь - дождемся нотификации
             } else {
-                print("Failed to remove NFT from cart")
+                print("MyNFTsViewModel: Failed to remove NFT from cart")
                 self?.errorModel = ErrorModel(
                     message: NSLocalizedString("Error.removeFromCart", comment: "Failed to remove from cart"),
                     actionText: NSLocalizedString("Error.repeat", comment: "Try again"),
@@ -76,7 +78,14 @@ final class MyNFTsViewModel: ObservableObject {
     private func setupNotifications() {
         NotificationCenter.default.publisher(for: NSNotification.Name("CartDidChange"))
             .sink { [weak self] _ in
-                print("CartDidChange notification received in MyNFTsViewModel")
+                print("MyNFTsViewModel: CartDidChange notification received - reloading NFTs")
+                self?.loadMyNFTs()
+            }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: NSNotification.Name("CartDidLoadFromServer"))
+            .sink { [weak self] _ in
+                print("MyNFTsViewModel: CartDidLoadFromServer notification received - reloading NFTs")
                 self?.loadMyNFTs()
             }
             .store(in: &cancellables)
@@ -86,11 +95,11 @@ final class MyNFTsViewModel: ObservableObject {
         guard !ids.isEmpty else {
             self.isLoading = false
             self.nfts = []
-            print("No NFT IDs to load")
+            print("MyNFTsViewModel: No NFT IDs to load")
             return
         }
         
-        print("Loading \(ids.count) NFTs: \(ids)")
+        print("MyNFTsViewModel: Loading \(ids.count) NFTs: \(ids)")
         
         let group = DispatchGroup()
         var loadedNFTs: [Nft] = []
@@ -101,10 +110,10 @@ final class MyNFTsViewModel: ObservableObject {
             nftService.loadNft(id: nftId) { result in
                 switch result {
                 case .success(let nft):
-                    print("Successfully loaded NFT: \(nft.name), id: \(nft.id)")
+                    print("MyNFTsViewModel: Successfully loaded NFT: \(nft.name), id: \(nft.id)")
                     loadedNFTs.append(nft)
                 case .failure(let error):
-                    print("Failed to load NFT \(nftId): \(error)")
+                    print("MyNFTsViewModel: Failed to load NFT \(nftId): \(error)")
                     loadError = error
                 }
                 group.leave()
@@ -114,10 +123,10 @@ final class MyNFTsViewModel: ObservableObject {
         group.notify(queue: .main) { [weak self] in
             self?.isLoading = false
             if let error = loadError {
-                print("Error loading NFTs: \(error)")
+                print("MyNFTsViewModel: Error loading NFTs: \(error)")
                 self?.errorModel = self?.makeErrorModel(error)
             } else {
-                print("Successfully loaded \(loadedNFTs.count) NFTs for MyNFTs")
+                print("MyNFTsViewModel: Successfully loaded \(loadedNFTs.count) NFTs for MyNFTs")
                 self?.nfts = self?.applySorting(to: loadedNFTs) ?? []
             }
         }

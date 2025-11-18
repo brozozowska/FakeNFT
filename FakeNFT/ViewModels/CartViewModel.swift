@@ -19,7 +19,7 @@ final class CartViewModel: CartViewModelProtocol {
     private enum Storage {
         static let sortOptionKey = "cart.sort.option"
     }
-
+    
     private let cartService: CartServiceProtocol
     private(set) var items: [CartItem] = []
     private var currentSort: SortOption? {
@@ -29,7 +29,7 @@ final class CartViewModel: CartViewModelProtocol {
             }
         }
     }
-
+    
     weak var output: CartViewModelOutput?
     
     init(cartService: CartServiceProtocol) {
@@ -60,13 +60,21 @@ final class CartViewModel: CartViewModelProtocol {
                 case .success:
                     self.items.removeAll { $0.id == id }
                     self.output?.didUpdateItems()
+                    
+                    // ВАЖНО: Отправляем нотификацию об изменении корзины
+                    // Это нужно чтобы MyNFTsViewModel узнал об изменении и обновил список
+                    print("CartViewModel: Item \(id) removed from cart, sending CartDidChange notification")
+                    NotificationCenter.default.post(
+                        name: NSNotification.Name("CartDidChange"),
+                        object: nil
+                    )
                 case .failure(let error):
                     self.output?.didReceiveError(error)
                 }
             }
         }
     }
-
+    
     func applySort(_ option: SortOption) {
         currentSort = option
         sortItems()
@@ -90,7 +98,7 @@ final class CartViewModel: CartViewModelProtocol {
             }
         }
     }
-
+    
     private func sortItems() {
         guard let currentSort else { return }
         switch currentSort {
