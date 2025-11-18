@@ -8,41 +8,49 @@ protocol CartStorage {
 }
 
 final class CartStorageImpl: CartStorage {
-    private let networkClient: NetworkClient
-    private let orderId = "1"
+    private let cartService: CartServiceProtocol
     private var cartItems: [String] = []
     
-    init(networkClient: NetworkClient) {
-        self.networkClient = networkClient
+    init(cartService: CartServiceProtocol) {
+        self.cartService = cartService
         loadCartFromServer()
+        setupNotifications()
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     func toggleCart(for nftId: String, completion: ((Bool) -> Void)? = nil) {
-        print("Toggle cart for NFT: \(nftId). Currently in cart: \(cartItems.contains(nftId))")
+        let isCurrentlyInCart = cartItems.contains(nftId)
         
-        let oldState = cartItems.contains(nftId)
-        
-        if let index = cartItems.firstIndex(of: nftId) {
-            cartItems.remove(at: index)
-        } else {
-            cartItems.append(nftId)
-        }
-        
-        updateCartOnServer { [weak self] success in
-            guard let self else { return }
-            
-            if success {
-                NotificationCenter.default.post(name: NSNotification.Name("CartDidChange"), object: nil)
-                completion?(true)
-            } else {
-                if oldState {
-                    self.cartItems.append(nftId)
-                } else {
-                    if let index = self.cartItems.firstIndex(of: nftId) {
-                        self.cartItems.remove(at: index)
+        if isCurrentlyInCart {
+            cartService.removeItem(with: nftId) { [weak self] result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success:
+                        self?.cartItems.removeAll { $0 == nftId }
+                        print("CartStorage: Removed NFT \(nftId) from cart. Current items: \(self?.cartItems ?? [])")
+                        NotificationCenter.default.post(name: NSNotification.Name("CartDidChange"), object: nil)
+                        completion?(true)
+                    case .failure:
+                        completion?(false)
                     }
                 }
-                completion?(false)
+            }
+        } else {
+            cartService.addItem(with: nftId) { [weak self] result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success:
+                        self?.cartItems.append(nftId)
+                        print("CartStorage: Added NFT \(nftId) to cart. Current items: \(self?.cartItems ?? [])")
+                        NotificationCenter.default.post(name: NSNotification.Name("CartDidChange"), object: nil)
+                        completion?(true)
+                    case .failure:
+                        completion?(false)
+                    }
+                }
             }
         }
     }
@@ -56,47 +64,51 @@ final class CartStorageImpl: CartStorage {
     }
     
     func clearCart() {
-        cartItems.removeAll()
-        updateCartOnServer()
-        NotificationCenter.default.post(name: NSNotification.Name("CartDidChange"), object: nil)
-    }
-    
-    private func loadCartFromServer() {
-        let request = GetOrderRequest(id: orderId)
-        print("Loading cart from server...")
-        
-        networkClient.send(request: request, type: Order.self) { [weak self] result in
-            switch result {
-            case .success(let order):
-                print("Successfully loaded cart. NFTs in cart: \(order.nfts)")
-                self?.cartItems = order.nfts
-                DispatchQueue.main.async {
-                    NotificationCenter.default.post(
-                        name: NSNotification.Name("CartDidLoadFromServer"),
-                        object: nil
-                    )
+        cartService.clear { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success:
+                    self?.cartItems.removeAll()
+                    NotificationCenter.default.post(name: NSNotification.Name("CartDidChange"), object: nil)
+                case .failure:
+                    break
                 }
-            case .failure(let error):
-                print("Failed to load cart: \(error)")
-                self?.cartItems = []
             }
         }
     }
     
-    private func updateCartOnServer(completion: ((Bool) -> Void)? = nil) {
-        let nftsString = cartItems.joined(separator: ",")
-        print("Updating cart on server: '\(nftsString)'")
-        
-        let request = PutOrderRequest(id: orderId, nfts: nftsString)
-        
-        networkClient.send(request: request, type: Order.self) { result in
-            switch result {
-            case .success(let order):
-                print("Cart updated successfully. NFTs in cart: \(order.nfts.count)")
-                completion?(true)
-            case .failure(let error):
-                print("Failed to update cart: \(error)")
-                completion?(false)
+    // MARK: - Notifications
+    
+    private func setupNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleCartDidChange),
+            name: NSNotification.Name("CartDidChange"),
+            object: nil
+        )
+    }
+    
+    @objc private func handleCartDidChange() {
+        print("CartStorage: CartDidChange notification received - reloading cart from server")
+        loadCartFromServer()
+    }
+    
+    private func loadCartFromServer() {
+        cartService.fetchCartItems { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let items):
+                    self?.cartItems = items.map { $0.id }
+                    print("CartStorage: Cart loaded from server: \(items.count) items - \(self?.cartItems ?? [])")
+                    
+                    NotificationCenter.default.post(
+                        name: NSNotification.Name("CartDidLoadFromServer"),
+                        object: nil
+                    )
+                case .failure(let error):
+                    print("CartStorage: Failed to load cart: \(error)")
+                    self?.cartItems = []
+                }
             }
         }
     }

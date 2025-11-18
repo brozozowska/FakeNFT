@@ -75,6 +75,7 @@ final class MyNFTsViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         print("MyNFTsViewController will appear - loading NFTs")
+        viewModel.loadMyNFTs()
     }
     
     deinit {

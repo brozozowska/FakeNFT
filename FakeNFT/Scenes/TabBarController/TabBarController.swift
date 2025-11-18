@@ -22,6 +22,15 @@ final class TabBarController: UITabBarController {
         
         view.backgroundColor = .systemBackground
         
+        // Profile
+        let profileViewModel = viewModelAssembly.makeProfileViewModel()
+        let profileController = ProfileViewController(
+            viewModel: profileViewModel,
+            viewModelFactory: viewModelAssembly
+        )
+        let profileNavigationController = UINavigationController(rootViewController: profileController)
+        profileNavigationController.tabBarItem = profileTabBarItem
+        
         // Catalog
         let catalogViewModel = viewModelAssembly.makeCatalogViewModel()
         let catalogController = CatalogViewController(
@@ -39,15 +48,6 @@ final class TabBarController: UITabBarController {
             tag: 1
         )
         
-        // Profile
-        let profileViewModel = viewModelAssembly.makeProfileViewModel()
-        let profileController = ProfileViewController(
-            viewModel: profileViewModel,
-            viewModelFactory: viewModelAssembly
-        )
-        let profileNavigationController = UINavigationController(rootViewController: profileController)
-        profileNavigationController.tabBarItem = profileTabBarItem
-        
-        viewControllers = [catalogNavigationController, cartNavigationController, profileNavigationController]
+        viewControllers = [profileNavigationController, catalogNavigationController, cartNavigationController]
     }
 }

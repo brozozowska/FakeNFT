@@ -20,3 +20,13 @@ struct NFTCollection: Decodable {
         nfts.count
     }
 }
+
+extension NFTCollection {
+    var displayNFTCount: Int {
+        Set(nfts).count
+    }
+    
+    var displayName: String {
+        "\(name) (\(displayNFTCount) NFT)"
+    }
+}

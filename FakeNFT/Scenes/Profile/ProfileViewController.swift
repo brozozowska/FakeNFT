@@ -297,10 +297,12 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         case .zero:
             let myNFTsViewModel = viewModelFactory.makeMyNFTsViewModel()
             let myNFTsViewController = MyNFTsViewController(viewModel: myNFTsViewModel)
+            myNFTsViewController.hidesBottomBarWhenPushed = true
             navigationController?.pushViewController(myNFTsViewController, animated: true)
         case 1:
             let favoritesViewModel = viewModelFactory.makeFavoritesViewModel()
             let favoritesViewController = FavoritesViewController(viewModel: favoritesViewModel)
+            favoritesViewController.hidesBottomBarWhenPushed = true
             navigationController?.pushViewController(favoritesViewController, animated: true)
         default:
             break

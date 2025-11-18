@@ -27,13 +27,41 @@ final class CartServiceNetwork: CartServiceProtocol {
         }
     }
     
+    func addItem(with id: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        assert(Thread.isMainThread, "CartServiceNetwork.addItem must be called on the main thread")
+        
+        var updatedIds = currentIds
+        if !updatedIds.contains(id) {
+            updatedIds.append(id)
+        }
+        
+        let dto = OrderPutDto(nfts: updatedIds)
+        let request = OrderPutRequest(dto: dto)
+        
+        networkClient.send(request: request, type: OrderDTO.self) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let order):
+                    self?.currentIds = order.nfts
+                    NotificationCenter.default.post(
+                        name: NSNotification.Name("CartDidChange"),
+                        object: nil
+                    )
+                    completion(.success(()))
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+            }
+        }
+    }
+    
     func removeItem(with id: String, completion: @escaping (Result<Void, Error>) -> Void) {
         assert(Thread.isMainThread, "CartServiceNetwork.removeItem must be called on the main thread")
         
         let proceed: ([String]) -> Void = { [weak self] ids in
             guard let self else { return }
             let updated = ids.filter { $0 != id }
-
+            
             guard !updated.isEmpty else {
                 self.clear(completion: completion)
                 return
@@ -42,13 +70,18 @@ final class CartServiceNetwork: CartServiceProtocol {
             let dto = OrderPutDto(nfts: updated)
             let request = OrderPutRequest(dto: dto)
             self.networkClient.send(request: request, type: OrderDTO.self) { [weak self] result in
-                guard let self else { return }
-                switch result {
-                case .success(let order):
-                    self.currentIds = order.nfts
-                    completion(.success(()))
-                case .failure(let error):
-                    completion(.failure(error))
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let order):
+                        self?.currentIds = order.nfts
+                        NotificationCenter.default.post(
+                            name: NSNotification.Name("CartDidChange"),
+                            object: nil
+                        )
+                        completion(.success(()))
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
                 }
             }
         }
@@ -75,13 +108,18 @@ final class CartServiceNetwork: CartServiceProtocol {
         
         let request = OrderPutRequest(dto: nil)
         networkClient.send(request: request, type: OrderDTO.self) { [weak self] result in
-            guard let self else { return }
-            switch result {
-            case .success(let order):
-                self.currentIds = order.nfts
-                completion(.success(()))
-            case .failure(let error):
-                completion(.failure(error))
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let order):
+                    self?.currentIds = order.nfts
+                    NotificationCenter.default.post(
+                        name: NSNotification.Name("CartDidChange"),
+                        object: nil
+                    )
+                    completion(.success(()))
+                case .failure(let error):
+                    completion(.failure(error))
+                }
             }
         }
     }

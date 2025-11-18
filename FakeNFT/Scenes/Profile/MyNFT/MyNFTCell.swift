@@ -9,12 +9,13 @@ final class MyNFTCell: UITableViewCell, ReuseIdentifying {
         static let nftImageSize: CGFloat = 108
         static let nftImageCornerRadius: CGFloat = 12
         static let horizontalInset: CGFloat = 16
-        static let imageToTextSpacing: CGFloat = 20
+        static let imageToTextSpacing: CGFloat = 10
+        static let textToPriceSpacing: CGFloat = 36
         static let nameTopInset: CGFloat = 23
         static let ratingTopInset: CGFloat = 4
         static let authorTopInset: CGFloat = 4
-        static let priceTopInset: CGFloat = 12
-        static let priceValueTopInset: CGFloat = 2
+        static let priceTopInset: CGFloat = 32
+        static let priceWidth: CGFloat = 85
         static let ratingViewWidth: CGFloat = 68
         static let ratingViewHeight: CGFloat = 12
     }
@@ -51,6 +52,7 @@ final class MyNFTCell: UITableViewCell, ReuseIdentifying {
         label.font = .caption2
         label.textColor = .black
         label.text = NSLocalizedString("MyNFTs.price", comment: "Price")
+        label.textAlignment = .left
         return label
     }()
     
@@ -59,6 +61,7 @@ final class MyNFTCell: UITableViewCell, ReuseIdentifying {
         label.font = .bodyBold
         label.textColor = .black
         label.numberOfLines = 1
+        label.textAlignment = .left
         return label
     }()
     
@@ -114,7 +117,7 @@ final class MyNFTCell: UITableViewCell, ReuseIdentifying {
             
             nameLabel.topAnchor.constraint(equalTo: nftImageView.topAnchor, constant: Constants.nameTopInset),
             nameLabel.leadingAnchor.constraint(equalTo: nftImageView.trailingAnchor, constant: Constants.imageToTextSpacing),
-            nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.horizontalInset),
+            nameLabel.trailingAnchor.constraint(lessThanOrEqualTo: priceLabel.leadingAnchor, constant: -Constants.textToPriceSpacing),
             
             ratingView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: Constants.ratingTopInset),
             ratingView.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
@@ -123,14 +126,15 @@ final class MyNFTCell: UITableViewCell, ReuseIdentifying {
             
             authorLabel.topAnchor.constraint(equalTo: ratingView.bottomAnchor, constant: Constants.authorTopInset),
             authorLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
-            authorLabel.trailingAnchor.constraint(equalTo: nameLabel.trailingAnchor),
+            authorLabel.trailingAnchor.constraint(lessThanOrEqualTo: priceLabel.leadingAnchor, constant: -Constants.textToPriceSpacing),
             
-            priceLabel.topAnchor.constraint(equalTo: authorLabel.bottomAnchor, constant: Constants.priceTopInset),
-            priceLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
+            priceLabel.topAnchor.constraint(equalTo: nftImageView.topAnchor, constant: Constants.priceTopInset),
+            priceLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.horizontalInset),
+            priceLabel.widthAnchor.constraint(equalToConstant: Constants.priceWidth),
             
-            priceValueLabel.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: Constants.priceValueTopInset),
-            priceValueLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
-            priceValueLabel.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -Constants.horizontalInset)
+            priceValueLabel.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 2),
+            priceValueLabel.leadingAnchor.constraint(equalTo: priceLabel.leadingAnchor),
+            priceValueLabel.trailingAnchor.constraint(equalTo: priceLabel.trailingAnchor)
         ])
     }
     

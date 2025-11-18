@@ -3,7 +3,16 @@ final class ServicesAssembly {
     private let networkClient: NetworkClient
     private let nftStorage: NftStorage
     
-    private lazy var cartStorageInstance: CartStorage = CartStorageImpl(networkClient: networkClient)
+    // Единый сервис корзины для всех модулей
+    private lazy var cartServiceInstance: CartServiceProtocol = CartServiceNetwork(
+        networkClient: networkClient,
+        nftService: nftService
+    )
+    
+    // CartStorage использует CartServiceProtocol
+    private lazy var cartStorageInstance: CartStorage = CartStorageImpl(
+        cartService: cartServiceInstance
+    )
     
     init(
         networkClient: NetworkClient,
@@ -44,18 +53,15 @@ final class ServicesAssembly {
             likeStorage: likeService
         )
     }
-
+    
     var cartService: CartServiceProtocol {
-        CartServiceNetwork(
-            networkClient: networkClient,
-            nftService: nftService
-        )
+        cartServiceInstance
     }
     
     var cartStorage: CartStorage {
         cartStorageInstance
     }
-
+    
     var currencyService: CurrencyServiceProtocol {
         CurrencyServiceNetwork(networkClient: networkClient)
     }

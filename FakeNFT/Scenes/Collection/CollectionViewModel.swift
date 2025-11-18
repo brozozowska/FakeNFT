@@ -87,41 +87,49 @@ final class CollectionViewModel: ObservableObject {
         errorModel = nil
         
         let group = DispatchGroup()
-        let threadSafeQueue = DispatchQueue(label: "com.app.collectionViewModel.nfts", attributes: .concurrent)
         var loadedNFTs: [Nft] = []
         var loadError: Error?
+        let serialQueue = DispatchQueue(label: "com.app.collectionViewModel.nfts.serial")
         
         for nftId in collection.nfts {
             group.enter()
             nftService.loadNft(id: nftId) { result in
-                switch result {
-                case .success(let nft):
-                    threadSafeQueue.async(flags: .barrier) {
-                        loadedNFTs.append(nft)
-                    }
-                case .failure(let error):
-                    threadSafeQueue.async(flags: .barrier) {
+                serialQueue.async {
+                    switch result {
+                    case .success(let nft):
+                        if !loadedNFTs.contains(where: { $0.id == nft.id }) {
+                            loadedNFTs.append(nft)
+                        }
+                    case .failure(let error):
                         if loadError == nil {
                             loadError = error
                         }
                     }
+                    group.leave()
                 }
-                group.leave()
             }
         }
         
         group.notify(queue: .main) { [weak self] in
             guard let self else { return }
             
-            threadSafeQueue.sync {
-                self.isLoading = false
+            self.isLoading = false
+            
+            if let error = loadError {
+                self.errorModel = self.makeErrorModel(error)
+            } else {
+                var uniqueNFTs: [Nft] = []
+                var seenIDs: Set<String> = []
                 
-                if let error = loadError {
-                    self.errorModel = self.makeErrorModel(error)
-                } else {
-                    self.nfts = loadedNFTs
-                    self.objectWillChange.send()
+                for nft in loadedNFTs {
+                    if !seenIDs.contains(nft.id) {
+                        uniqueNFTs.append(nft)
+                        seenIDs.insert(nft.id)
+                    }
                 }
+                
+                self.nfts = uniqueNFTs.sorted { $0.id < $1.id }
+                self.objectWillChange.send()
             }
         }
     }
