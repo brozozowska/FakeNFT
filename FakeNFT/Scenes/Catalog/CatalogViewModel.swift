@@ -25,28 +25,28 @@ final class CatalogViewModel: ObservableObject {
     // MARK: - Public Methods
     
     func loadCollections() {
-            isLoading = true
-            errorModel = nil
-            
-            collectionService.loadCollections { [weak self] result in
-                DispatchQueue.main.async {
-                    guard let self else { return }
-                    self.isLoading = false
-                    
-                    switch result {
-                    case .success(let collections):
-                        self.collections = self.applySorting(to: collections)
-                    case .failure(let error):
-                        self.errorModel = self.makeErrorModel(error)
-                    }
+        isLoading = true
+        errorModel = nil
+        
+        collectionService.loadCollections { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.isLoading = false
+                
+                switch result {
+                case .success(let collections):
+                    self.collections = self.applySorting(to: collections)
+                case .failure(let error):
+                    self.errorModel = self.makeErrorModel(error)
+                }
             }
         }
     }
     
     func updateSortOption(_ option: CatalogSortOption) {
-            sortSettingsService.currentSortOption = option
-            collections = applySorting(to: collections)
-        }
+        sortSettingsService.currentSortOption = option
+        collections = applySorting(to: collections)
+    }
     
     var currentSortOption: CatalogSortOption {
         sortSettingsService.currentSortOption
@@ -63,12 +63,18 @@ final class CatalogViewModel: ObservableObject {
     // MARK: - Private Methods
     
     private func applySorting(to collections: [NFTCollection]) -> [NFTCollection] {
+        let sortedCollections: [NFTCollection]
+        
         switch sortSettingsService.currentSortOption {
         case .byName:
-            return collections.sorted { $0.name < $1.name }
+            sortedCollections = collections.sorted { $0.name < $1.name }
         case .byNFTCount:
-            return collections.sorted { $0.nftCount > $1.nftCount }
+            sortedCollections = collections.sorted {
+                Set($0.nfts).count > Set($1.nfts).count
+            }
         }
+        
+        return sortedCollections
     }
     
     private func makeErrorModel(_ error: Error) -> ErrorModel {
