@@ -14,7 +14,7 @@ final class CartStorageImpl: CartStorage {
     init(cartService: CartServiceProtocol) {
         self.cartService = cartService
         loadCartFromServer()
-        setupNotifications() // Добавляем подписку на нотификации
+        setupNotifications() // Добав
     }
     
     deinit {
