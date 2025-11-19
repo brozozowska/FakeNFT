@@ -2,7 +2,7 @@ import UIKit
 
 // MARK: - Constants
 private enum OnboardingConstants {
-    static let darkOverlayAlpha: CGFloat = 0.2
+    static let darkOverlayAlpha: CGFloat = 0.4
     static let titleTopOffset: CGFloat = 230
     static let horizontalPadding: CGFloat = 16
     static let descriptionTopOffset: CGFloat = 12
