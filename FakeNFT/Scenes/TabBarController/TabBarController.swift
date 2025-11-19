@@ -5,6 +5,8 @@ final class TabBarController: UITabBarController {
     var servicesAssembly: ServicesAssembly!
     var viewModelAssembly: ViewModelAssembly!
     
+    private var isInitialized = false
+    
     private let catalogTabBarItem = UITabBarItem(
         title: NSLocalizedString("Tab.catalog", comment: ""),
         image: UIImage(resource: .catalogNoactive),
@@ -21,6 +23,17 @@ final class TabBarController: UITabBarController {
         super.viewDidLoad()
         
         view.backgroundColor = .systemBackground
+        setupViewControllers()
+    }
+    
+    private func setupViewControllers() {
+        guard !isInitialized else { return }
+        
+        // Проверяем, что зависимости установлены
+        guard servicesAssembly != nil, viewModelAssembly != nil else {
+            print("Dependencies not set in TabBarController")
+            return
+        }
         
         // Profile
         let profileViewModel = viewModelAssembly.makeProfileViewModel()
@@ -49,5 +62,11 @@ final class TabBarController: UITabBarController {
         )
         
         viewControllers = [profileNavigationController, catalogNavigationController, cartNavigationController]
+        isInitialized = true
+    }
+    
+    // Метод для принудительной переустановки контроллеров после установки зависимостей
+    func setupTabs() {
+        setupViewControllers()
     }
 }

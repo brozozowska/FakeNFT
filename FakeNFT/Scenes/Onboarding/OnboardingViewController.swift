@@ -8,6 +8,8 @@ final class OnboardingViewController: UIViewController {
     private let viewModel: OnboardingViewModel
     private var cancellables = Set<AnyCancellable>()
     
+    var onCompletion: (() -> Void)?
+    
     // MARK: - UI Components
     
     private lazy var collectionView: UICollectionView = {
@@ -124,10 +126,7 @@ final class OnboardingViewController: UIViewController {
     
     private func handleLoginButtonTapped() {
         UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
-        
-        if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
-            sceneDelegate.completeOnboarding()
-        }
+        onCompletion?()
     }
 }
 

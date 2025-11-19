@@ -1,5 +1,26 @@
 import UIKit
 
+// MARK: - Constants
+private enum OnboardingConstants {
+    static let darkOverlayAlpha: CGFloat = 0.2
+    static let titleTopOffset: CGFloat = 230
+    static let horizontalPadding: CGFloat = 16
+    static let descriptionTopOffset: CGFloat = 12
+    static let buttonBottomOffset: CGFloat = 50
+    static let buttonHeight: CGFloat = 60
+    static let buttonCornerRadius: CGFloat = 16
+    
+    // Shadow properties
+    static let shadowColor: UIColor = .black
+    static let shadowRadius: CGFloat = 2.0
+    static let shadowOpacity: Float = 0.6
+    static let shadowOffset = CGSize(width: 1, height: 1)
+    
+    // Page control
+    static let pageControlTopOffset: CGFloat = 44
+    static let pageControlHeight: CGFloat = 28
+}
+
 final class OnboardingCollectionViewCell: UICollectionViewCell, ReuseIdentifying {
     
     // MARK: - Properties
@@ -15,7 +36,7 @@ final class OnboardingCollectionViewCell: UICollectionViewCell, ReuseIdentifying
     
     private lazy var darkOverlay: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.2)
+        view.backgroundColor = UIColor.black.withAlphaComponent(OnboardingConstants.darkOverlayAlpha)
         return view
     }()
     
@@ -26,10 +47,10 @@ final class OnboardingCollectionViewCell: UICollectionViewCell, ReuseIdentifying
         label.textAlignment = .left
         label.numberOfLines = 1
         
-        label.layer.shadowColor = UIColor.black.cgColor
-        label.layer.shadowRadius = 2.0
-        label.layer.shadowOpacity = 0.6
-        label.layer.shadowOffset = CGSize(width: 1, height: 1)
+        label.layer.shadowColor = OnboardingConstants.shadowColor.cgColor
+        label.layer.shadowRadius = OnboardingConstants.shadowRadius
+        label.layer.shadowOpacity = OnboardingConstants.shadowOpacity
+        label.layer.shadowOffset = OnboardingConstants.shadowOffset
         label.layer.masksToBounds = false
         
         return label
@@ -42,10 +63,10 @@ final class OnboardingCollectionViewCell: UICollectionViewCell, ReuseIdentifying
         label.textAlignment = .left
         label.numberOfLines = .zero
         
-        label.layer.shadowColor = UIColor.black.cgColor
-        label.layer.shadowRadius = 2.0
-        label.layer.shadowOpacity = 0.6
-        label.layer.shadowOffset = CGSize(width: 1, height: 1)
+        label.layer.shadowColor = OnboardingConstants.shadowColor.cgColor
+        label.layer.shadowRadius = OnboardingConstants.shadowRadius
+        label.layer.shadowOpacity = OnboardingConstants.shadowOpacity
+        label.layer.shadowOffset = OnboardingConstants.shadowOffset
         label.layer.masksToBounds = false
         
         return label
@@ -56,7 +77,7 @@ final class OnboardingCollectionViewCell: UICollectionViewCell, ReuseIdentifying
         button.backgroundColor = .black
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = .bodyBold
-        button.layer.cornerRadius = 16
+        button.layer.cornerRadius = OnboardingConstants.buttonCornerRadius
         button.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
         button.isHidden = true
         return button
@@ -115,19 +136,19 @@ final class OnboardingCollectionViewCell: UICollectionViewCell, ReuseIdentifying
             darkOverlay.bottomAnchor.constraint(equalTo: imageView.bottomAnchor),
             
             // Title and description
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 230),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: OnboardingConstants.titleTopOffset),
+            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: OnboardingConstants.horizontalPadding),
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -OnboardingConstants.horizontalPadding),
             
-            descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12),
-            descriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: OnboardingConstants.descriptionTopOffset),
+            descriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: OnboardingConstants.horizontalPadding),
+            descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -OnboardingConstants.horizontalPadding),
             
             // Login button
-            loginButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            loginButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            loginButton.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor, constant: -50),
-            loginButton.heightAnchor.constraint(equalToConstant: 60)
+            loginButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: OnboardingConstants.horizontalPadding),
+            loginButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -OnboardingConstants.horizontalPadding),
+            loginButton.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor, constant: -OnboardingConstants.buttonBottomOffset),
+            loginButton.heightAnchor.constraint(equalToConstant: OnboardingConstants.buttonHeight)
         ])
     }
 }

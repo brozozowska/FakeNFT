@@ -28,6 +28,9 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     private func showOnboarding() {
         let onboardingViewController = OnboardingViewController()
+        onboardingViewController.onCompletion = { [weak self] in
+            self?.completeOnboarding()
+        }
         window?.rootViewController = onboardingViewController
     }
     
@@ -35,6 +38,9 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let tabBarController = TabBarController()
         tabBarController.servicesAssembly = servicesAssembly
         tabBarController.viewModelAssembly = viewModelAssembly
+        
+        tabBarController.setupTabs()
+        
         window?.rootViewController = tabBarController
     }
     
