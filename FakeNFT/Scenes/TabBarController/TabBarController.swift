@@ -2,8 +2,19 @@ import UIKit
 
 final class TabBarController: UITabBarController {
     
-    var servicesAssembly: ServicesAssembly!
-    var viewModelAssembly: ViewModelAssembly!
+    var servicesAssembly: ServicesAssembly! {
+        didSet {
+            setupViewControllersIfNeeded()
+        }
+    }
+    
+    var viewModelAssembly: ViewModelAssembly! {
+        didSet {
+            setupViewControllersIfNeeded()
+        }
+    }
+    
+    private var isInitialized = false
     
     private let catalogTabBarItem = UITabBarItem(
         title: NSLocalizedString("Tab.catalog", comment: ""),
@@ -19,9 +30,24 @@ final class TabBarController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         view.backgroundColor = .systemBackground
+        setupViewControllersIfNeeded()
+    }
+    
+    private func setupViewControllersIfNeeded() {
+        guard !isInitialized else { return }
         
+        // Проверяем, что все зависимости установлены И контроллер загружен
+        guard servicesAssembly != nil,
+              viewModelAssembly != nil,
+              isViewLoaded else {
+            return
+        }
+        
+        setupViewControllers()
+    }
+    
+    private func setupViewControllers() {
         // Profile
         let profileViewModel = viewModelAssembly.makeProfileViewModel()
         let profileController = ProfileViewController(
@@ -49,5 +75,10 @@ final class TabBarController: UITabBarController {
         )
         
         viewControllers = [profileNavigationController, catalogNavigationController, cartNavigationController]
+        isInitialized = true
+    }
+    
+    func setupTabs() {
+        setupViewControllersIfNeeded()
     }
 }

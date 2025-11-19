@@ -79,3 +79,11 @@
 "Payment.failed.title" = "Не удалось произвести оплату";
 "Payment.failed.cancel" = "Отмена";
 "Payment.failed.retry" = "Повторить";
+
+"Onboarding.slide1.title" = "Исследуйте";
+"Onboarding.slide1.description" = "Присоединяйтесь и откройте новый мир уникальных NFT для коллекционеров";
+"Onboarding.slide2.title" = "Коллекционируйте";
+"Onboarding.slide2.description" = "Пополняйте свою коллекцию эксклюзивными картинками, созданными нейросетью!";
+"Onboarding.slide3.title" = "Состязайтесь";
+"Onboarding.slide3.description" = "Смотрите статистику других и покажите всем, что у вас самая ценная коллекция";
+"Onboarding.login.button" = "Что внутри?";
