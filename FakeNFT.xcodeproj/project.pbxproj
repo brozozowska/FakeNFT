@@ -173,6 +173,7 @@
 		4EC062AD2EACF6F000373C9E /* ViewModels */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ViewModels; sourceTree = "<group>"; };
 		4EC062B02EACF73B00373C9E /* Cart */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Cart; sourceTree = "<group>"; };
 		E4A056A02ECD122E00681D71 /* Onboarding */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Onboarding; sourceTree = "<group>"; };
+		E4A057732ECDD97D00681D71 /* LaunchScreen */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = LaunchScreen; sourceTree = "<group>"; };
 		E4F1433B2EC113D600D3AF8C /* Profile */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Profile; sourceTree = "<group>"; };
 		E4F541272EB39D440046681D /* Collection */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Collection; sourceTree = "<group>"; };
 		E4F542882EB8AA030046681D /* Sorting */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Sorting; sourceTree = "<group>"; };
@@ -297,6 +298,7 @@
 		3F68069529CBBAF100B4F915 /* FakeNFT */ = {
 			isa = PBXGroup;
 			children = (
+				E4A057732ECDD97D00681D71 /* LaunchScreen */,
 				4EC062AD2EACF6F000373C9E /* ViewModels */,
 				3F68069629CBBAF100B4F915 /* AppDelegate.swift */,
 				3F68069829CBBAF100B4F915 /* SceneDelegate.swift */,
@@ -494,6 +496,7 @@
 				4EC062AD2EACF6F000373C9E /* ViewModels */,
 				4EC062B02EACF73B00373C9E /* Cart */,
 				E4A056A02ECD122E00681D71 /* Onboarding */,
+				E4A057732ECDD97D00681D71 /* LaunchScreen */,
 				E4F1433B2EC113D600D3AF8C /* Profile */,
 				E4F541272EB39D440046681D /* Collection */,
 				E4F542882EB8AA030046681D /* Sorting */,

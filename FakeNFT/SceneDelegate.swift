@@ -15,6 +15,21 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         
+        showLaunchScreen()
+        
+        window?.makeKeyAndVisible()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            self.showAppInterface()
+        }
+    }
+    
+    private func showLaunchScreen() {
+        let launchScreenViewController = LaunchScreenViewController()
+        window?.rootViewController = launchScreenViewController
+    }
+    
+    private func showAppInterface() {
         let hasSeenOnboarding = UserDefaults.standard.bool(forKey: "hasSeenOnboarding")
         
         if hasSeenOnboarding {
@@ -22,8 +37,6 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         } else {
             showOnboarding()
         }
-        
-        window?.makeKeyAndVisible()
     }
     
     private func showOnboarding() {
@@ -31,17 +44,21 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         onboardingViewController.onCompletion = { [weak self] in
             self?.completeOnboarding()
         }
-        window?.rootViewController = onboardingViewController
+        
+        UIView.transition(with: window!, duration: 0.5, options: .transitionCrossDissolve, animations: {
+            self.window?.rootViewController = onboardingViewController
+        })
     }
     
     private func showMainApp() {
         let tabBarController = TabBarController()
         tabBarController.servicesAssembly = servicesAssembly
         tabBarController.viewModelAssembly = viewModelAssembly
-        
         tabBarController.setupTabs()
         
-        window?.rootViewController = tabBarController
+        UIView.transition(with: window!, duration: 0.5, options: .transitionCrossDissolve, animations: {
+            self.window?.rootViewController = tabBarController
+        })
     }
     
     func completeOnboarding() {
