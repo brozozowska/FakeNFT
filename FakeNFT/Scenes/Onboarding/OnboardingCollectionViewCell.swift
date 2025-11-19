@@ -2,8 +2,10 @@ import UIKit
 
 final class OnboardingCollectionViewCell: UICollectionViewCell, ReuseIdentifying {
     
-    // MARK: - UI Components
+    // MARK: - Properties
+    var onLoginButtonTapped: (() -> Void)?
     
+    // MARK: - UI Components
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -11,16 +13,22 @@ final class OnboardingCollectionViewCell: UICollectionViewCell, ReuseIdentifying
         return imageView
     }()
     
+    private lazy var darkOverlay: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.2)
+        return view
+    }()
+    
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .headline2
+        label.font = .headline3
         label.textColor = .white
         label.textAlignment = .left
         label.numberOfLines = 1
         
         label.layer.shadowColor = UIColor.black.cgColor
-        label.layer.shadowRadius = 3.0
-        label.layer.shadowOpacity = 0.8
+        label.layer.shadowRadius = 2.0
+        label.layer.shadowOpacity = 0.6
         label.layer.shadowOffset = CGSize(width: 1, height: 1)
         label.layer.masksToBounds = false
         
@@ -29,14 +37,14 @@ final class OnboardingCollectionViewCell: UICollectionViewCell, ReuseIdentifying
     
     private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
-        label.font = .caption1
+        label.font = .bodyRegular
         label.textColor = .white
         label.textAlignment = .left
         label.numberOfLines = .zero
         
         label.layer.shadowColor = UIColor.black.cgColor
-        label.layer.shadowRadius = 3.0
-        label.layer.shadowOpacity = 0.8
+        label.layer.shadowRadius = 2.0
+        label.layer.shadowOpacity = 0.6
         label.layer.shadowOffset = CGSize(width: 1, height: 1)
         label.layer.masksToBounds = false
         
@@ -54,12 +62,7 @@ final class OnboardingCollectionViewCell: UICollectionViewCell, ReuseIdentifying
         return button
     }()
     
-    // MARK: - Properties
-    
-    var onLoginButtonTapped: (() -> Void)?
-    
     // MARK: - Init
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
@@ -72,7 +75,6 @@ final class OnboardingCollectionViewCell: UICollectionViewCell, ReuseIdentifying
     }
     
     // MARK: - Configuration
-    
     func configure(with slide: OnboardingSlide) {
         imageView.image = UIImage(named: slide.imageName)
         titleLabel.text = slide.title
@@ -85,17 +87,15 @@ final class OnboardingCollectionViewCell: UICollectionViewCell, ReuseIdentifying
     }
     
     // MARK: - Actions
-    
     @objc private func loginButtonTapped() {
         onLoginButtonTapped?()
     }
     
     // MARK: - Private Methods
-    
     private func setupViews() {
         contentView.backgroundColor = .white
         
-        [imageView, titleLabel, descriptionLabel, loginButton].forEach {
+        [imageView, darkOverlay, titleLabel, descriptionLabel, loginButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview($0)
         }
@@ -103,13 +103,18 @@ final class OnboardingCollectionViewCell: UICollectionViewCell, ReuseIdentifying
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            // ImageView - занимает весь экран
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
-            // Title and description container
+            // Dark overlay - поверх картинки
+            darkOverlay.topAnchor.constraint(equalTo: imageView.topAnchor),
+            darkOverlay.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
+            darkOverlay.trailingAnchor.constraint(equalTo: imageView.trailingAnchor),
+            darkOverlay.bottomAnchor.constraint(equalTo: imageView.bottomAnchor),
+            
+            // Title and description
             titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 230),
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
