@@ -32,7 +32,7 @@ final class CartViewController: UIViewController, CartView {
             static let payButtonTitleColor: UIColor = UIColor { traits in
                 switch traits.userInterfaceStyle {
                 case .dark:
-                    return .black
+                    return .darkGray
                 default:
                     return .white
                 }
