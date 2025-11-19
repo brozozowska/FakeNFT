@@ -2,8 +2,17 @@ import UIKit
 
 final class TabBarController: UITabBarController {
     
-    var servicesAssembly: ServicesAssembly!
-    var viewModelAssembly: ViewModelAssembly!
+    var servicesAssembly: ServicesAssembly! {
+        didSet {
+            setupViewControllersIfNeeded()
+        }
+    }
+    
+    var viewModelAssembly: ViewModelAssembly! {
+        didSet {
+            setupViewControllersIfNeeded()
+        }
+    }
     
     private var isInitialized = false
     
@@ -21,20 +30,24 @@ final class TabBarController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         view.backgroundColor = .systemBackground
+        setupViewControllersIfNeeded()
+    }
+    
+    private func setupViewControllersIfNeeded() {
+        guard !isInitialized else { return }
+        
+        // Проверяем, что все зависимости установлены И контроллер загружен
+        guard servicesAssembly != nil,
+              viewModelAssembly != nil,
+              isViewLoaded else {
+            return
+        }
+        
         setupViewControllers()
     }
     
     private func setupViewControllers() {
-        guard !isInitialized else { return }
-        
-        // Проверяем, что зависимости установлены
-        guard servicesAssembly != nil, viewModelAssembly != nil else {
-            print("Dependencies not set in TabBarController")
-            return
-        }
-        
         // Profile
         let profileViewModel = viewModelAssembly.makeProfileViewModel()
         let profileController = ProfileViewController(
@@ -65,8 +78,7 @@ final class TabBarController: UITabBarController {
         isInitialized = true
     }
     
-    // Метод для принудительной переустановки контроллеров после установки зависимостей
     func setupTabs() {
-        setupViewControllers()
+        setupViewControllersIfNeeded()
     }
 }
