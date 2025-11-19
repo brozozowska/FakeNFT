@@ -31,8 +31,8 @@ final class LaunchScreenViewController: UIViewController {
         NSLayoutConstraint.activate([
             logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             logoImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            logoImageView.widthAnchor.constraint(equalToConstant: 120),
-            logoImageView.heightAnchor.constraint(equalToConstant: 120)
+            logoImageView.widthAnchor.constraint(equalToConstant: 75),
+            logoImageView.heightAnchor.constraint(equalToConstant: 78)
         ])
     }
 }
