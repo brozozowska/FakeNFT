@@ -42,7 +42,7 @@ final class OnboardingCollectionViewCell: UICollectionViewCell, ReuseIdentifying
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .headline3
+        label.font = .headline2
         label.textColor = .white
         label.textAlignment = .left
         label.numberOfLines = 1
