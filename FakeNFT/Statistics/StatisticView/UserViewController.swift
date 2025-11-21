@@ -24,12 +24,19 @@ final class UserViewController: UIViewController {
     init(viewModel: UserViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        self.hidesBottomBarWhenPushed = true
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+
+        navigationController?.navigationBar.tintColor = .label
+
+        let backItem = UIBarButtonItem()
+        backItem.title = ""
+        navigationItem.backBarButtonItem = backItem
 
         navigationItem.hidesBackButton = true
         let backImage = UIImage(named: "back_icon")?.withRenderingMode(.alwaysOriginal)
@@ -141,13 +148,19 @@ final class UserViewController: UIViewController {
 
     @objc private func openSite() {
         guard let url = viewModel.website else { return }
+
         let web = WKWebView()
         let vc = UIViewController()
         vc.view = web
-        vc.title = "Сайт"
+
+        vc.title = nil
+
+        vc.hidesBottomBarWhenPushed = true
+
         web.load(URLRequest(url: url))
         navigationController?.pushViewController(vc, animated: true)
     }
+
 }
 
 private final class UserProfileCollectionCell: UITableViewCell {
@@ -231,6 +244,7 @@ extension UserViewController: UITableViewDataSource, UITableViewDelegate {
         )
 
         let vc = UserCollectionViewController(viewModel: vm)
+        vc.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(vc, animated: true)
     }
 

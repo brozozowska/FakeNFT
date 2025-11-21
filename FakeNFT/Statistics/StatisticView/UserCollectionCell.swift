@@ -6,17 +6,14 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class UserCollectionCell: UICollectionViewCell {
 
     static let identifier = "UserCollectionCell"
 
-    // MARK: - Callbacks
-
     var onHeartTap: (() -> Void)?
     var onCartTap: (() -> Void)?
-
-    // MARK: - UI
 
     private let nftImageView: UIImageView = {
         let iv = UIImageView()
@@ -34,7 +31,6 @@ final class UserCollectionCell: UICollectionViewCell {
         b.imageView?.contentMode = .scaleAspectFit
         return b
     }()
-
 
     private let starsImageView: UIImageView = {
         let iv = UIImageView()
@@ -66,8 +62,6 @@ final class UserCollectionCell: UICollectionViewCell {
         return b
     }()
 
-    // MARK: - Init
-
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -79,46 +73,39 @@ final class UserCollectionCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: - Configure
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        nftImageView.kf.cancelDownloadTask()
+        nftImageView.image = nil
+    }
 
     func configure(with model: UserCollectionCellModel) {
-
-        // Имя
         nameLabel.text = model.displayTitle
-
-        // Цена
         priceLabel.text = model.priceString
 
-        // Картинка
         if
             let urlString = model.imageURL,
             let url = URL(string: urlString)
         {
-            loadImage(from: url)
+            let placeholder = UIImage(systemName: "photo")
+            nftImageView.kf.setImage(with: url, placeholder: placeholder)
         } else {
             nftImageView.image = UIImage(systemName: "photo")
         }
 
-        // Рейтинг (звёзды)
         starsImageView.image = UIImage(named: model.ratingImageName)
 
-        // Избранное
         if model.isFavorite {
             heartButton.tintColor = .systemRed
-            let img = UIImage(named: "Active")?.withRenderingMode(.alwaysTemplate)
-            heartButton.setImage(img, for: .normal)
+            heartButton.setImage(UIImage(named: "Active")?.withRenderingMode(.alwaysTemplate), for: .normal)
         } else {
             heartButton.tintColor = .white
-            let img = UIImage(named: "NoActive")?.withRenderingMode(.alwaysTemplate)
-            heartButton.setImage(img, for: .normal)
+            heartButton.setImage(UIImage(named: "NoActive")?.withRenderingMode(.alwaysTemplate), for: .normal)
         }
 
-        // Корзина
         let cartImageName = model.isInCart ? "Delete" : "add"
         cartButton.setImage(UIImage(named: cartImageName), for: .normal)
     }
-
-    // MARK: - Actions
 
     @objc private func heartTapped() {
         onHeartTap?()
@@ -127,8 +114,6 @@ final class UserCollectionCell: UICollectionViewCell {
     @objc private func cartTapped() {
         onCartTap?()
     }
-
-    // MARK: - Setup UI
 
     private func setupUI() {
         contentView.addSubview(nftImageView)
@@ -139,52 +124,33 @@ final class UserCollectionCell: UICollectionViewCell {
         contentView.addSubview(cartButton)
 
         NSLayoutConstraint.activate([
-            // Image
-            nftImageView.topAnchor.constraint(equalTo: contentView.topAnchor)
-                ,
+            nftImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             nftImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             nftImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             nftImageView.heightAnchor.constraint(equalToConstant: 108),
 
-            // Heart icon
             heartButton.topAnchor.constraint(equalTo: nftImageView.topAnchor, constant: 5),
             heartButton.trailingAnchor.constraint(equalTo: nftImageView.trailingAnchor, constant: -5),
             heartButton.widthAnchor.constraint(equalToConstant: 40),
             heartButton.heightAnchor.constraint(equalToConstant: 40),
 
-            // Stars
             starsImageView.topAnchor.constraint(equalTo: nftImageView.bottomAnchor, constant: 6),
             starsImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             starsImageView.widthAnchor.constraint(equalToConstant: 80),
             starsImageView.heightAnchor.constraint(equalToConstant: 14),
 
-            // Name
             nameLabel.topAnchor.constraint(equalTo: starsImageView.bottomAnchor, constant: 6),
             nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             nameLabel.trailingAnchor.constraint(lessThanOrEqualTo: cartButton.leadingAnchor, constant: -6),
 
-            // Cart icon
             cartButton.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
             cartButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             cartButton.widthAnchor.constraint(equalToConstant: 40),
             cartButton.heightAnchor.constraint(equalToConstant: 40),
 
-            // Price
             priceLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 2),
             priceLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             priceLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
         ])
-    }
-
-    // MARK: - Image loader
-
-    private func loadImage(from url: URL) {
-        URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
-            guard let data,
-                  let img = UIImage(data: data) else { return }
-            DispatchQueue.main.async {
-                self?.nftImageView.image = img
-            }
-        }.resume()
     }
 }

@@ -16,22 +16,23 @@ final class UserCollectionViewModel {
     private let userID: String
     private(set) var items: [UserCollectionCellModel] = []
 
-    // MARK: - Favorites / Cart (имитация)
+    // MARK: - Favorites / Cart через сервисы
 
-    private static let favoritesKey = "UserCollectionFavorites"
-    private static let cartKey = "UserCollectionCart"
+    private let favoritesService: FavoritesServiceProtocol
+    private let cartService: CartServiceProtocol
 
-    private var favoriteIDs: Set<String>
-    private var cartIDs: Set<String>
+    // MARK: - Init
 
-    init(service: UserCollectionServiceProtocol, userID: String) {
+    init(
+        service: UserCollectionServiceProtocol,
+        userID: String,
+        favoritesService: FavoritesServiceProtocol = FavoritesService(),
+        cartService: CartServiceProtocol = CartService()
+    ) {
         self.service = service
         self.userID = userID
-
-        let fav = UserDefaults.standard.stringArray(forKey: Self.favoritesKey) ?? []
-        let cart = UserDefaults.standard.stringArray(forKey: Self.cartKey) ?? []
-        self.favoriteIDs = Set(fav)
-        self.cartIDs = Set(cart)
+        self.favoritesService = favoritesService
+        self.cartService = cartService
     }
 
     // MARK: - Load
@@ -47,8 +48,8 @@ final class UserCollectionViewModel {
                     self.items = nfts.map { nft in
                         UserCollectionCellModel(
                             nft: nft,
-                            isFavorite: self.favoriteIDs.contains(nft.id),
-                            isInCart: self.cartIDs.contains(nft.id)
+                            isFavorite: self.favoritesService.isFavorite(id: nft.id),
+                            isInCart: self.cartService.isInCart(id: nft.id)
                         )
                     }
                     self.onItems?(self.items)
@@ -67,41 +68,17 @@ final class UserCollectionViewModel {
         guard index < items.count else { return }
         let id = items[index].id
 
-        if favoriteIDs.contains(id) {
-            favoriteIDs.remove(id)
-            items[index].isFavorite = false
-        } else {
-            favoriteIDs.insert(id)
-            items[index].isFavorite = true
-        }
-
-        saveFavorites()
+        favoritesService.toggleFavorite(id: id)
+        // обновляем состояние модели из сервиса
+        items[index].isFavorite = favoritesService.isFavorite(id: id)
     }
 
     func toggleCart(at index: Int) {
         guard index < items.count else { return }
         let id = items[index].id
 
-        if cartIDs.contains(id) {
-            cartIDs.remove(id)
-            items[index].isInCart = false
-        } else {
-            cartIDs.insert(id)
-            items[index].isInCart = true
-        }
-
-        saveCart()
-    }
-
-    // MARK: - Persistence
-
-    private func saveFavorites() {
-        let array = Array(favoriteIDs)
-        UserDefaults.standard.set(array, forKey: Self.favoritesKey)
-    }
-
-    private func saveCart() {
-        let array = Array(cartIDs)
-        UserDefaults.standard.set(array, forKey: Self.cartKey)
+        cartService.toggleInCart(id: id)
+        // обновляем состояние модели из сервиса
+        items[index].isInCart = cartService.isInCart(id: id)
     }
 }
