@@ -14,23 +14,45 @@ struct UserCollectionCellModel {
     let rating: Int?
     let priceETH: Double?
 
+    // состояние
+    var isFavorite: Bool
+    var isInCart: Bool
+
     init(nft: Nft) {
         id = nft.id
         title = nft.name
         imageURL = nft.images.first?.absoluteString
         rating = nft.rating
         priceETH = nft.price
+        isFavorite = false
+        isInCart = false
+    }
+
+    init(nft: Nft, isFavorite: Bool, isInCart: Bool) {
+        id = nft.id
+        title = nft.name
+        imageURL = nft.images.first?.absoluteString
+        rating = nft.rating
+        priceETH = nft.price
+        self.isFavorite = isFavorite
+        self.isInCart = isInCart
     }
 
     var displayTitle: String { title ?? id }
 
-    var priceString: String {
-        guard let priceETH else { return "—" }
+    var priceString: String? {
+        guard let priceETH else { return nil }
         return String(format: "%.2f ETH", priceETH)
     }
 
     var ratingImageName: String {
-        guard let rating else { return "0stars" }
-        return "\(rating)stars"        
+        switch rating ?? 0 {
+        case 1: return "1star"
+        case 2: return "2stars"
+        case 3: return "3stars"
+        case 4: return "4stars"
+        case 5: return "5stars"
+        default: return "zero"
+        }
     }
 }
