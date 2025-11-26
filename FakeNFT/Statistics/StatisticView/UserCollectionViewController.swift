@@ -11,6 +11,7 @@ final class UserCollectionViewController: UIViewController {
 
     // MARK: - Dependencies
     private let viewModel: UserCollectionViewModel
+    private let metricsService: MetricsServiceProtocol = MetricsService.shared
 
     // MARK: - UI
 
@@ -78,6 +79,12 @@ final class UserCollectionViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        metricsService.track(.userCollectionScreenOpen)
+    }
+
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -242,6 +249,16 @@ extension UserCollectionViewController: UICollectionViewDataSource {
     }
 }
 
-// MARK: - UICollectionViewDelegate (если нужно будет)
+// MARK: - UICollectionViewDelegate
 
-extension UserCollectionViewController: UICollectionViewDelegate { }
+extension UserCollectionViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView,
+                        didSelectItemAt indexPath: IndexPath) {
+        guard indexPath.item < viewModel.items.count else { return }
+        let model = viewModel.items[indexPath.item]
+
+        if let id = model.id as String? {
+            metricsService.track(.userCollectionNftTap(nftId: id))
+        }
+    }
+}

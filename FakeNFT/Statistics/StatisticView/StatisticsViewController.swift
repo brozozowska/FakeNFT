@@ -10,6 +10,7 @@ import UIKit
 final class StatisticsViewController: UIViewController, LoadingView, ErrorView {
 
     private let viewModel: StatisticsViewModel
+    private let metricsService: MetricsServiceProtocol = MetricsService.shared
 
     private let tableView = UITableView(frame: .zero, style: .plain)
     internal let activityIndicator = UIActivityIndicatorView(style: .medium)
@@ -20,20 +21,21 @@ final class StatisticsViewController: UIViewController, LoadingView, ErrorView {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
+
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-       
+
         view.backgroundColor = .systemBackground
 
         let sortImage = UIImage(named: "sort_icon")?.withRenderingMode(.alwaysOriginal)
-                navigationItem.rightBarButtonItem = UIBarButtonItem(
-                    image: sortImage,
-                    style: .plain,
-                    target: self,
-                    action: #selector(showSort)
-                )
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: sortImage,
+            style: .plain,
+            target: self,
+            action: #selector(showSort)
+        )
 
         tableView.register(UserRatingCell.self)
         tableView.dataSource = self
@@ -47,6 +49,11 @@ final class StatisticsViewController: UIViewController, LoadingView, ErrorView {
 
         bind()
         viewModel.load()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        metricsService.track(.statisticsScreenOpen)
     }
 
     private func bind() {
@@ -65,9 +72,11 @@ final class StatisticsViewController: UIViewController, LoadingView, ErrorView {
     @objc private func showSort() {
         let ac = UIAlertController(title: "Сортировка", message: nil, preferredStyle: .actionSheet)
         ac.addAction(UIAlertAction(title: "По имени", style: .default) { [weak self] _ in
+            self?.metricsService.track(.statisticsSortByName)
             self?.viewModel.changeSort(to: .byName)
         })
         ac.addAction(UIAlertAction(title: "По рейтингу", style: .default) { [weak self] _ in
+            self?.metricsService.track(.statisticsSortByRating)
             self?.viewModel.changeSort(to: .byRating)
         })
         ac.addAction(UIAlertAction(title: "Закрыть", style: .cancel))
@@ -79,7 +88,10 @@ extension StatisticsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { users.count }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat { 92 }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath
+    ) -> UITableViewCell {
         let cell: UserRatingCell = tableView.dequeueReusableCell()
         cell.configure(rank: indexPath.row + 1, user: users[indexPath.row])
         return cell
@@ -87,6 +99,11 @@ extension StatisticsViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let user = users[indexPath.row]
+
+        if let id = user.id as String? {
+            metricsService.track(.statisticsUserTap(userId: id))
+        }
+
         let vc = UserAssembly().build(user: user)
         navigationController?.pushViewController(vc, animated: true)
     }
