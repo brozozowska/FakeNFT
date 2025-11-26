@@ -1,4 +1,5 @@
 {
+  "originHash" : "26924ba3ac1fab193b6447767f67f3ec8a7284f505b2cda3bd413b905732f32f",
   "pins" : [
     {
       "identity" : "kingfisher",
@@ -7,6 +8,15 @@
       "state" : {
         "revision" : "af4be924ad984cf4d16f4ae4df424e79a443d435",
         "version" : "7.6.2"
+      }
+    },
+    {
+      "identity" : "metrica-sdk-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/yandexmobile/metrica-sdk-ios",
+      "state" : {
+        "revision" : "13d8b11181a33938ef42759d49466a621df5e7db",
+        "version" : "4.5.2"
       }
     },
     {
@@ -19,5 +29,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }
